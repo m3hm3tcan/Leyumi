@@ -8,13 +8,26 @@ class FeedingController {
   Duration _elapsed = Duration.zero;
   final Function(Duration) onTick;
 
+  int? startWeightGr; // Feeding öncesi kilo
+  int? endWeightGr;   // Feeding sonrası kilo
+
   FeedingController({required this.onTick});
+
+  void setStartWeight(int? weightGr) {
+    startWeightGr = weightGr;
+  }
+
+  void setEndWeight(int? weightGr) {
+    endWeightGr = weightGr;
+  }
 
   void startSide(String side) {
     if (currentSession == null) {
       currentSession = FeedingSession(
         startTime: DateTime.now(),
+        endTime: DateTime.now(), // geçici, finishSession'da override edeceğiz
         entries: [],
+        startWeightGr: startWeightGr,
       );
     }
 
@@ -41,8 +54,21 @@ class FeedingController {
 
   FeedingSession finishSession() {
     _timer?.cancel();
-    currentSession!.endTime = DateTime.now();
-    final session = currentSession!;
+
+    final now = DateTime.now();
+
+    final session = FeedingSession(
+      startTime: currentSession!.startTime,
+      endTime: now,
+      entries: currentSession!.entries,
+      startWeightGr: currentSession!.startWeightGr,
+      endWeightGr: endWeightGr,
+      milkIntakeGr: (currentSession!.startWeightGr != null &&
+              endWeightGr != null)
+          ? (endWeightGr! - currentSession!.startWeightGr!)
+          : null,
+    );
+
     currentSession = null;
     return session;
   }

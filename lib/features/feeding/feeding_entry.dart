@@ -1,5 +1,5 @@
 class FeedingEntry {
-  final String side;
+  final String side; // "left" or "right"
   final Duration duration;
 
   FeedingEntry({

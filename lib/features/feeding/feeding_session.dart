@@ -2,48 +2,49 @@ import 'feeding_entry.dart';
 
 class FeedingSession {
   final DateTime startTime;
-  DateTime? endTime;
+  final DateTime endTime;
   final List<FeedingEntry> entries;
+
+  final int? startWeightGr;
+  final int? endWeightGr;
+  final int? milkIntakeGr;
 
   FeedingSession({
     required this.startTime,
+    required this.endTime,
     required this.entries,
-    this.endTime,
+    this.startWeightGr,
+    this.endWeightGr,
+    this.milkIntakeGr,
   });
 
   Duration get totalDuration {
-    return entries.fold(Duration.zero, (sum, e) => sum + e.duration);
+    Duration total = Duration.zero;
+    for (var e in entries) {
+      total += e.duration;
+    }
+    return total;
   }
 
   Map<String, dynamic> toJson() => {
-        "start": startTime.toIso8601String(),
-        "end": endTime?.toIso8601String(),
+        "startTime": startTime.toIso8601String(),
+        "endTime": endTime.toIso8601String(),
         "entries": entries.map((e) => e.toJson()).toList(),
-  };
+        "startWeightGr": startWeightGr,
+        "endWeightGr": endWeightGr,
+        "milkIntakeGr": milkIntakeGr,
+      };
 
   factory FeedingSession.fromJson(Map<String, dynamic> json) {
-  // NEW FORMAT (correct)
-  if (json["entries"] != null) {
     return FeedingSession(
-      startTime: DateTime.parse(json["start"]),
-      endTime: json["end"] != null ? DateTime.parse(json["end"]) : null,
+      startTime: DateTime.parse(json["startTime"]),
+      endTime: DateTime.parse(json["endTime"]),
       entries: (json["entries"] as List)
-          .map((e) => FeedingEntry.fromJson(e))
+          .map((e) => FeedingEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
+      startWeightGr: json["startWeightGr"],
+      endWeightGr: json["endWeightGr"],
+      milkIntakeGr: json["milkIntakeGr"],
     );
   }
-
-  // OLD FORMAT (backward compatibility)
-    return FeedingSession(
-      startTime: DateTime.parse(json["start"]),
-      endTime: json["end"] != null ? DateTime.parse(json["end"]) : null,
-      entries: [
-        FeedingEntry(
-          side: json["side"] ?? "left",
-          duration: Duration(seconds: json["duration"] ?? 0),
-        ),
-      ],
-    );
-  }
-
 }

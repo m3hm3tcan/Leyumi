@@ -49,6 +49,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
         itemBuilder: (_, i) {
           final session = sessions[i];
 
+          for (final e in session.entries) {
+            final entry = e as FeedingEntry; // veya direkt tipli tanımla
+            Text(
+              "${entry.side.toUpperCase()} • ${format(entry.duration)} • ${formatDate(session.startTime)}",
+            );
+}
+
           return Card(
             margin: const EdgeInsets.all(12),
             child: Padding(
