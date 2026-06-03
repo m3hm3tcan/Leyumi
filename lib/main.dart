@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final prefs = await SharedPreferences.getInstance();
-  await prefs.clear(); // 🔥 TÜM LOCAL STORAGE SİLİNİR
+  // await prefs.clear(); // 🔥 TÜM LOCAL STORAGE SİLİNİR
   
   runApp(const BabyFeedApp());
 }
