@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../services/feeding_storage.dart';
-import '../feeding/feeding_session.dart';
+import 'package:babyfeedpro/services/feeding_storage.dart';
+import 'package:babyfeedpro/features/feeding/feeding_session.dart';
+
+import 'widgets/session_card.dart';
+import 'widgets/timeline_section.dart';
+import 'widgets/today_summary_card.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -20,166 +24,67 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Future<void> load() async {
     final data = await FeedingStorage().loadSessions();
+    data.sort((a, b) => b.startTime.compareTo(a.startTime));
+
     setState(() => sessions = data);
   }
 
-  String format(Duration d) {
-    final h = d.inHours;
-    final m = d.inMinutes.remainder(60);
-    final s = d.inSeconds.remainder(60);
+  Map<String, List<FeedingSession>> groupSessions() {
+    final Map<String, List<FeedingSession>> map = {};
 
-    if (h > 0) return "${h}h ${m}m ${s}s";
-    if (m > 0) return "${m}m ${s}s";
-    return "${s}s";
+    for (final s in sessions) {
+      final key = _getSection(s.startTime);
+      map.putIfAbsent(key, () => []);
+      map[key]!.add(s);
+    }
+
+    return map;
   }
 
-  String formatDate(DateTime dt) {
-    return "${dt.day}.${dt.month}.${dt.year}  "
-        "${dt.hour.toString().padLeft(2, '0')}:"
-        "${dt.minute.toString().padLeft(2, '0')}";
+  String _getSection(DateTime date) {
+    final now = DateTime.now();
+
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final sessionDay = DateTime(date.year, date.month, date.day);
+
+    if (sessionDay == today) return "Today";
+    if (sessionDay == yesterday) return "Yesterday";
+    if (today.difference(sessionDay).inDays <= 7) return "This Week";
+
+    return "Older";
   }
 
   @override
   Widget build(BuildContext context) {
+    final grouped = groupSessions();
+
     return Scaffold(
-      backgroundColor: const Color(0xffF7F8FC),
+      backgroundColor: const Color(0xffF6F7FB),
+
       appBar: AppBar(
-        title: const Text("Feeding History"),
-        centerTitle: true,
+        title: const Text("History"),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
 
-      body: ListView.builder(
-        itemCount: sessions.length,
-        itemBuilder: (_, i) {
-          final session = sessions[i];
+      body: ListView(
+        padding: const EdgeInsets.only(bottom: 24),
 
-          // Sol toplam süre
-          final leftTotal = session.entries
-              .where((e) => e.side == "left")
-              .fold(Duration.zero, (a, b) => a + b.duration);
+        children: [
+          const SizedBox(height: 12),
 
-          // Sağ toplam süre
-          final rightTotal = session.entries
-              .where((e) => e.side == "right")
-              .fold(Duration.zero, (a, b) => a + b.duration);
+          /// 🌟 TODAY SUMMARY CARD (TOP PRIORITY)
+          if (grouped["Today"] != null)
+            TodaySummaryCard(sessions: grouped["Today"]!),
 
-          final startW = session.startWeightGr;
-          final endW = session.endWeightGr;
-          final diff = session.milkIntakeGr;
-
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                )
-              ],
+          /// TIMELINE SECTIONS
+          for (final entry in grouped.entries)
+            TimelineSection(
+              title: entry.key,
+              sessions: entry.value,
             ),
-
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(22),
-              child: ExpansionTile(
-                tilePadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                collapsedBackgroundColor: Colors.white,
-                backgroundColor: Colors.white,
-
-                // -------------------------
-                // HEADER (KAPALI HAL)
-                // -------------------------
-                title: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      formatDate(session.startTime),
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      "Toplam süre: ${format(session.totalDuration)}",
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-
-                // -------------------------
-                // EXPANDED CONTENT
-                // -------------------------
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(18),
-                    color: Colors.white,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // SOL / SAĞ TOPLAM SÜRELER
-                        Text(
-                          "Sol meme: ${format(leftTotal)}",
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.pink.shade400,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          "Sağ meme: ${format(rightTotal)}",
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.blue.shade400,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-
-                        const SizedBox(height: 14),
-
-                        // KİLO BİLGİLERİ
-                        if (startW != null && endW != null) ...[
-                          Divider(height: 22, color: Colors.grey.shade300),
-
-                          Text(
-                            "İlk kilo: $startW gr",
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-                          Text(
-                            "Son kilo: $endW gr",
-                            style: const TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w500),
-                          ),
-
-                          const SizedBox(height: 10),
-
-                          // SADECE İÇİLEN SÜT MİKTARI
-                          Text(
-                            "İçilen süt: $diff gr",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.green.shade700,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          );
-        },
+        ],
       ),
     );
   }
