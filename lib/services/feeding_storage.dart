@@ -24,4 +24,16 @@ class FeedingStorage {
       return FeedingSession.fromJson(data);
     }).toList();
   }
+
+  Future<void> saveAllSessions(
+    List<FeedingSession> sessions,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final data = sessions
+        .map((e) => jsonEncode(e.toJson()))
+        .toList();
+
+    await prefs.setStringList(key, data);
+  }
 }
