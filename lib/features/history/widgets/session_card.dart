@@ -28,14 +28,8 @@ class SessionCard extends StatelessWidget {
     final m = d.inMinutes.remainder(60);
     final s = d.inSeconds.remainder(60);
 
-    if (h > 0) {
-      return "${h}h ${m}m ${s}s";
-    }
-
-    if (m > 0) {
-      return "${m}m ${s}s";
-    }
-
+    if (h > 0) return "${h}h ${m}m ${s}s";
+    if (m > 0) return "${m}m ${s}s";
     return "${s}s";
   }
 
@@ -52,73 +46,83 @@ class SessionCard extends StatelessWidget {
     final rightTotal = session.entries
         .where((e) => e.side == FeedingSide.right)
         .fold(Duration.zero, (a, b) => a + b.duration);
-        
+
     final total = leftTotal + rightTotal;
 
     final leftRatio =
         total.inSeconds == 0 ? 0.5 : leftTotal.inSeconds / total.inSeconds;
 
+    final leftFlex = (leftRatio * 100).round().clamp(1, 99);
+    final rightFlex = 100 - leftFlex;
+
     final milk = session.milkIntakeGr ?? 0;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(
+        right: 16,
+        bottom: 12,
+      ),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: UIColors.card,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 14,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ─────────────────────────
-          // HEADER
-          // ─────────────────────────
-          Text(
-            _formatTime(session.startTime),
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: UIColors.muted,
-            ),
+          /// HEADER
+          Row(
+            children: [
+              const Icon(
+                Icons.schedule_rounded,
+                size: 14,
+                color: UIColors.muted,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                _formatTime(session.startTime),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: UIColors.muted,
+                ),
+              ),
+            ],
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 6),
 
-          // ─────────────────────────
-          // MAIN NUMBER (FOCUS)
-          // ─────────────────────────
+          /// MAIN VALUE
           Text(
             _formatDuration(session.totalDuration),
             style: const TextStyle(
-              fontSize: 26,
+              fontSize: 24,
               fontWeight: FontWeight.w800,
               color: UIColors.text,
               letterSpacing: -0.5,
             ),
           ),
 
-          const SizedBox(height: 4),
+          const SizedBox(height: 1),
 
           const Text(
             "Total feeding time",
             style: TextStyle(
-              fontSize: 13,
+              fontSize: 12,
               color: UIColors.muted,
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // ─────────────────────────
-          // BALANCE BAR (LEFT / RIGHT)
-          // ─────────────────────────
+          /// BALANCE BAR
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: SizedBox(
@@ -126,11 +130,11 @@ class SessionCard extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    flex: (leftRatio * 100).toInt(),
+                    flex: leftFlex,
                     child: Container(color: UIColors.left),
                   ),
                   Expanded(
-                    flex: ((1 - leftRatio) * 100).toInt(),
+                    flex: rightFlex,
                     child: Container(color: UIColors.right),
                   ),
                 ],
@@ -138,11 +142,9 @@ class SessionCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // ─────────────────────────
-          // STATS ROW
-          // ─────────────────────────
+          /// LEFT / RIGHT
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -159,16 +161,15 @@ class SessionCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 10),
-
-          // ─────────────────────────
-          // MILK BADGE
-          // ─────────────────────────
-          if (milk > 0)
+          if (milk > 0) ...[
+            const SizedBox(height: 8),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 6,
+              ),
               decoration: BoxDecoration(
-                color: UIColors.milk.withOpacity(0.1),
+                color: UIColors.milk.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
@@ -176,21 +177,22 @@ class SessionCard extends StatelessWidget {
                 children: [
                   const Icon(
                     Icons.water_drop_rounded,
-                    size: 18,
+                    size: 16,
                     color: UIColors.milk,
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    "$milk g milk intake",
+                    "$milk g milk",
                     style: const TextStyle(
                       color: UIColors.milk,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                       fontSize: 12,
                     ),
                   ),
                 ],
               ),
             ),
+          ],
         ],
       ),
     );
@@ -201,37 +203,24 @@ class SessionCard extends StatelessWidget {
     required String value,
     required Color color,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 12,
-            color: UIColors.muted,
+        Container(
+          width: 8,
+          height: 8,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
           ),
         ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: 6),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: UIColors.text,
-              ),
-            ),
-          ],
+        const SizedBox(width: 6),
+        Text(
+          "$label • $value",
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: UIColors.text,
+          ),
         ),
       ],
     );

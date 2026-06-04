@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:babyfeedpro/features/feeding/feeding_session.dart';
 import 'session_card.dart';
 import 'timeline_header.dart';
+import 'timeline_item.dart';
 
 class TimelineSection extends StatelessWidget {
   final String title;
@@ -37,12 +38,18 @@ class TimelineSection extends StatelessWidget {
           itemBuilder: (context, index) {
             final session = sessions[index];
 
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: index == sessions.length - 1 ? 8 : 0,
+            return TimelineItem(
+              isLast: index == sessions.length - 1,
+              child: SessionCard(
+                session: session,
               ),
-              child: SessionCard(session: session),
             );
+                  // return Padding(
+            //   padding: EdgeInsets.only(
+            //     bottom: index == sessions.length - 1 ? 8 : 0,
+            //   ),
+            //   child: SessionCard(session: session),
+            // );
           },
         ),
       ],
