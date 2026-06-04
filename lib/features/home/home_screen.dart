@@ -5,7 +5,7 @@ import 'package:babyfeedpro/models/baby_profile.dart';
 import 'package:babyfeedpro/services/baby_storage.dart';
 import 'package:babyfeedpro/widgets/baby_card.dart';
 import 'package:babyfeedpro/services/reset_service.dart';
-
+import 'package:babyfeedpro/features/history/history_hub_screen.dart';
 // 👇 yeni widget
 import 'widgets/home_action_card.dart';
 
@@ -101,9 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const HistoryScreen(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const HistoryHubScreen()),
                       );
                     },
                   ),
@@ -117,14 +115,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
 
-                  HomeActionCard(
-                    icon: Icons.show_chart_rounded,
-                    title: "Growth Log",
-                    subtitle: "Measurements",
-                    onTap: () {
-                      Navigator.pushNamed(context, "/growth_history");
-                    },
-                  ),
+                  // HomeActionCard(
+                  //   icon: Icons.show_chart_rounded,
+                  //   title: "Growth Log",
+                  //   subtitle: "Measurements",
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, "/growth_history");
+                  //   },
+                  // ),
                 ],
               ),
             ),

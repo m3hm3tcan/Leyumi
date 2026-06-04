@@ -29,7 +29,7 @@ class BabyFeedApp extends StatelessWidget {
         "/onboarding": (_) => const OnboardingScreen(),
         "/home": (_) => const HomeScreen(),
         "/growth_update": (_) => const GrowthUpdateScreen(),
-        "/growth_history": (_) => const GrowthHistoryScreen(),
+        // "/growth_history": (_) => const GrowthHistoryScreen(),
       },
     );
   }
