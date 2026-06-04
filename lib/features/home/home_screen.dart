@@ -6,6 +6,9 @@ import 'package:babyfeedpro/services/baby_storage.dart';
 import 'package:babyfeedpro/widgets/baby_card.dart';
 import 'package:babyfeedpro/services/reset_service.dart';
 
+// 👇 yeni widget
+import 'widgets/home_action_card.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -48,88 +51,136 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return Scaffold(
+      backgroundColor: const Color(0xffF6F7FB),
+
       appBar: AppBar(
         title: const Text("BabyFeed Pro"),
         centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
       ),
+
       body: SingleChildScrollView(
         child: Column(
           children: [
             BabyCard(profile: profile!),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
+            // ─────────────────────────────
+            // QUICK ACTION GRID
+            // ─────────────────────────────
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.15,
                 children: [
-                  // FEEDING
+                  HomeActionCard(
+                    icon: Icons.favorite_rounded,
+                    title: "Feeding",
+                    subtitle: "Start session",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FeedingScreen(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  HomeActionCard(
+                    icon: Icons.history_rounded,
+                    title: "History",
+                    subtitle: "Past feedings",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const HistoryScreen(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  HomeActionCard(
+                    icon: Icons.monitor_weight_rounded,
+                    title: "Growth",
+                    subtitle: "Update weight",
+                    onTap: () {
+                      Navigator.pushNamed(context, "/growth_update");
+                    },
+                  ),
+
+                  HomeActionCard(
+                    icon: Icons.show_chart_rounded,
+                    title: "Growth Log",
+                    subtitle: "Measurements",
+                    onTap: () {
+                      Navigator.pushNamed(context, "/growth_history");
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 40),
+
+            // ─────────────────────────────
+            // DANGER ZONE
+            // ─────────────────────────────
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Danger Zone",
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      onPressed: () async {
+                        await ResetService.clearAll();
+                        if (!mounted) return;
+                        Navigator.pushReplacementNamed(
                           context,
-                          MaterialPageRoute(builder: (_) => const FeedingScreen()),
+                          "/onboarding",
                         );
                       },
-                      child: const Text("Start Feeding"),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // FEEDING HISTORY
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const HistoryScreen()),
-                        );
-                      },
-                      child: const Text("Feeding History"),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // GROWTH UPDATE
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/growth_update");
-                      },
-                      child: const Text("Growth Update"),
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // GROWTH HISTORY
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/growth_history");
-                      },
-                      child: const Text("Growth History"),
+                      icon: const Icon(Icons.delete_forever),
+                      label: const Text("Reset App (Clear All Data)"),
                     ),
                   ),
                 ],
               ),
             ),
-            ElevatedButton(
-              onPressed: () async {
-                await ResetService.clearAll();
-                if (!mounted) return;
-                Navigator.pushReplacementNamed(context, "/onboarding");
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text("Reset App (Clear All Data)"),
-            ),
+
+            const SizedBox(height: 24),
           ],
         ),
       ),
