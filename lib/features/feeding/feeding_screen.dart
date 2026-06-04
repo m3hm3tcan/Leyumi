@@ -16,7 +16,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
   late FeedingController controller;
 
   Duration currentTimer = Duration.zero;
-  String? activeSide;
+  FeedingSide? activeSide;
 
   final startWeightCtrl = TextEditingController();
   final endWeightCtrl = TextEditingController();
@@ -35,7 +35,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
     return "$m:$s";
   }
 
-  void startFeeding(String side) {
+  void startFeeding(FeedingSide side) {
     if (controller.currentSession == null) {
       // Feeding öncesi kilo
       if (startWeightCtrl.text.isNotEmpty) {
@@ -76,6 +76,8 @@ class _FeedingScreenState extends State<FeedingScreen> {
   }
 
   Widget buildEntryCard(FeedingEntry entry) {
+    final isLeft = entry.side == FeedingSide.left;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
       padding: const EdgeInsets.all(14),
@@ -93,19 +95,25 @@ class _FeedingScreenState extends State<FeedingScreen> {
       child: Row(
         children: [
           Icon(
-            entry.side == "left" ? Icons.arrow_back : Icons.arrow_forward,
-            color: entry.side == "left" ? Colors.pink : Colors.blue,
+            isLeft ? Icons.arrow_back : Icons.arrow_forward,
+            color: isLeft ? Colors.pink : Colors.blue,
             size: 28,
           ),
           const SizedBox(width: 12),
           Text(
-            entry.side == "left" ? "Sol Meme" : "Sağ Meme",
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
+            isLeft ? "Sol Meme" : "Sağ Meme",
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const Spacer(),
           Text(
             formatTime(entry.duration),
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w500),
+            style: GoogleFonts.poppins(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -185,7 +193,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                   Text(
                     activeSide == null
                         ? "Hazır"
-                        : (activeSide == "left" ? "Sol Meme" : "Sağ Meme"),
+                        : (activeSide == FeedingSide.left ? "Sol Meme" : "Sağ Meme"),
                     style: GoogleFonts.poppins(
                       fontSize: 18,
                       color: Colors.grey[600],
@@ -205,12 +213,12 @@ class _FeedingScreenState extends State<FeedingScreen> {
               children: [
                 // SOL
                 GestureDetector(
-                  onTap: activeSide == null ? () => startFeeding("left") : null,
+                  onTap: activeSide == null ? () => startFeeding(FeedingSide.left) : null,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: activeSide == "left"
+                      color: activeSide == FeedingSide.left
                           ? Colors.pink.shade100
                           : Colors.white,
                       borderRadius: BorderRadius.circular(20),
@@ -237,12 +245,12 @@ class _FeedingScreenState extends State<FeedingScreen> {
 
                 // SAĞ
                 GestureDetector(
-                  onTap: activeSide == null ? () => startFeeding("right") : null,
+                  onTap: activeSide == null ? () => startFeeding(FeedingSide.right) : null,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: activeSide == "right"
+                      color: activeSide == FeedingSide.right
                           ? Colors.blue.shade100
                           : Colors.white,
                       borderRadius: BorderRadius.circular(20),

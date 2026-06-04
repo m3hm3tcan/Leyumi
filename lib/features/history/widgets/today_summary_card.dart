@@ -31,109 +31,121 @@ class TodaySummaryCard extends StatelessWidget {
       (a, b) => a + (b.milkIntakeGr ?? 0),
     );
 
-    final avgSessionMinutes = sessions.isEmpty
-        ? 0
-        : totalDuration.inMinutes ~/ sessions.length;
+    final avgDuration = sessions.isEmpty
+        ? Duration.zero
+        : Duration(
+            seconds: totalDuration.inSeconds ~/ sessions.length,
+          );
 
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 14),
-      padding: const EdgeInsets.all(18),
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 20),
+      padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-
+        borderRadius: BorderRadius.circular(32),
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
             Color(0xff6C63FF),
-            Color(0xff8B7CFF),
+            Color(0xff8A7DFF),
           ],
         ),
-
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff6C63FF).withOpacity(0.25),
-            blurRadius: 24,
-            offset: const Offset(0, 10),
+            color: const Color(0xff6C63FF).withOpacity(.25),
+            blurRadius: 30,
+            offset: const Offset(0, 12),
           )
         ],
       ),
-
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// HEADER ROW
+          /// TOP BAR
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text(
-                "Today",
+                "TODAY",
                 style: TextStyle(
                   color: Colors.white70,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 1.1,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.4,
                 ),
               ),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+                  horizontal: 12,
+                  vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withOpacity(.15),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
                   "${sessions.length} sessions",
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: 12,
                     fontWeight: FontWeight.w600,
+                    fontSize: 12,
                   ),
                 ),
               ),
             ],
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 18),
 
-          /// MAIN VALUE
+          /// HERO NUMBER
           Text(
             _format(totalDuration),
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 34,
-              fontWeight: FontWeight.w800,
-              letterSpacing: -0.5,
+              fontSize: 42,
+              height: 1,
+              fontWeight: FontWeight.w900,
+              letterSpacing: -1,
             ),
           ),
 
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
 
           Text(
-            "Total feeding duration today",
+            "Total feeding duration",
             style: TextStyle(
-              color: Colors.white.withOpacity(0.85),
-              fontSize: 13,
+              color: Colors.white.withOpacity(.85),
+              fontSize: 14,
             ),
           ),
 
-          const SizedBox(height: 18),
+          const SizedBox(height: 24),
 
-          /// INSIGHTS ROW
+          /// METRICS
           Row(
             children: [
-              _chip(
-                icon: Icons.water_drop_rounded,
-                label: "$totalMilk g",
-                sub: "Milk intake",
+              Expanded(
+                child: _metricCard(
+                  icon: Icons.monitor_weight_outlined,
+                  value: "$totalMilk g",
+                  label: "Milk",
+                ),
               ),
               const SizedBox(width: 10),
-              _chip(
-                icon: Icons.timer_outlined,
-                label: "$avgSessionMinutes min",
-                sub: "Avg session",
+              Expanded(
+                child: _metricCard(
+                  icon: Icons.schedule_rounded,
+                  value: _format(avgDuration),
+                  label: "Average",
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: _metricCard(
+                  icon: Icons.baby_changing_station_rounded,
+                  value: sessions.length.toString(),
+                  label: "Sessions",
+                ),
               ),
             ],
           ),
@@ -142,47 +154,50 @@ class TodaySummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _chip({
+  Widget _metricCard({
     required IconData icon,
+    required String value,
     required String label,
-    required String sub,
   }) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.12),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: Colors.white.withOpacity(0.15),
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 14,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(.12),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: Colors.white.withOpacity(.12),
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            size: 18,
+            color: Colors.white,
           ),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white, size: 18),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 13,
-                  ),
-                ),
-                Text(
-                  sub,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 11,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 10),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              fontSize: 14,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: Colors.white.withOpacity(.7),
+              fontSize: 11,
+            ),
+          ),
+        ],
       ),
     );
   }

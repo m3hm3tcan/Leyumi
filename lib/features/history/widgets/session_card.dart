@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:babyfeedpro/features/feeding/feeding_session.dart';
+import 'package:babyfeedpro/features/feeding/feeding_entry.dart';
 
 class UIColors {
   static const bg = Color(0xffF6F7FB);
@@ -45,13 +46,13 @@ class SessionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final leftTotal = session.entries
-        .where((e) => e.side == "left")
+        .where((e) => e.side == FeedingSide.left)
         .fold(Duration.zero, (a, b) => a + b.duration);
 
     final rightTotal = session.entries
-        .where((e) => e.side == "right")
+        .where((e) => e.side == FeedingSide.right)
         .fold(Duration.zero, (a, b) => a + b.duration);
-
+        
     final total = leftTotal + rightTotal;
 
     final leftRatio =
@@ -61,7 +62,7 @@ class SessionCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: UIColors.card,
         borderRadius: BorderRadius.circular(24),
@@ -79,28 +80,16 @@ class SessionCard extends StatelessWidget {
           // ─────────────────────────
           // HEADER
           // ─────────────────────────
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                "Feeding Session",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: UIColors.muted,
-                ),
-              ),
-              Text(
-                _formatTime(session.startTime),
-                style: TextStyle(
-                  fontSize: 13,
-                  color: UIColors.muted,
-                ),
-              ),
-            ],
+          Text(
+            _formatTime(session.startTime),
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: UIColors.muted,
+            ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
 
           // ─────────────────────────
           // MAIN NUMBER (FOCUS)
@@ -108,7 +97,7 @@ class SessionCard extends StatelessWidget {
           Text(
             _formatDuration(session.totalDuration),
             style: const TextStyle(
-              fontSize: 30,
+              fontSize: 26,
               fontWeight: FontWeight.w800,
               color: UIColors.text,
               letterSpacing: -0.5,
@@ -149,7 +138,7 @@ class SessionCard extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
 
           // ─────────────────────────
           // STATS ROW
@@ -170,14 +159,14 @@ class SessionCard extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
 
           // ─────────────────────────
           // MILK BADGE
           // ─────────────────────────
           if (milk > 0)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
                 color: UIColors.milk.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(14),
@@ -196,6 +185,7 @@ class SessionCard extends StatelessWidget {
                     style: const TextStyle(
                       color: UIColors.milk,
                       fontWeight: FontWeight.w600,
+                      fontSize: 12,
                     ),
                   ),
                 ],

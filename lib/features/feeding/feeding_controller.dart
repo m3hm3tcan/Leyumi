@@ -21,7 +21,7 @@ class FeedingController {
     endWeightGr = weightGr;
   }
 
-  void startSide(String side) {
+  void startSide(FeedingSide  side) {
     if (currentSession == null) {
       currentSession = FeedingSession(
         startTime: DateTime.now(),
@@ -39,7 +39,7 @@ class FeedingController {
     });
   }
 
-  FeedingEntry stopSide(String side) {
+  FeedingEntry stopSide(FeedingSide side) {
     _timer?.cancel();
 
     final entry = FeedingEntry(
