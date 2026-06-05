@@ -34,17 +34,17 @@ class _GrowthTabState extends State<GrowthTab> {
     final isUp = diff > 0;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: (isUp ? Colors.green : Colors.red).withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
+        color: (isUp ? Colors.green : Colors.red).withOpacity(0.08),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
         "${isUp ? "+" : ""}${diff.toStringAsFixed(0)} $unit",
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: isUp ? Colors.green : Colors.red,
+          color: isUp ? Colors.green.shade700 : Colors.red.shade700,
         ),
       ),
     );
@@ -52,121 +52,186 @@ class _GrowthTabState extends State<GrowthTab> {
 
   @override
   Widget build(BuildContext context) {
-
     if (entries.isEmpty) {
-        return _emptyState();
+      return _emptyState();
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.all(12),
-      itemCount: entries.length,
-      itemBuilder: (context, i) {
-        final e = entries[i];
-        final prev = i < entries.length - 1 ? entries[i + 1] : null;
+    return Container(
+      color: const Color(0xffF6F7FB),
+      child: ListView.builder(
+        padding: const EdgeInsets.only(bottom: 24),
+        itemCount: entries.length,
+        itemBuilder: (context, i) {
+          final e = entries[i];
+          final prev = i < entries.length - 1 ? entries[i + 1] : null;
 
-        final weightGr = (e.weight * 1000).round();
-        final prevWeightGr =
-            prev != null ? (prev.weight * 1000).round() : null;
+          final weightGr = (e.weight * 1000).round();
+          final prevWeightGr =
+              prev != null ? (prev.weight * 1000).round() : null;
 
-        final weightDiff =
-            prevWeightGr != null ? weightGr - prevWeightGr : null;
+          final weightDiff =
+              prevWeightGr != null ? weightGr - prevWeightGr : null;
 
-        final heightDiff =
-            prev != null ? (e.height - prev.height) : null;
+          final heightDiff =
+              prev != null ? (e.height - prev.height) : null;
 
-        return Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.04),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                formatDate(e.date),
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
+          return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 16,
+                  offset: const Offset(0, 6),
+                )
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// DATE
+                Text(
+                  formatDate(e.date),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 10),
+                const SizedBox(height: 12),
 
-              // WEIGHT
-              Row(
-                children: [
-                  Text("Weight: ${weightGr}g"),
-                  const SizedBox(width: 8),
-                  diffChip(weightDiff, "g"),
-                ],
-              ),
+                /// WEIGHT
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "${weightGr}g",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    diffChip(weightDiff, "g"),
+                  ],
+                ),
 
-              const SizedBox(height: 6),
+                const SizedBox(height: 10),
 
-              // HEIGHT
-              Row(
-                children: [
-                  Text("Height: ${e.height} cm"),
-                  const SizedBox(width: 8),
-                  diffChip(heightDiff, "cm"),
-                ],
-              ),
+                /// HEIGHT
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "${e.height} cm",
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    diffChip(heightDiff, "cm"),
+                  ],
+                ),
 
-              const SizedBox(height: 6),
+                const SizedBox(height: 10),
 
-              if (e.headCircumference != null)
-                Text("Head: ${e.headCircumference} cm"),
+                /// EXTRA METRICS (clean grid feel)
+                if (e.headCircumference != null ||
+                    e.waistCircumference != null)
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      if (e.headCircumference != null)
+                        _metric("Head", "${e.headCircumference} cm"),
 
-              if (e.waistCircumference != null)
-                Text("Waist: ${e.waistCircumference} cm"),
-            ],
-          ),
-        );
-      },
+                      if (e.waistCircumference != null)
+                        _metric("Waist", "${e.waistCircumference} cm"),
+                    ],
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _metric(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xffF6F7FB),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        "$label: $value",
+        style: const TextStyle(
+          fontSize: 12,
+          color: Colors.black87,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 
   Widget _emptyState() {
-    return Center(
+    return Container(
+      color: const Color(0xffF6F7FB),
+      child: Center(
         child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
+          padding: const EdgeInsets.all(28),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-            const Icon(
-                Icons.show_chart_outlined,
-                size: 70,
-                color: Colors.grey,
-            ),
-            const SizedBox(height: 12),
-            const Text(
-                "No growth records yet",
-                style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-                "Add your baby's weight and measurements to track progress.",
+                child: const Icon(
+                  Icons.show_chart_rounded,
+                  size: 60,
+                  color: Colors.blueGrey,
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              const Text(
+                "No growth data yet",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                "Track your baby's growth over time to see progress clearly.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 13,
+                  color: Colors.grey.shade600,
+                  fontSize: 13,
+                  height: 1.4,
                 ),
-            ),
+              ),
             ],
+          ),
         ),
-        ),
+      ),
     );
-    }
+  }
 }

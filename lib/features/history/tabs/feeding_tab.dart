@@ -42,11 +42,11 @@ class _FeedingTabState extends State<FeedingTab> {
 
   Future<void> deleteSession(FeedingSession session) async {
     setState(() {
-        sessions.remove(session);
+      sessions.remove(session);
     });
 
     await FeedingStorage().saveAllSessions(sessions);
-}
+  }
 
   String _getSection(DateTime date) {
     final now = DateTime.now();
@@ -61,60 +61,90 @@ class _FeedingTabState extends State<FeedingTab> {
   Widget build(BuildContext context) {
     final grouped = group();
 
-    if (sessions.isEmpty) {
-        return _emptyState();
-    }
+    return Container(
+      color: const Color(0xffF6F7FB),
+      child: sessions.isEmpty
+          ? _emptyState()
+          : ListView(
+              padding: const EdgeInsets.only(bottom: 28),
+              children: [
+                const SizedBox(height: 12),
 
-    return ListView(
-      padding: const EdgeInsets.only(bottom: 24),
-      children: [
-        const SizedBox(height: 12),
+                /// TODAY SUMMARY (premium spacing)
+                if (grouped["Today"] != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: TodaySummaryCard(sessions: grouped["Today"]!),
+                  ),
 
-        if (grouped["Today"] != null)
-          TodaySummaryCard(sessions: grouped["Today"]!),
+                const SizedBox(height: 10),
 
-        for (final entry in grouped.entries)
-          TimelineSection(
-            title: entry.key,
-            sessions: entry.value,
-            onDelete: deleteSession,
-          ),
-      ],
+                /// STREAM STYLE TIMELINE
+                for (final entry in grouped.entries)
+                  TimelineSection(
+                    title: entry.key,
+                    sessions: entry.value,
+                    onDelete: deleteSession,
+                  ),
+              ],
+            ),
     );
   }
 
   Widget _emptyState() {
-    return Center(
+    return Container(
+      color: const Color(0xffF6F7FB),
+      child: Center(
         child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
+          padding: const EdgeInsets.all(28),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-            const Icon(
-                Icons.local_drink_outlined,
-                size: 70,
-                color: Colors.grey,
-            ),
-            const SizedBox(height: 12),
-            const Text(
-                "No feeding records yet",
-                style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
+              Container(
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 18,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
                 ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-                "Start a feeding session to see your history here.",
+                child: const Icon(
+                  Icons.local_drink_outlined,
+                  size: 60,
+                  color: Colors.blueGrey,
+                ),
+              ),
+
+              const SizedBox(height: 18),
+
+              const Text(
+                "No feeding sessions yet",
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                "Start a feeding session to track your baby's feeding history in a clean timeline.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 13,
+                  color: Colors.grey.shade600,
+                  fontSize: 13,
+                  height: 1.4,
                 ),
-            ),
+              ),
             ],
+          ),
         ),
-        ),
+      ),
     );
-    }
+  }
 }
