@@ -92,6 +92,7 @@ class SessionCard extends StatelessWidget {
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                   color: UIColors.muted,
+                  decoration: TextDecoration.none,
                 ),
               ),
             ],
@@ -107,6 +108,7 @@ class SessionCard extends StatelessWidget {
               fontWeight: FontWeight.w800,
               color: UIColors.text,
               letterSpacing: -0.5,
+              decoration: TextDecoration.none,
             ),
           ),
 
@@ -117,6 +119,7 @@ class SessionCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               color: UIColors.muted,
+              decoration: TextDecoration.none,
             ),
           ),
 
@@ -187,6 +190,7 @@ class SessionCard extends StatelessWidget {
                       color: UIColors.milk,
                       fontWeight: FontWeight.w700,
                       fontSize: 12,
+                      decoration: TextDecoration.none,
                     ),
                   ),
                 ],
@@ -220,6 +224,7 @@ class SessionCard extends StatelessWidget {
             fontSize: 12,
             fontWeight: FontWeight.w600,
             color: UIColors.text,
+            decoration: TextDecoration.none,
           ),
         ),
       ],

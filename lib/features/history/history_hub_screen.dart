@@ -25,6 +25,7 @@ class HistoryHubScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
+                  decoration: TextDecoration.none,
                 ),
               ),
 
@@ -35,6 +36,7 @@ class HistoryHubScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey.shade600,
+                  decoration: TextDecoration.none,
                 ),
               ),
 

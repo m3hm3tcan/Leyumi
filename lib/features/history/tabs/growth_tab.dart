@@ -28,151 +28,236 @@ class _GrowthTabState extends State<GrowthTab> {
     return "${dt.day}.${dt.month}.${dt.year}";
   }
 
-  Widget diffChip(int? diff, String unit) {
-    if (diff == null) return const SizedBox();
+  Map<String, List<GrowthEntry>> _groupByDate(List<GrowthEntry> list) {
+    final map = <String, List<GrowthEntry>>{};
 
-    final isUp = diff > 0;
+    for (final e in list) {
+      final key = formatDate(e.date);
+      map.putIfAbsent(key, () => []);
+      map[key]!.add(e);
+    }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: (isUp ? Colors.green : Colors.red).withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        "${isUp ? "+" : ""}${diff.toStringAsFixed(0)} $unit",
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: isUp ? Colors.green.shade700 : Colors.red.shade700,
-        ),
-      ),
-    );
+    return map;
   }
 
   @override
   Widget build(BuildContext context) {
-    if (entries.isEmpty) {
-      return _emptyState();
-    }
+    if (entries.isEmpty) return _emptyState();
+
+    final grouped = _groupByDate(entries);
+    final keys = grouped.keys.toList();
 
     return Container(
       color: const Color(0xffF6F7FB),
       child: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 24),
-        itemCount: entries.length,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        itemCount: keys.length,
         itemBuilder: (context, i) {
-          final e = entries[i];
-          final prev = i < entries.length - 1 ? entries[i + 1] : null;
+          final dateKey = keys[i];
+          final dayEntries = grouped[dateKey]!;
 
-          final weightGr = (e.weight * 1000).round();
-          final prevWeightGr =
-              prev != null ? (prev.weight * 1000).round() : null;
-
-          final weightDiff =
-              prevWeightGr != null ? weightGr - prevWeightGr : null;
-
-          final heightDiff =
-              prev != null ? (e.height - prev.height) : null;
-
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.04),
-                  blurRadius: 16,
-                  offset: const Offset(0, 6),
-                )
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                /// DATE
-                Text(
-                  formatDate(e.date),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// DATE HEADER
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 56, top: 18, bottom: 8),
+                child: Text(
+                  dateKey,
                   style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
                     color: Colors.grey,
+                    decoration: TextDecoration.none,
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 12),
+              /// ITEMS
+              ...List.generate(dayEntries.length, (index) {
+                final e = dayEntries[index];
+                final prev = index < dayEntries.length - 1
+                    ? dayEntries[index + 1]
+                    : null;
+
+                final isLast = index == dayEntries.length - 1;
 
                 /// WEIGHT
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      "${weightGr}g",
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    diffChip(weightDiff, "g"),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
+                final weight = e.weight.round();
+                final prevWeight = prev?.weight.round();
+                final weightDiff =
+                    prevWeight != null ? weight - prevWeight : null;
 
                 /// HEIGHT
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                final heightDiff =
+                    prev != null ? e.height - prev.height : null;
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "${e.height} cm",
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
+                    /// TIMELINE
+                    SizedBox(
+                      width: 40,
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 10,
+                            height: 10,
+                            decoration: const BoxDecoration(
+                              color: Colors.blueAccent,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          Container(
+                            width: 2,
+                            height: isLast ? 60 : 110,
+                            color: isLast
+                                ? Colors.transparent
+                                : Colors.grey.shade300,
+                          ),
+                        ],
                       ),
                     ),
-                    diffChip(heightDiff, "cm"),
+
+                    /// CARD
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.only(
+                            right: 16, bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.04),
+                              blurRadius: 18,
+                              offset: const Offset(0, 8),
+                            )
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            /// WEIGHT + DELTA
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  "$weight",
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w900,
+                                    decoration: TextDecoration.none,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Padding(
+                                  padding: EdgeInsets.only(bottom: 4),
+                                  child: Text(
+                                    "g",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                      decoration: TextDecoration.none,
+                                    ),
+                                  ),
+                                ),
+
+                                if (weightDiff != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 10, bottom: 4),
+                                    child: Text(
+                                      "${weightDiff > 0 ? "+" : ""}$weightDiff g",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w700,
+                                        color: weightDiff > 0
+                                            ? Colors.green
+                                            : Colors.red,
+                                        decoration: TextDecoration.none,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+
+                            const SizedBox(height: 12),
+
+                            /// HEIGHT + DELTA
+                            _infoRow(
+                              "Height",
+                              "${e.height} cm",
+                              heightDiff,
+                            ),
+
+                            if (e.headCircumference != null)
+                              _simpleRow(
+                                "Head",
+                                "${e.headCircumference} cm",
+                              ),
+
+                            if (e.waistCircumference != null)
+                              _simpleRow(
+                                "Waist",
+                                "${e.waistCircumference} cm",
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-
-                const SizedBox(height: 10),
-
-                /// EXTRA METRICS (clean grid feel)
-                if (e.headCircumference != null ||
-                    e.waistCircumference != null)
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: [
-                      if (e.headCircumference != null)
-                        _metric("Head", "${e.headCircumference} cm"),
-
-                      if (e.waistCircumference != null)
-                        _metric("Waist", "${e.waistCircumference} cm"),
-                    ],
-                  ),
-              ],
-            ),
+                );
+              }),
+            ],
           );
         },
       ),
     );
   }
 
-  Widget _metric(String label, String value) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: const Color(0xffF6F7FB),
-        borderRadius: BorderRadius.circular(12),
+  Widget _infoRow(String label, String value, num? diff) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          Text(
+            "$label: $value",
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              decoration: TextDecoration.none,
+            ),
+          ),
+          if (diff != null) ...[
+            const SizedBox(width: 6),
+            Text(
+              "${diff > 0 ? "+" : ""}${diff.toStringAsFixed(0)}",
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: diff > 0 ? Colors.green : Colors.red,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ]
+        ],
       ),
+    );
+  }
+
+  Widget _simpleRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         "$label: $value",
         style: const TextStyle(
-          fontSize: 12,
-          color: Colors.black87,
+          fontSize: 13,
+          color: Colors.grey,
           fontWeight: FontWeight.w500,
+          decoration: TextDecoration.none,
         ),
       ),
     );
@@ -181,54 +266,13 @@ class _GrowthTabState extends State<GrowthTab> {
   Widget _emptyState() {
     return Container(
       color: const Color(0xffF6F7FB),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(28),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.show_chart_rounded,
-                  size: 60,
-                  color: Colors.blueGrey,
-                ),
-              ),
-
-              const SizedBox(height: 18),
-
-              const Text(
-                "No growth data yet",
-                style: TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                "Track your baby's growth over time to see progress clearly.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 13,
-                  height: 1.4,
-                ),
-              ),
-            ],
+      child: const Center(
+        child: Text(
+          "No growth data yet",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            decoration: TextDecoration.none,
           ),
         ),
       ),

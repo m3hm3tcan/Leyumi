@@ -27,11 +27,11 @@ class SessionExpanded extends StatelessWidget {
         children: [
           Text(
             "Sol meme: ${leftTotal.inMinutes}m",
-            style: TextStyle(color: Colors.pink.shade400),
+            style: TextStyle(color: Colors.pink.shade400, decoration: TextDecoration.none),
           ),
           Text(
             "Sağ meme: ${rightTotal.inMinutes}m",
-            style: TextStyle(color: Colors.blue.shade400),
+            style: TextStyle(color: Colors.blue.shade400, decoration: TextDecoration.none,),
           ),
 
           const SizedBox(height: 14),

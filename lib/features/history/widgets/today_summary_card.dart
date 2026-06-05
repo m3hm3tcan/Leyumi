@@ -72,6 +72,7 @@ class TodaySummaryCard extends StatelessWidget {
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.4,
+                  decoration: TextDecoration.none,
                 ),
               ),
               Container(
@@ -89,6 +90,7 @@ class TodaySummaryCard extends StatelessWidget {
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
+                    decoration: TextDecoration.none,
                   ),
                 ),
               ),
@@ -106,6 +108,7 @@ class TodaySummaryCard extends StatelessWidget {
               height: 1,
               fontWeight: FontWeight.w900,
               letterSpacing: -1,
+              decoration: TextDecoration.none,
             ),
           ),
 
@@ -116,6 +119,7 @@ class TodaySummaryCard extends StatelessWidget {
             style: TextStyle(
               color: Colors.white.withOpacity(.85),
               fontSize: 14,
+              decoration: TextDecoration.none,
             ),
           ),
 
@@ -187,6 +191,7 @@ class TodaySummaryCard extends StatelessWidget {
               color: Colors.white,
               fontWeight: FontWeight.w800,
               fontSize: 14,
+              decoration: TextDecoration.none,
             ),
           ),
           const SizedBox(height: 4),
@@ -195,6 +200,7 @@ class TodaySummaryCard extends StatelessWidget {
             style: TextStyle(
               color: Colors.white.withOpacity(.7),
               fontSize: 11,
+              decoration: TextDecoration.none,
             ),
           ),
         ],

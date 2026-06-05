@@ -127,6 +127,7 @@ class _FeedingTabState extends State<FeedingTab> {
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
+                  decoration: TextDecoration.none,
                 ),
               ),
 
@@ -139,6 +140,7 @@ class _FeedingTabState extends State<FeedingTab> {
                   color: Colors.grey.shade600,
                   fontSize: 13,
                   height: 1.4,
+                  decoration: TextDecoration.none,
                 ),
               ),
             ],
