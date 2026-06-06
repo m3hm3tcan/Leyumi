@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 import '../../models/baby_profile.dart';
 import '../../models/growth_entry.dart';
 import '../../services/baby_storage.dart';
@@ -42,10 +43,12 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   Future<void> save() async {
     if (profile == null) return;
 
+    final l10n = AppLocalizations.of(context);
+
     if (weightCtrl.text.isEmpty || heightCtrl.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Weight and Height are required"),
+        SnackBar(
+          content: Text(l10n.weightHeightRequired),
         ),
       );
       return;
@@ -78,8 +81,8 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text("Growth record saved"),
+      SnackBar(
+        content: Text(l10n.growthRecordSaved),
       ),
     );
 
@@ -88,6 +91,8 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     if (profile == null) {
       return const Scaffold(
         body: Center(
@@ -104,7 +109,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
       backgroundColor: const Color(0xffF6F7FB),
 
       appBar: AppBar(
-        title: const Text("Growth Update"),
+        title: Text(l10n.growthUpdateTitle),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -123,7 +128,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.04),
+                    color: Colors.black.withAlpha(10),
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -134,7 +139,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: primaryColor.withOpacity(0.15),
+                    backgroundColor: primaryColor.withAlpha(38),
                     child: Icon(
                       isBoy ? Icons.male : Icons.female,
                       color: primaryColor,
@@ -158,9 +163,9 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
                         const SizedBox(height: 4),
 
-                        const Text(
-                          "Current Growth Snapshot",
-                          style: TextStyle(
+                        Text(
+                          l10n.currentGrowthSnapshot,
+                          style: const TextStyle(
                             color: Colors.grey,
                             fontSize: 13,
                           ),
@@ -179,16 +184,16 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               children: [
                 Expanded(
                   child: _statCard(
-                    "Weight",
-                    "${profile!.weight} g",
+                    l10n.weight,
+                    "${profile!.weight} ${l10n.unitGr}",
                     Icons.monitor_weight_outlined,
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: _statCard(
-                    "Height",
-                    "${profile!.height} cm",
+                    l10n.height,
+                    "${profile!.height} ${l10n.unitCm}",
                     Icons.height,
                   ),
                 ),
@@ -198,35 +203,43 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
             const SizedBox(height: 16),
 
             _growthField(
-              label: "Weight",
+              label: l10n.weight,
               currentValue: profile!.weight,
               controller: weightCtrl,
               icon: Icons.monitor_weight_outlined,
-              unit: "g",
+              unit: l10n.unitGr,
+              currentLabel: l10n.currentLabel,
+              hintText: l10n.enterNewValueHint,
             ),
 
             _growthField(
-              label: "Height",
+              label: l10n.height,
               currentValue: profile!.height,
               controller: heightCtrl,
               icon: Icons.height,
-              unit: "cm",
+              unit: l10n.unitCm,
+              currentLabel: l10n.currentLabel,
+              hintText: l10n.enterNewValueHint,
             ),
 
             _growthField(
-              label: "Head Circumference",
+              label: l10n.headCircumference,
               currentValue: profile!.headCircumference ?? 0,
               controller: headCtrl,
               icon: Icons.circle_outlined,
-              unit: "cm",
+              unit: l10n.unitCm,
+              currentLabel: l10n.currentLabel,
+              hintText: l10n.enterNewValueHint,
             ),
 
             _growthField(
-              label: "Waist Circumference",
+              label: l10n.waistCircumference,
               currentValue: profile!.waistCircumference ?? 0,
               controller: waistCtrl,
               icon: Icons.straighten,
-              unit: "cm",
+              unit: l10n.unitCm,
+              currentLabel: l10n.currentLabel,
+              hintText: l10n.enterNewValueHint,
             ),
 
             const SizedBox(height: 24),
@@ -237,9 +250,9 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               child: ElevatedButton.icon(
                 onPressed: save,
                 icon: const Icon(Icons.favorite),
-                label: const Text(
-                  "Save Growth Record",
-                  style: TextStyle(
+                label: Text(
+                  l10n.saveGrowthRecord,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
                   ),
@@ -299,6 +312,8 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     required TextEditingController controller,
     required IconData icon,
     required String unit,
+    required String currentLabel,
+    required String hintText,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -329,7 +344,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
           const SizedBox(height: 8),
 
           Text(
-            "Current: $currentValue $unit",
+            "$currentLabel: $currentValue $unit",
             style: const TextStyle(
               color: Colors.grey,
             ),
@@ -341,7 +356,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
             controller: controller,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
-              hintText: "Enter new value",
+              hintText: hintText,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 import '../../models/growth_entry.dart';
 import '../../services/growth_storage.dart';
 
@@ -48,10 +49,11 @@ class _GrowthHistoryScreenState extends State<GrowthHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: const Color(0xffF7F8FC),
       appBar: AppBar(
-        title: const Text("Growth History"),
+        title: Text(l10n.growthHistoryTitle),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -115,7 +117,7 @@ class _GrowthHistoryScreenState extends State<GrowthHistoryScreen> {
                         width: 2,
                         height: 80,
                         margin: const EdgeInsets.only(top: 4),
-                        color: Colors.blueAccent.withOpacity(0.4),
+                        color: Colors.blueAccent.withAlpha(102),
                       ),
                   ],
                 ),
@@ -133,7 +135,7 @@ class _GrowthHistoryScreenState extends State<GrowthHistoryScreen> {
                     borderRadius: BorderRadius.circular(18),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withAlpha(13),
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       )
@@ -169,11 +171,11 @@ class _GrowthHistoryScreenState extends State<GrowthHistoryScreen> {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 4),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
                             child: Text(
-                              "g",
-                              style: TextStyle(
+                              l10n.unitGr,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey,
                                 decoration: TextDecoration.none,
@@ -183,7 +185,7 @@ class _GrowthHistoryScreenState extends State<GrowthHistoryScreen> {
                           if (weightDiff != null)
                             Padding(
                               padding: const EdgeInsets.only(left: 10, bottom: 4),
-                              child: diff(weightDiff, "g"),
+                              child: diff(weightDiff, l10n.unitGr),
                             ),
                         ],
                       ),
@@ -195,11 +197,11 @@ class _GrowthHistoryScreenState extends State<GrowthHistoryScreen> {
                         spacing: 12,
                         runSpacing: 8,
                         children: [
-                          _chip("Boy", "${e.height} cm", heightDiff),
+                          _chip(l10n.height, "${e.height} ${l10n.unitCm}", heightDiff),
                           if (e.headCircumference != null)
-                            _chip("Kafa", "${e.headCircumference} cm", headDiff),
+                            _chip(l10n.headCircumference, "${e.headCircumference} ${l10n.unitCm}", headDiff),
                           if (e.waistCircumference != null)
-                            _chip("Bel", "${e.waistCircumference} cm", waistDiff),
+                            _chip(l10n.waistCircumference, "${e.waistCircumference} ${l10n.unitCm}", waistDiff),
                         ],
                       ),
                     ],

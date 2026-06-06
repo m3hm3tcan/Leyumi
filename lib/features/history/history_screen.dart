@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'package:babyfeedpro/services/feeding_storage.dart';
 import 'package:babyfeedpro/features/feeding/feeding_session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,11 +37,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
     setState(() => sessions = data);
   }
 
-  Map<String, List<FeedingSession>> groupSessions() {
+  Map<String, List<FeedingSession>> groupSessions(AppLocalizations l10n) {
     final Map<String, List<FeedingSession>> map = {};
 
     for (final s in sessions) {
-      final key = _getSection(s.startTime);
+      final key = _getSection(s.startTime, l10n);
       map.putIfAbsent(key, () => []);
       map[key]!.add(s);
     }
@@ -50,18 +51,18 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   
 
-  String _getSection(DateTime date) {
+  String _getSection(DateTime date, AppLocalizations l10n) {
     final now = DateTime.now();
 
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
     final sessionDay = DateTime(date.year, date.month, date.day);
 
-    if (sessionDay == today) return "Today";
-    if (sessionDay == yesterday) return "Yesterday";
-    if (today.difference(sessionDay).inDays <= 7) return "This Week";
+    if (sessionDay == today) return l10n.today;
+    if (sessionDay == yesterday) return l10n.yesterday;
+    if (today.difference(sessionDay).inDays <= 7) return l10n.thisWeek;
 
-    return "Older";
+    return l10n.older;
   }
 
   Future<void> loadTipState() async {
@@ -93,11 +94,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
     await FeedingStorage().saveAllSessions(sessions);
 
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text("Session deleted"),
+        content: Text(l10n.sessionDeleted),
         action: SnackBarAction(
-          label: "UNDO",
+          label: l10n.undo,
           onPressed: () {
             if (recentlyDeleted != null &&
                 recentlyDeletedIndex != null) {
@@ -117,13 +119,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final grouped = groupSessions();
+    final l10n = AppLocalizations.of(context);
+    final grouped = groupSessions(l10n);
 
     return Scaffold(
       backgroundColor: const Color(0xffF6F7FB),
 
       appBar: AppBar(
-        title: const Text("History"),
+        title: Text(l10n.history),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -135,8 +138,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
           const SizedBox(height: 12),
 
           /// 🌟 TODAY SUMMARY CARD (TOP PRIORITY)
-          if (grouped["Today"] != null)
-            TodaySummaryCard(sessions: grouped["Today"]!),
+          if (grouped[l10n.today] != null)
+            TodaySummaryCard(sessions: grouped[l10n.today]!),
 
           if (showSwipeTip)
             Padding(
@@ -152,19 +155,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   color: const Color(0xffEEF4FF),
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.lightbulb_outline_rounded,
                       color: Color(0xff4DA3FF),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        "Tip: Swipe left on a feeding session to delete it.",
-                        style: TextStyle(
+                        l10n.swipeHistoryTip,
+                        style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w500,
+                          decoration: TextDecoration.none,
                         ),
                       ),
                     ),

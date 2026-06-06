@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'package:babyfeedpro/models/growth_entry.dart';
 import 'package:babyfeedpro/services/growth_storage.dart';
 
@@ -42,7 +43,8 @@ class _GrowthTabState extends State<GrowthTab> {
 
   @override
   Widget build(BuildContext context) {
-    if (entries.isEmpty) return _emptyState();
+    final l10n = AppLocalizations.of(context);
+    if (entries.isEmpty) return _emptyState(context);
 
     final grouped = _groupByDate(entries);
     final keys = grouped.keys.toList();
@@ -153,11 +155,11 @@ class _GrowthTabState extends State<GrowthTab> {
                                   ),
                                 ),
                                 const SizedBox(width: 4),
-                                const Padding(
-                                  padding: EdgeInsets.only(bottom: 4),
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 4),
                                   child: Text(
-                                    "g",
-                                    style: TextStyle(
+                                    l10n.unitGr,
+                                    style: const TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey,
                                       decoration: TextDecoration.none,
@@ -170,7 +172,7 @@ class _GrowthTabState extends State<GrowthTab> {
                                     padding: const EdgeInsets.only(
                                         left: 10, bottom: 4),
                                     child: Text(
-                                      "${weightDiff > 0 ? "+" : ""}$weightDiff g",
+                                      "${weightDiff > 0 ? "+" : ""}$weightDiff ${l10n.unitGr}",
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: FontWeight.w700,
@@ -188,21 +190,21 @@ class _GrowthTabState extends State<GrowthTab> {
 
                             /// HEIGHT + DELTA
                             _infoRow(
-                              "Height",
-                              "${e.height} cm",
+                              l10n.height,
+                              "${e.height} ${l10n.unitCm}",
                               heightDiff,
                             ),
 
                             if (e.headCircumference != null)
                               _simpleRow(
-                                "Head",
-                                "${e.headCircumference} cm",
+                                l10n.headCircumference,
+                                "${e.headCircumference} ${l10n.unitCm}",
                               ),
 
                             if (e.waistCircumference != null)
                               _simpleRow(
-                                "Waist",
-                                "${e.waistCircumference} cm",
+                                l10n.waistCircumference,
+                                "${e.waistCircumference} ${l10n.unitCm}",
                               ),
                           ],
                         ),
@@ -263,12 +265,13 @@ class _GrowthTabState extends State<GrowthTab> {
     );
   }
 
-  Widget _emptyState() {
+  Widget _emptyState(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       color: const Color(0xffF6F7FB),
-      child: const Center(
+      child: Center(
         child: Text(
-          "No growth data yet",
+          l10n.noGrowthDataYet,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,

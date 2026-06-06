@@ -33,7 +33,6 @@ class AppLocalizations {
       'confirmResetContent': 'Are you sure you want to clear all app data?',
       'cancel': 'Cancel',
       'delete': 'Delete',
-      'undo': 'UNDO',
       'today': 'Today',
       'older': 'Older',
       'entryDeleted': 'Entry deleted',
@@ -103,6 +102,22 @@ class AppLocalizations {
       'currentGrowthSnapshot': 'Current Growth Snapshot',
       'saveGrowthRecord': 'Save Growth Record',
       'growthUpdateTitle': 'Growth Update',
+      'historyHubTitle': 'History Hub',
+      'historyHubSubtitle': 'Track everything about your baby',
+      'milkTracking': 'Milk tracking',
+      'weightAndHeight': 'Weight & height',
+      'diaperChanges': 'Diaper changes',
+      'sessionDeleted': 'Session deleted',
+      'undo': 'UNDO',
+      'yesterday': 'Yesterday',
+      'thisWeek': 'This Week',
+      'swipeHistoryTip': 'Tip: Swipe left on a feeding session to delete it.',
+      'noGrowthDataYet': 'No growth data yet',
+      'leftBreast': 'Left breast',
+      'rightBreast': 'Right breast',
+      'initialWeight': 'Initial weight',
+      'finalWeight': 'Final weight',
+      'milkIntake': 'Milk intake',
       'weight': 'Weight',
       'height': 'Height',
       'headCircumference': 'Head Circumference',
@@ -129,7 +144,6 @@ class AppLocalizations {
       'confirmResetContent': 'Tüm verileri silmek istediğinizden emin misiniz?',
       'cancel': 'İptal',
       'delete': 'Sil',
-      'undo': 'GERİ AL',
       'today': 'Bugün',
       'older': 'Daha eski',
       'entryDeleted': 'Kayıt silindi',
@@ -199,12 +213,30 @@ class AppLocalizations {
       'currentGrowthSnapshot': 'Mevcut Büyüme Anlık Görünümü',
       'saveGrowthRecord': 'Büyüme Kaydını Kaydet',
       'growthUpdateTitle': 'Büyüme Güncelle',
+
+      'historyHubTitle': 'Geçmiş Merkezi',
+      'historyHubSubtitle': 'Bebeğinizle ilgili her şeyi takip edin',
+      'milkTracking': 'Süt takibi',
+      'weightAndHeight': 'Kilo ve boy',
+      'diaperChanges': 'Bez değişiklikleri',
+      'sessionDeleted': 'Oturum silindi',
+      'undo': 'GERİ AL',
+      'yesterday': 'Dün',
+      'thisWeek': 'Bu Hafta',
+      'swipeHistoryTip': 'İpucu: Silmek için bir beslenme oturumunu sola kaydırın.',
+      'noGrowthDataYet': 'Henüz büyüme verisi yok',
+      'leftBreast': 'Sol meme',
+      'rightBreast': 'Sağ meme',
+      'initialWeight': 'İlk kilo',
+      'finalWeight': 'Son kilo',
+      'milkIntake': 'İçilen süt',
       'weight': 'Kilo',
       'height': 'Boy',
       'headCircumference': 'Kafa Çevresi',
       'waistCircumference': 'Bel Çevresi',
       'unitGr': 'g',
       'unitCm': 'cm',
+      'growthHistoryTitle': 'Büyüme Geçmişi',
       'weightHeightRequired': 'Kilo ve Boy zorunludur',
       'growthRecordSaved': 'Büyüme kaydı kaydedildi',
     },
@@ -232,7 +264,6 @@ class AppLocalizations {
   String get confirmResetContent => _getString('confirmResetContent');
   String get cancel => _getString('cancel');
   String get delete => _getString('delete');
-  String get undo => _getString('undo');
   String get today => _getString('today');
   String get older => _getString('older');
   String get noFeedingSessionsYet => _getString('noFeedingSessionsYet');
@@ -302,6 +333,23 @@ class AppLocalizations {
   String get currentGrowthSnapshot => _getString('currentGrowthSnapshot');
   String get saveGrowthRecord => _getString('saveGrowthRecord');
   String get growthUpdateTitle => _getString('growthUpdateTitle');
+  String get growthHistoryTitle => _getString('growthHistoryTitle');
+  String get historyHubTitle => _getString('historyHubTitle');
+  String get historyHubSubtitle => _getString('historyHubSubtitle');
+  String get milkTracking => _getString('milkTracking');
+  String get weightAndHeight => _getString('weightAndHeight');
+  String get diaperChanges => _getString('diaperChanges');
+  String get sessionDeleted => _getString('sessionDeleted');
+  String get undo => _getString('undo');
+  String get yesterday => _getString('yesterday');
+  String get thisWeek => _getString('thisWeek');
+  String get swipeHistoryTip => _getString('swipeHistoryTip');
+  String get noGrowthDataYet => _getString('noGrowthDataYet');
+  String get leftBreast => _getString('leftBreast');
+  String get rightBreast => _getString('rightBreast');
+  String get initialWeight => _getString('initialWeight');
+  String get finalWeight => _getString('finalWeight');
+  String get milkIntake => _getString('milkIntake');
   String get weight => _getString('weight');
   String get height => _getString('height');
   String get headCircumference => _getString('headCircumference');

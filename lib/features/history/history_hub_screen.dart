@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'tabs/feeding_tab.dart';
 import 'tabs/diaper_tab.dart';
 import 'tabs/growth_tab.dart';
@@ -9,6 +10,8 @@ class HistoryHubScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xffF6F7FB),
 
@@ -21,9 +24,9 @@ class HistoryHubScreen extends StatelessWidget {
               const SizedBox(height: 10),
 
               /// HEADER
-              const Text(
-                "History Hub",
-                style: TextStyle(
+              Text(
+                l10n.historyHubTitle,
+                style: const TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   decoration: TextDecoration.none,
@@ -33,7 +36,7 @@ class HistoryHubScreen extends StatelessWidget {
               const SizedBox(height: 4),
 
               Text(
-                "Track everything about your baby",
+                l10n.historyHubSubtitle,
                 style: TextStyle(
                   fontSize: 13,
                   color: Colors.grey.shade600,
@@ -54,10 +57,10 @@ class HistoryHubScreen extends StatelessWidget {
                   ),
                   children: [
                     HubCard(
-                      title: "Feeding",
+                      title: l10n.feeding,
                       icon: Icons.local_drink_rounded,
                       color: const Color(0xff4DA3FF),
-                      subtitle: "Milk tracking",
+                      subtitle: l10n.milkTracking,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -67,10 +70,10 @@ class HistoryHubScreen extends StatelessWidget {
                     ),
 
                     HubCard(
-                      title: "Growth",
+                      title: l10n.growth,
                       icon: Icons.show_chart_rounded,
                       color: const Color(0xff22C55E),
-                      subtitle: "Weight & height",
+                      subtitle: l10n.weightAndHeight,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -81,10 +84,10 @@ class HistoryHubScreen extends StatelessWidget {
 
                     /// FUTURE READY
                     HubCard(
-                      title: "Diaper",
+                      title: l10n.diaper,
                       icon: Icons.baby_changing_station,
                       color: const Color(0xffF59E0B),
-                      subtitle: "Diaper changes",
+                      subtitle: l10n.diaperChanges,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -94,10 +97,10 @@ class HistoryHubScreen extends StatelessWidget {
                     ),
 
                     HubCard(
-                      title: "Sleep",
+                      title: l10n.comingSoon,
                       icon: Icons.nightlight_round,
                       color: const Color(0xff8B5CF6),
-                      subtitle: "Coming soon",
+                      subtitle: l10n.comingSoon,
                       onTap: () {},
                     ),
                   ],
