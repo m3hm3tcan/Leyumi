@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 import '../../services/diaper_storage.dart';
 import 'diaper_entry.dart';
 
@@ -33,8 +34,9 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
 
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Diaper record saved')),
+      SnackBar(content: Text(l10n.diaperRecordSaved)),
     );
 
     Navigator.pop(context);
@@ -42,10 +44,12 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: const Color(0xffF6F7FB),
       appBar: AppBar(
-        title: const Text('Add Diaper'),
+        title: Text(l10n.diaperScreenTitle),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -63,9 +67,9 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Diaper Type',
-                    style: TextStyle(fontWeight: FontWeight.w700),
+                  Text(
+                    l10n.diaperType,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -86,7 +90,8 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                t.name.toUpperCase(),
+                                _labelForType(t, l10n),
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   color: selected ? Colors.blue : Colors.black,
@@ -102,7 +107,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
 
                   if (type == DiaperType.pee || type == DiaperType.both) ...[
                     const SizedBox(height: 8),
-                    const Text('Pee Amount', style: TextStyle(fontWeight: FontWeight.w700)),
+                    Text(l10n.peeAmountTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 8),
                     Row(
                       children: PeeAmount.values.map((p) {
@@ -120,7 +125,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                                   color: sel ? Colors.green : Colors.grey.shade200,
                                 ),
                               ),
-                              child: Center(child: Text(p.name.toUpperCase())),
+                              child: Center(child: Text(_labelForPeeAmount(p, l10n))),
                             ),
                           ),
                         );
@@ -130,14 +135,16 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
 
                   if (type == DiaperType.poop || type == DiaperType.both) ...[
                     const SizedBox(height: 12),
-                    const Text('Poop Color', style: TextStyle(fontWeight: FontWeight.w700)),
+                    Text(l10n.poopColor, style: const TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<PoopColor>(
                       value: poopColor,
                       items: PoopColor.values
-                          .map((c) => DropdownMenuItem(value: c, child: Text(c.name)))
+                          .map((c) => DropdownMenuItem(value: c, child: Text(_labelForPoopColor(c, l10n))))
                           .toList(),
-                      onChanged: (v) => setState(() => poopColor = v),
+                      onChanged: (v) {
+                        if (v != null) setState(() => poopColor = v);
+                      },
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Colors.white,
@@ -147,13 +154,13 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                   ],
 
                   const SizedBox(height: 12),
-                  const Text('Note', style: TextStyle(fontWeight: FontWeight.w700)),
+                  Text(l10n.note, style: const TextStyle(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 8),
                   TextField(
                     controller: noteCtrl,
                     maxLines: 3,
                     decoration: InputDecoration(
-                      hintText: 'Optional note',
+                      hintText: l10n.optionalNote,
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
@@ -170,12 +177,47 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
               height: 52,
               child: ElevatedButton(
                 onPressed: save,
-                child: const Text('Save Diaper Record', style: TextStyle(fontWeight: FontWeight.w700)),
+                child: Text(l10n.saveDiaperRecord, style: const TextStyle(fontWeight: FontWeight.w700)),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  String _labelForType(DiaperType t, AppLocalizations l10n) {
+    switch (t) {
+      case DiaperType.pee:
+        return l10n.pee;
+      case DiaperType.poop:
+        return l10n.poop;
+      case DiaperType.both:
+        return l10n.peeAndPoop;
+    }
+  }
+
+  String _labelForPeeAmount(PeeAmount amount, AppLocalizations l10n) {
+    switch (amount) {
+      case PeeAmount.small:
+        return l10n.small;
+      case PeeAmount.medium:
+        return l10n.medium;
+      case PeeAmount.large:
+        return l10n.large;
+    }
+  }
+
+  String _labelForPoopColor(PoopColor color, AppLocalizations l10n) {
+    switch (color) {
+      case PoopColor.yellow:
+        return l10n.yellow;
+      case PoopColor.brown:
+        return l10n.brown;
+      case PoopColor.green:
+        return l10n.green;
+      case PoopColor.black:
+        return l10n.black;
+    }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:babyfeedpro/services/diaper_storage.dart';
 import 'package:babyfeedpro/features/diaper/diaper_entry.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 
 class DiaperTab extends StatefulWidget {
   const DiaperTab({super.key});
@@ -48,6 +49,7 @@ class _DiaperTabState extends State<DiaperTab> {
   }
 
   Future<void> deleteEntry(DiaperEntry entry) async {
+    final l10n = AppLocalizations.of(context);
     final index = entries.indexOf(entry);
     setState(() {
       recentlyDeleted = entry;
@@ -62,10 +64,10 @@ class _DiaperTabState extends State<DiaperTab> {
 
     final controller = messenger.showSnackBar(
       SnackBar(
-        content: const Text('Entry deleted'),
+        content: Text(l10n.entryDeleted),
         duration: const Duration(seconds: 4),
         action: SnackBarAction(
-          label: 'UNDO',
+          label: l10n.undo,
           onPressed: () async {
             if (!mounted) return;
             if (recentlyDeleted != null && recentlyDeletedIndex != null) {
@@ -92,13 +94,13 @@ class _DiaperTabState extends State<DiaperTab> {
     });
   }
 
-  Map<String, List<DiaperEntry>> group() {
+  Map<String, List<DiaperEntry>> group(AppLocalizations l10n) {
     final Map<String, List<DiaperEntry>> map = {};
     for (final e in entries) {
       final now = DateTime.now();
       final today = DateTime(now.year, now.month, now.day);
       final day = DateTime(e.timestamp.year, e.timestamp.month, e.timestamp.day);
-      final key = day == today ? 'Today' : 'Older';
+      final key = day == today ? l10n.today : l10n.older;
       map.putIfAbsent(key, () => []);
       map[key]!.add(e);
     }
@@ -109,17 +111,18 @@ class _DiaperTabState extends State<DiaperTab> {
   Widget build(BuildContext context) {
     if (loading) return const Center(child: CircularProgressIndicator());
 
-    final grouped = group();
+    final l10n = AppLocalizations.of(context);
+    final grouped = group(l10n);
 
     return Container(
       color: const Color(0xffF6F7FB),
       child: entries.isEmpty
-          ? _emptyState()
+          ? _emptyState(l10n)
           : ListView(
               padding: const EdgeInsets.only(bottom: 28),
               children: [
                 const SizedBox(height: 12),
-                if (showTooltip) _swipeHint(),
+                if (showTooltip) _swipeHint(l10n),
 
                 for (final section in grouped.entries) ...[
                   Padding(
@@ -135,7 +138,7 @@ class _DiaperTabState extends State<DiaperTab> {
                   ),
                   ...section.value.map((e) => Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                        child: _modernItem(e),
+                        child: _modernItem(e, l10n),
                       )),
                 ],
               ],
@@ -143,7 +146,7 @@ class _DiaperTabState extends State<DiaperTab> {
     );
   }
 
-  Widget _swipeHint() {
+  Widget _swipeHint(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Material(
@@ -161,15 +164,15 @@ class _DiaperTabState extends State<DiaperTab> {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'Sola çekerek sil',
-                        style: TextStyle(fontWeight: FontWeight.w700, decoration: TextDecoration.none),
+                        l10n.swipeToDelete,
+                        style: const TextStyle(fontWeight: FontWeight.w700, decoration: TextDecoration.none),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        'İlk 3 açılışta bu ipucu gösterilir.',
-                        style: TextStyle(decoration: TextDecoration.none),
+                        l10n.swipeHintInfo,
+                        style: const TextStyle(decoration: TextDecoration.none),
                       ),
                     ],
                   ),
@@ -183,7 +186,7 @@ class _DiaperTabState extends State<DiaperTab> {
     );
   }
 
-  Widget _modernItem(DiaperEntry e) {
+  Widget _modernItem(DiaperEntry e, AppLocalizations l10n) {
     return Dismissible(
       key: ValueKey(e.timestamp.toIso8601String()),
       direction: DismissDirection.endToStart,
@@ -215,7 +218,7 @@ class _DiaperTabState extends State<DiaperTab> {
                   Row(
                     children: [
                       Text(
-                        _titleFor(e),
+                        _titleFor(e, l10n),
                         style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 14,
@@ -227,16 +230,16 @@ class _DiaperTabState extends State<DiaperTab> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(10)),
-                          child: const Text(
-                            'Note',
-                            style: TextStyle(fontSize: 11, decoration: TextDecoration.none),
+                          child: Text(
+                            l10n.note,
+                            style: const TextStyle(fontSize: 11, decoration: TextDecoration.none),
                           ),
                         ),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _detailsFor(e),
+                    _detailsFor(e, l10n),
                     style: TextStyle(
                       color: Colors.grey.shade600,
                       fontSize: 13,
@@ -290,26 +293,54 @@ class _DiaperTabState extends State<DiaperTab> {
     }
   }
 
-  String _titleFor(DiaperEntry e) {
+  String _titleFor(DiaperEntry e, AppLocalizations l10n) {
     switch (e.type) {
       case DiaperType.pee:
-        return 'Pee';
+        return l10n.pee;
       case DiaperType.poop:
-        return 'Poop';
+        return l10n.poop;
       case DiaperType.both:
-        return 'Pee & Poop';
+        return l10n.peeAndPoop;
     }
   }
 
-  String _detailsFor(DiaperEntry e) {
+  String _detailsFor(DiaperEntry e, AppLocalizations l10n) {
     final parts = <String>[];
-    if (e.peeAmount != null) parts.add('Amount: ${e.peeAmount!.name}');
-    if (e.poopColor != null) parts.add('Color: ${e.poopColor!.name}');
+    if (e.peeAmount != null) {
+      parts.add('${l10n.amount}: ${_labelForPeeAmount(e.peeAmount!, l10n)}');
+    }
+    if (e.poopColor != null) {
+      parts.add('${l10n.color}: ${_labelForPoopColor(e.poopColor!, l10n)}');
+    }
     if (e.note != null && e.note!.isNotEmpty) parts.add('"${e.note!}"');
     return parts.join(' • ');
   }
 
-  Widget _emptyState() {
+  String _labelForPeeAmount(PeeAmount amount, AppLocalizations l10n) {
+    switch (amount) {
+      case PeeAmount.small:
+        return l10n.small;
+      case PeeAmount.medium:
+        return l10n.medium;
+      case PeeAmount.large:
+        return l10n.large;
+    }
+  }
+
+  String _labelForPoopColor(PoopColor color, AppLocalizations l10n) {
+    switch (color) {
+      case PoopColor.yellow:
+        return l10n.yellow;
+      case PoopColor.brown:
+        return l10n.brown;
+      case PoopColor.green:
+        return l10n.green;
+      case PoopColor.black:
+        return l10n.black;
+    }
+  }
+
+  Widget _emptyState(AppLocalizations l10n) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(28),
@@ -322,9 +353,9 @@ class _DiaperTabState extends State<DiaperTab> {
               child: const Icon(Icons.baby_changing_station, size: 60, color: Colors.blueGrey),
             ),
             const SizedBox(height: 18),
-            const Text(
-              'No diaper records yet',
-              style: TextStyle(
+            Text(
+              l10n.noDiaperRecordsYet,
+              style: const TextStyle(
                 fontSize: 17,
                 fontWeight: FontWeight.w700,
                 decoration: TextDecoration.none,
@@ -332,7 +363,7 @@ class _DiaperTabState extends State<DiaperTab> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Add diaper changes from the home screen to track history.',
+              l10n.addDiaperChangesHint,
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.grey.shade600,
