@@ -107,12 +107,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
 
                   HomeActionCard(
+                    icon: Icons.baby_changing_station_rounded,
+                    title: "Diaper",
+                    subtitle: "Track changes",
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        "/diaper",
+                      );
+                    },
+                  ),
+
+                  HomeActionCard(
                     icon: Icons.monitor_weight_rounded,
                     title: "Growth",
                     subtitle: "Update weight",
-                    onTap: () {
-                      Navigator.pushNamed(context, "/growth_update");
-                    },
+                    onTap: () async {
+                        await Navigator.pushNamed(
+                          context,
+                          "/growth_update",
+                        );
+
+                        await loadProfile();
+                      },
                   ),
 
                   // HomeActionCard(
