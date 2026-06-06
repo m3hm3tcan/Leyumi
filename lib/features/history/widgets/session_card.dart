@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:babyfeedpro/features/feeding/feeding_session.dart';
 import 'package:babyfeedpro/features/feeding/feeding_entry.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 
 class UIColors {
   static const bg = Color(0xffF6F7FB);
@@ -39,6 +40,7 @@ class SessionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final leftTotal = session.entries
         .where((e) => e.side == FeedingSide.left)
         .fold(Duration.zero, (a, b) => a + b.duration);
@@ -68,7 +70,7 @@ class SessionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withAlpha(10),
             blurRadius: 14,
             offset: const Offset(0, 4),
           ),
@@ -114,8 +116,8 @@ class SessionCard extends StatelessWidget {
 
           const SizedBox(height: 1),
 
-          const Text(
-            "Total feeding time",
+          Text(
+            l10n.totalFeedingTime,
             style: TextStyle(
               fontSize: 12,
               color: UIColors.muted,
@@ -152,12 +154,12 @@ class SessionCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _miniStat(
-                label: "Left",
+                label: l10n.leftLabel,
                 value: _formatDuration(leftTotal),
                 color: UIColors.left,
               ),
               _miniStat(
-                label: "Right",
+                label: l10n.rightLabel,
                 value: _formatDuration(rightTotal),
                 color: UIColors.right,
               ),
@@ -172,7 +174,7 @@ class SessionCard extends StatelessWidget {
                 vertical: 6,
               ),
               decoration: BoxDecoration(
-                color: UIColors.milk.withOpacity(0.10),
+                color: UIColors.milk.withAlpha(26),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Row(
@@ -185,7 +187,7 @@ class SessionCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    "$milk g milk",
+                    "$milk g ${l10n.milk}",
                     style: const TextStyle(
                       color: UIColors.milk,
                       fontWeight: FontWeight.w700,

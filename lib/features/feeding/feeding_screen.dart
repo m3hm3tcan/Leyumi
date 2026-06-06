@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'feeding_controller.dart';
-import 'feeding_session.dart';
 import 'feeding_entry.dart';
 import '../../services/feeding_storage.dart';
 
@@ -122,12 +122,13 @@ class _FeedingScreenState extends State<FeedingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final entries = controller.currentSession?.entries ?? [];
 
     return Scaffold(
       backgroundColor: const Color(0xffF7F8FC),
       appBar: AppBar(
-        title: const Text("Feeding Session"),
+        title: Text(l10n.feedingSessionTitle),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -143,7 +144,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
             // -----------------------------
             if (controller.currentSession == null) ...[
               Text(
-                "Bebeğin Kilosu (gr)",
+                l10n.babyWeightGr,
                 style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600, decoration: TextDecoration.none,),
               ),
               const SizedBox(height: 8),
@@ -151,7 +152,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                 controller: startWeightCtrl,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: "Örn: 2500",
+                  hintText: l10n.exampleWeight,
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -211,8 +212,8 @@ class _FeedingScreenState extends State<FeedingScreen> {
 
                       Text(
                         activeSide != null
-                            ? "LIVE SESSION"
-                            : "READY",
+                            ? l10n.liveSession
+                            : l10n.ready,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,
@@ -237,12 +238,12 @@ class _FeedingScreenState extends State<FeedingScreen> {
 
                   Text(
                     activeSide == null
-                        ? "Tap left or right to start"
+                        ? l10n.tapLeftOrRightToStart
                         : activeSide == FeedingSide.left
-                            ? "LEFT SIDE"
-                            : "RIGHT SIDE",
+                            ? l10n.leftSide
+                            : l10n.rightSide,
                     style: GoogleFonts.poppins(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withAlpha(230),
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
@@ -279,7 +280,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withAlpha(13),
                             blurRadius: 14,
                             offset: const Offset(0, 6),
                           )
@@ -297,7 +298,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                           const SizedBox(height: 12),
 
                           Text(
-                            "LEFT",
+                            l10n.leftSide,
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w700,
                               fontSize: 13,
@@ -327,9 +328,9 @@ class _FeedingScreenState extends State<FeedingScreen> {
                                   color: Colors.pink,
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Text(
-                                  "LIVE",
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.live,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
@@ -367,7 +368,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withAlpha(13),
                             blurRadius: 14,
                             offset: const Offset(0, 6),
                           )
@@ -385,7 +386,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                           const SizedBox(height: 12),
 
                           Text(
-                            "RIGHT",
+                            l10n.rightSide,
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.w700,
                               fontSize: 13,
@@ -415,9 +416,9 @@ class _FeedingScreenState extends State<FeedingScreen> {
                                   color: Color(0xff4DA3FF),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
-                                child: const Text(
-                                  "LIVE",
-                                  style: TextStyle(
+                                child: Text(
+                                  l10n.live,
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
@@ -447,7 +448,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                       borderRadius: BorderRadius.circular(16)),
                 ),
                 child: Text(
-                  "Durdur",
+                  l10n.stop,
                   style: GoogleFonts.poppins(
                       fontSize: 18, fontWeight: FontWeight.w600),
                 ),
@@ -469,7 +470,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
             // -----------------------------
             if (entries.isNotEmpty && activeSide == null) ...[
               Text(
-                "Feeding Sonrası Kilo (gr)",
+                l10n.feedingAfterWeight,
                 style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 8),
@@ -477,7 +478,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                 controller: endWeightCtrl,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: "Örn: 2550",
+                  hintText: l10n.exampleWeight,
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -498,7 +499,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                       borderRadius: BorderRadius.circular(16)),
                 ),
                 child: Text(
-                  "Kaydet",
+                  l10n.save,
                   style: GoogleFonts.poppins(
                       fontSize: 18, fontWeight: FontWeight.w600),
                 ),
@@ -511,6 +512,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
   }
 
   Widget buildSimpleSummary(List<FeedingEntry> entries) {
+    final l10n = AppLocalizations.of(context);
     Duration left = Duration.zero;
     Duration right = Duration.zero;
 
@@ -540,7 +542,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withAlpha(15),
             blurRadius: 18,
             offset: const Offset(0, 6),
           )
@@ -550,7 +552,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Feeding Özeti",
+            l10n.feedingSummary,
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w600,
@@ -591,7 +593,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Sol",
+                    l10n.leftLabel,
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w600,
                       color: Colors.blue,
@@ -612,7 +614,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    "Sağ",
+                    l10n.rightLabel,
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w600,
                       color: Colors.pink,
@@ -635,7 +637,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
 
           Center(
             child: Text(
-              "Toplam: ${fmt(total)}",
+              "${l10n.totalLabel}: ${fmt(total)}",
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w600,
               ),

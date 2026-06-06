@@ -61,6 +61,13 @@ class AppLocalizations {
       'brown': 'Brown',
       'green': 'Green',
       'black': 'Black',
+      'noFeedingSessionsYet': 'No feeding sessions yet',
+      'startFeedingSessionHint': 'Start a feeding session to track your baby\'s feeding history in a clean timeline.',
+      'totalFeedingDuration': 'Total feeding duration',
+      'milk': 'Milk',
+      'average': 'Average',
+      'sessions': 'Sessions',
+      'totalFeedingTime': 'Total feeding time',
       'comingSoon': 'Coming soon',
       'babyInfoTitle': 'Baby Information',
       'babyNameLabel': 'Baby Name',
@@ -150,6 +157,13 @@ class AppLocalizations {
       'brown': 'Kahverengi',
       'green': 'Yeşil',
       'black': 'Siyah',
+      'noFeedingSessionsYet': 'Henüz beslenme kaydı yok',
+      'startFeedingSessionHint': 'Temiz bir zaman çizelgesinde bebeğinizin beslenme geçmişini takip etmek için bir beslenme seansı başlatın.',
+      'totalFeedingDuration': 'Toplam beslenme süresi',
+      'milk': 'Süt',
+      'average': 'Ortalama',
+      'sessions': 'Oturumlar',
+      'totalFeedingTime': 'Toplam beslenme süresi',
       'comingSoon': 'Yakında',
       'babyInfoTitle': 'Bebek Bilgileri',
       'babyNameLabel': 'Bebek Adı',
@@ -221,6 +235,13 @@ class AppLocalizations {
   String get undo => _getString('undo');
   String get today => _getString('today');
   String get older => _getString('older');
+  String get noFeedingSessionsYet => _getString('noFeedingSessionsYet');
+  String get startFeedingSessionHint => _getString('startFeedingSessionHint');
+  String get totalFeedingDuration => _getString('totalFeedingDuration');
+  String get milk => _getString('milk');
+  String get average => _getString('average');
+  String get sessions => _getString('sessions');
+  String get totalFeedingTime => _getString('totalFeedingTime');
   String get entryDeleted => _getString('entryDeleted');
   String get swipeToDelete => _getString('swipeToDelete');
   String get swipeHintInfo => _getString('swipeHintInfo');

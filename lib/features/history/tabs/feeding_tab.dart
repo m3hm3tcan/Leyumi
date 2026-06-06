@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'package:babyfeedpro/services/feeding_storage.dart';
 import 'package:babyfeedpro/features/feeding/feeding_session.dart';
 
-import '../widgets/session_card.dart';
 import '../widgets/timeline_section.dart';
 import '../widgets/today_summary_card.dart';
 
@@ -28,16 +28,25 @@ class _FeedingTabState extends State<FeedingTab> {
     setState(() => sessions = data);
   }
 
-  Map<String, List<FeedingSession>> group() {
+  Map<String, List<FeedingSession>> group(AppLocalizations l10n) {
     final Map<String, List<FeedingSession>> map = {};
 
     for (final s in sessions) {
-      final key = _getSection(s.startTime);
+      final key = _getSection(s.startTime, l10n);
       map.putIfAbsent(key, () => []);
       map[key]!.add(s);
     }
 
     return map;
+  }
+
+  String _getSection(DateTime date, AppLocalizations l10n) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final sessionDay = DateTime(date.year, date.month, date.day);
+
+    if (sessionDay == today) return l10n.today;
+    return l10n.older;
   }
 
   Future<void> deleteSession(FeedingSession session) async {
@@ -48,33 +57,25 @@ class _FeedingTabState extends State<FeedingTab> {
     await FeedingStorage().saveAllSessions(sessions);
   }
 
-  String _getSection(DateTime date) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final sessionDay = DateTime(date.year, date.month, date.day);
-
-    if (sessionDay == today) return "Today";
-    return "Older";
-  }
-
   @override
   Widget build(BuildContext context) {
-    final grouped = group();
+    final l10n = AppLocalizations.of(context);
+    final grouped = group(l10n);
 
     return Container(
       color: const Color(0xffF6F7FB),
       child: sessions.isEmpty
-          ? _emptyState()
+          ? _emptyState(l10n)
           : ListView(
               padding: const EdgeInsets.only(bottom: 28),
               children: [
                 const SizedBox(height: 12),
 
                 /// TODAY SUMMARY (premium spacing)
-                if (grouped["Today"] != null)
+                if (grouped[l10n.today] != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: TodaySummaryCard(sessions: grouped["Today"]!),
+                    child: TodaySummaryCard(sessions: grouped[l10n.today]!),
                   ),
 
                 const SizedBox(height: 10),
@@ -91,7 +92,7 @@ class _FeedingTabState extends State<FeedingTab> {
     );
   }
 
-  Widget _emptyState() {
+  Widget _emptyState(AppLocalizations l10n) {
     return Container(
       color: const Color(0xffF6F7FB),
       child: Center(
@@ -107,7 +108,7 @@ class _FeedingTabState extends State<FeedingTab> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withAlpha(13),
                       blurRadius: 18,
                       offset: const Offset(0, 8),
                     ),
@@ -122,9 +123,9 @@ class _FeedingTabState extends State<FeedingTab> {
 
               const SizedBox(height: 18),
 
-              const Text(
-                "No feeding sessions yet",
-                style: TextStyle(
+              Text(
+                l10n.noFeedingSessionsYet,
+                style: const TextStyle(
                   fontSize: 17,
                   fontWeight: FontWeight.w700,
                   decoration: TextDecoration.none,
@@ -134,7 +135,7 @@ class _FeedingTabState extends State<FeedingTab> {
               const SizedBox(height: 8),
 
               Text(
-                "Start a feeding session to track your baby's feeding history in a clean timeline.",
+                l10n.startFeedingSessionHint,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: Colors.grey.shade600,

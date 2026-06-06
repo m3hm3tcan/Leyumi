@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:babyfeedpro/features/feeding/feeding_session.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 
 class TodaySummaryCard extends StatelessWidget {
   final List<FeedingSession> sessions;
@@ -21,6 +22,7 @@ class TodaySummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final totalDuration = sessions.fold<Duration>(
       Duration.zero,
       (a, b) => a + b.totalDuration,
@@ -65,9 +67,9 @@ class TodaySummaryCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "TODAY",
-                style: TextStyle(
+              Text(
+                l10n.today.toUpperCase(),
+                style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
@@ -85,7 +87,7 @@ class TodaySummaryCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
-                  "${sessions.length} sessions",
+                  "${sessions.length} ${l10n.sessions}",
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
@@ -115,7 +117,7 @@ class TodaySummaryCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           Text(
-            "Total feeding duration",
+            l10n.totalFeedingDuration,
             style: TextStyle(
               color: Colors.white.withOpacity(.85),
               fontSize: 14,
@@ -131,8 +133,8 @@ class TodaySummaryCard extends StatelessWidget {
               Expanded(
                 child: _metricCard(
                   icon: Icons.monitor_weight_outlined,
-                  value: "$totalMilk g",
-                  label: "Milk",
+                  value: "$totalMilk g ${l10n.milk}",
+                  label: l10n.milk,
                 ),
               ),
               const SizedBox(width: 10),
@@ -140,7 +142,7 @@ class TodaySummaryCard extends StatelessWidget {
                 child: _metricCard(
                   icon: Icons.schedule_rounded,
                   value: _format(avgDuration),
-                  label: "Average",
+                  label: l10n.average,
                 ),
               ),
               const SizedBox(width: 10),
@@ -148,7 +150,7 @@ class TodaySummaryCard extends StatelessWidget {
                 child: _metricCard(
                   icon: Icons.baby_changing_station_rounded,
                   value: sessions.length.toString(),
-                  label: "Sessions",
+                  label: l10n.sessions,
                 ),
               ),
             ],
