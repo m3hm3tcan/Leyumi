@@ -133,18 +133,18 @@ class _BabyCardState extends State<BabyCard>
                   ),
 
                   /// 👦👧 ICON BADGE
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.12),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      isBoy ? Icons.male : Icons.female,
-                      color: primaryColor,
-                      size: 18,
-                    ),
-                  ),
+                  // Container(
+                  //   padding: const EdgeInsets.all(10),
+                  //   decoration: BoxDecoration(
+                  //     color: primaryColor.withOpacity(0.12),
+                  //     shape: BoxShape.circle,
+                  //   ),
+                  //   child: Icon(
+                  //     isBoy ? Icons.male : Icons.female,
+                  //     color: primaryColor,
+                  //     size: 18,
+                  //   ),
+                  // ),
                 ],
               ),
 

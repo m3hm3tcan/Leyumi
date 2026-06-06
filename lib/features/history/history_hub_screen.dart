@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tabs/feeding_tab.dart';
+import 'tabs/diaper_tab.dart';
 import 'tabs/growth_tab.dart';
 import 'widgets/hub_card.dart';
 
@@ -83,8 +84,13 @@ class HistoryHubScreen extends StatelessWidget {
                       title: "Diaper",
                       icon: Icons.baby_changing_station,
                       color: const Color(0xffF59E0B),
-                      subtitle: "Coming soon",
-                      onTap: () {},
+                      subtitle: "Diaper changes",
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const DiaperTab()),
+                        );
+                      },
                     ),
 
                     HubCard(

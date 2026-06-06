@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'features/onboarding/onboarding_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/growth/growth_update_screen.dart';
+import 'features/diaper/diaper_add_screen.dart';
 import 'features/growth/growth_history_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -29,6 +30,7 @@ class BabyFeedApp extends StatelessWidget {
         "/onboarding": (_) => const OnboardingScreen(),
         "/home": (_) => const HomeScreen(),
         "/growth_update": (_) => const GrowthUpdateScreen(),
+        "/diaper": (_) => const DiaperAddScreen(),
         // "/growth_history": (_) => const GrowthHistoryScreen(),
       },
     );
