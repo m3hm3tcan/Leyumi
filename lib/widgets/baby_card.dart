@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../models/baby_profile.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 
 class BabyCard extends StatefulWidget {
   final BabyProfile profile;
@@ -40,7 +41,9 @@ class _BabyCardState extends State<BabyCard>
     return const Color(0xffA78BFA);
   }
 
-  String calculateAge(DateTime birthDate) {
+  String calculateAge(BuildContext context, DateTime birthDate) {
+    final t = AppLocalizations.of(context);
+
     final now = DateTime.now();
     int years = now.year - birthDate.year;
     int months = now.month - birthDate.month;
@@ -57,14 +60,16 @@ class _BabyCardState extends State<BabyCard>
     }
 
     if (years > 0) {
-      return "$years y $months m";
+      return "$years ${t.yearsShort} $months ${t.monthsShort}";
     } else {
-      return "$months m $days d";
+      return "$months ${t.monthsShort} $days ${t.daysShort}";
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       padding: const EdgeInsets.all(18),
@@ -107,7 +112,7 @@ class _BabyCardState extends State<BabyCard>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
-                children: [             
+                children: [
                   /// NAME + AGE
                   Expanded(
                     child: Column(
@@ -122,7 +127,7 @@ class _BabyCardState extends State<BabyCard>
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          calculateAge(widget.profile.birthDate),
+                          calculateAge(context, widget.profile.birthDate),
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.grey.shade600,
@@ -131,20 +136,6 @@ class _BabyCardState extends State<BabyCard>
                       ],
                     ),
                   ),
-
-                  /// 👦👧 ICON BADGE
-                  // Container(
-                  //   padding: const EdgeInsets.all(10),
-                  //   decoration: BoxDecoration(
-                  //     color: primaryColor.withOpacity(0.12),
-                  //     shape: BoxShape.circle,
-                  //   ),
-                  //   child: Icon(
-                  //     isBoy ? Icons.male : Icons.female,
-                  //     color: primaryColor,
-                  //     size: 18,
-                  //   ),
-                  // ),
                 ],
               ),
 
@@ -153,8 +144,8 @@ class _BabyCardState extends State<BabyCard>
               /// STATS
               Row(
                 children: [
-                  _stat("Weight", "${widget.profile.weight} g"),
-                  _stat("Height", "${widget.profile.height} cm"),
+                  _stat(t.weight, "${widget.profile.weight} ${t.unitGr}"),
+                  _stat(t.height, "${widget.profile.height} ${t.unitCm}"),
                 ],
               ),
             ],

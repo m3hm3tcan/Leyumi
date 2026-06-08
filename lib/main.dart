@@ -30,6 +30,7 @@ class BabyFeedApp extends StatelessWidget {
       supportedLocales: const [
         Locale('en'),
         Locale('tr'),
+        Locale('hu'),
       ],
       localeResolutionCallback: (locale, supportedLocales) {
         if (locale == null) {

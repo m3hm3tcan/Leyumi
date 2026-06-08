@@ -23,7 +23,7 @@ class AppLocalizations {
       'history': 'History',
       'diaper': 'Diaper',
       'growth': 'Growth',
-      'startSession': 'Start session',
+      'startSession': 'Start feeding session',
       'pastFeedings': 'Past feedings',
       'trackChanges': 'Track changes',
       'updateWeight': 'Update weight',
@@ -68,6 +68,7 @@ class AppLocalizations {
       'sessions': 'Sessions',
       'totalFeedingTime': 'Total feeding time',
       'comingSoon': 'Coming soon',
+      'sleepTitle': 'Sleep',
       'babyInfoTitle': 'Baby Information',
       'babyNameLabel': 'Baby Name',
       'genderLabel': 'Gender',
@@ -126,6 +127,10 @@ class AppLocalizations {
       'unitCm': 'cm',
       'weightHeightRequired': 'Weight and Height are required',
       'growthRecordSaved': 'Growth record saved',
+      "growthHistoryTitle": 'Growth History',
+      "yearsShort": "y",
+      "monthsShort": "m",
+      "daysShort": "d"
     },
     'tr': {
       'appTitle': 'BabyFeed Pro',
@@ -134,8 +139,8 @@ class AppLocalizations {
       'history': 'Geçmiş',
       'diaper': 'Bez',
       'growth': 'Büyüme',
-      'startSession': 'Seansı Başlat',
-      'pastFeedings': 'Geçmiş beslenmeler',
+      'startSession': 'Emizrme Başlat',
+      'pastFeedings': 'Kayitli Veriler',
       'trackChanges': 'Değişiklikleri takip et',
       'updateWeight': 'Kilosu Güncelle',
       'dangerZone': 'Tehlike Bölgesi',
@@ -179,6 +184,7 @@ class AppLocalizations {
       'sessions': 'Oturumlar',
       'totalFeedingTime': 'Toplam beslenme süresi',
       'comingSoon': 'Yakında',
+      'sleepTitle': 'Uyku',
       'babyInfoTitle': 'Bebek Bilgileri',
       'babyNameLabel': 'Bebek Adı',
       'genderLabel': 'Cinsiyet',
@@ -212,8 +218,6 @@ class AppLocalizations {
       'enterNewValueHint': 'Yeni değer girin',
       'currentGrowthSnapshot': 'Mevcut Büyüme Anlık Görünümü',
       'saveGrowthRecord': 'Büyüme Kaydını Kaydet',
-      'growthUpdateTitle': 'Büyüme Güncelle',
-
       'historyHubTitle': 'Geçmiş Merkezi',
       'historyHubSubtitle': 'Bebeğinizle ilgili her şeyi takip edin',
       'milkTracking': 'Süt takibi',
@@ -239,7 +243,126 @@ class AppLocalizations {
       'growthHistoryTitle': 'Büyüme Geçmişi',
       'weightHeightRequired': 'Kilo ve Boy zorunludur',
       'growthRecordSaved': 'Büyüme kaydı kaydedildi',
+      "yearsShort": "y",
+      "monthsShort": "a",
+      "daysShort": "g"
     },
+    'hu': {
+        'appTitle': 'BabyFeed Pro',
+        'homeTitle': 'Főoldal',
+        'feeding': 'Etetés',
+        'history': 'Előzmények',
+        'diaper': 'Pelenka',
+        'growth': 'Növekedés',
+        'startSession': 'Etetés indítása',
+        'pastFeedings': 'Korábbi etetések',
+        'trackChanges': 'Változások követése',
+        'updateWeight': 'Súly frissítése',
+        'dangerZone': 'Veszélyzóna',
+        'resetApp': 'Alkalmazás visszaállítása (Összes adat törlése)',
+        'confirmResetTitle': 'Alkalmazás visszaállítása',
+        'confirmResetContent': 'Biztosan törölni szeretnéd az összes adatot?',
+        'cancel': 'Mégse',
+        'delete': 'Törlés',
+        'today': 'Ma',
+        'older': 'Korábbiak',
+        'entryDeleted': 'Bejegyzés törölve',
+        'swipeToDelete': 'Húzd balra a törléshez',
+        'swipeHintInfo': 'Ez a tipp az első 3 megnyitáskor jelenik meg.',
+        'noDiaperRecordsYet': 'Még nincs pelenka bejegyzés',
+        'addDiaperChangesHint': 'Adj hozzá pelenkacserét a főoldalról az előzmények követéséhez.',
+        'pee': 'Pisi',
+        'poop': 'Kaki',
+        'peeAndPoop': 'Pisi & Kaki',
+        'amount': 'Mennyiség',
+        'color': 'Szín',
+        'note': 'Megjegyzés',
+        'diaperScreenTitle': 'Pelenka bejegyzés hozzáadása',
+        'diaperType': 'Pelenka típusa',
+        'peeAmountTitle': 'Pisi mennyisége',
+        'poopColor': 'Kaki színe',
+        'optionalNote': 'Opcionális megjegyzés',
+        'saveDiaperRecord': 'Pelenka bejegyzés mentése',
+        'diaperRecordSaved': 'Pelenka bejegyzés mentve',
+        'small': 'Kicsi',
+        'medium': 'Közepes',
+        'large': 'Nagy',
+        'yellow': 'Sárga',
+        'brown': 'Barna',
+        'green': 'Zöld',
+        'black': 'Fekete',
+        'noFeedingSessionsYet': 'Még nincs etetési bejegyzés',
+        'startFeedingSessionHint': 'Indíts etetési folyamatot, hogy tiszta idővonalon követhesd a baba etetési előzményeit.',
+        'totalFeedingDuration': 'Összes etetési idő',
+        'milk': 'Tej',
+        'average': 'Átlag',
+        'sessions': 'Etetések',
+        'totalFeedingTime': 'Összes etetési idő',
+        'comingSoon': 'Hamarosan',
+        'sleepTitle': 'Alvás',
+        'babyInfoTitle': 'Baba adatai',
+        'babyNameLabel': 'Baba neve',
+        'genderLabel': 'Nem',
+        'genderMale': 'Fiú',
+        'genderFemale': 'Lány',
+        'birthDateNotSelected': 'Születési dátum nincs kiválasztva',
+        'selectDate': 'Dátum kiválasztása',
+        'saveContinue': 'Mentés és folytatás',
+        'requiredField': 'Ez a mező kötelező',
+        'weightGr': 'Súly (g)',
+        'heightCm': 'Magasság (cm)',
+        'headCircumferenceOptional': 'Fejkörfogat (opcionális)',
+        'waistCircumferenceOptional': 'Derékkörfogat (opcionális)',
+        'feedingSessionTitle': 'Etetési folyamat',
+        'babyWeightGr': 'Baba súlya (g)',
+        'exampleWeight': 'pl. 2500',
+        'liveSession': 'Élő folyamat',
+        'ready': 'Kész',
+        'tapLeftOrRightToStart': 'Kezdéshez érintsd meg a bal vagy jobb oldalt',
+        'leftSide': 'Bal oldal',
+        'rightSide': 'Jobb oldal',
+        'live': 'ÉLŐ',
+        'stop': 'Leállítás',
+        'feedingSummary': 'Etetési összegzés',
+        'leftLabel': 'Bal',
+        'rightLabel': 'Jobb',
+        'totalLabel': 'Összesen',
+        'feedingAfterWeight': 'Etetés utáni súly',
+        'save': 'Mentés',
+        'currentLabel': 'Jelenlegi',
+        'enterNewValueHint': 'Adj meg új értéket',
+        'currentGrowthSnapshot': 'Aktuális növekedési állapot',
+        'saveGrowthRecord': 'Növekedési adat mentése',
+        'historyHubTitle': 'Előzmények központ',
+        'historyHubSubtitle': 'Kövesd a babával kapcsolatos összes adatot',
+        'milkTracking': 'Tej követése',
+        'weightAndHeight': 'Súly és magasság',
+        'diaperChanges': 'Pelenkacserék',
+        'sessionDeleted': 'Etetés törölve',
+        'undo': 'VISSZAVONÁS',
+        'yesterday': 'Tegnap',
+        'thisWeek': 'Ezen a héten',
+        'swipeHistoryTip': 'Tipp: Húzd balra az etetési bejegyzést a törléshez.',
+        'noGrowthDataYet': 'Még nincs növekedési adat',
+        'leftBreast': 'Bal mell',
+        'rightBreast': 'Jobb mell',
+        'initialWeight': 'Kezdő súly',
+        'finalWeight': 'Végső súly',
+        'milkIntake': 'Elfogyasztott tej',
+        'weight': 'Súly',
+        'height': 'Magasság',
+        'headCircumference': 'Fejkörfogat',
+        'waistCircumference': 'Derékkörfogat',
+        'unitGr': 'g',
+        'unitCm': 'cm',
+        'growthHistoryTitle': 'Növekedési előzmények',
+        'weightHeightRequired': 'Súly és magasság kötelező',
+        'growthRecordSaved': 'Növekedési adat mentve',
+        "yearsShort": "év",
+        "monthsShort": "hó",
+        "daysShort": "nap"
+      },
+
   };
 
   String _getString(String key) {
@@ -299,6 +422,7 @@ class AppLocalizations {
   String get green => _getString('green');
   String get black => _getString('black');
   String get comingSoon => _getString('comingSoon');
+  String get sleepTitle => _getString('sleepTitle');
   String get babyInfoTitle => _getString('babyInfoTitle');
   String get babyNameLabel => _getString('babyNameLabel');
   String get genderLabel => _getString('genderLabel');
@@ -358,6 +482,9 @@ class AppLocalizations {
   String get unitCm => _getString('unitCm');
   String get weightHeightRequired => _getString('weightHeightRequired');
   String get growthRecordSaved => _getString('growthRecordSaved');
+  String get yearsShort => _getString('yearsShort');
+  String get monthsShort => _getString('monthsShort');
+  String get daysShort => _getString('daysShort');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
@@ -365,7 +492,7 @@ class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> 
 
   @override
   bool isSupported(Locale locale) {
-    return ['en', 'tr'].contains(locale.languageCode);
+    return ['en', 'tr', 'hu'].contains(locale.languageCode);
   }
 
   @override

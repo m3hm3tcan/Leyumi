@@ -97,7 +97,7 @@ class HistoryHubScreen extends StatelessWidget {
                     ),
 
                     HubCard(
-                      title: l10n.comingSoon,
+                      title: l10n.sleepTitle,
                       icon: Icons.nightlight_round,
                       color: const Color(0xff8B5CF6),
                       subtitle: l10n.comingSoon,

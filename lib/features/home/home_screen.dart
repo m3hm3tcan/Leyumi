@@ -6,8 +6,8 @@ import 'package:babyfeedpro/services/baby_storage.dart';
 import 'package:babyfeedpro/widgets/baby_card.dart';
 import 'package:babyfeedpro/services/reset_service.dart';
 import 'package:babyfeedpro/features/history/history_hub_screen.dart';
-// 👇 yeni widget
 import 'widgets/home_action_card.dart';
+import 'package:babyfeedpro/l10n/app_localizations.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context); // 👈 KISALTMA
+
     if (loading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
@@ -54,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color(0xffF6F7FB),
 
       appBar: AppBar(
-        title: const Text("BabyFeed Pro"),
+        title: Text(t.appTitle), // 👈 DİL DESTEKLİ
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -82,8 +84,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: [
                   HomeActionCard(
                     icon: Icons.favorite_rounded,
-                    title: "Feeding",
-                    subtitle: "Start session",
+                    title: t.feeding,          // 👈
+                    subtitle: t.startSession,  // 👈
                     onTap: () {
                       Navigator.push(
                         context,
@@ -96,8 +98,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   HomeActionCard(
                     icon: Icons.history_rounded,
-                    title: "History",
-                    subtitle: "Past feedings",
+                    title: t.history,          // 👈
+                    subtitle: t.pastFeedings,  // 👈
                     onTap: () {
                       Navigator.push(
                         context,
@@ -108,8 +110,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   HomeActionCard(
                     icon: Icons.baby_changing_station_rounded,
-                    title: "Diaper",
-                    subtitle: "Track changes",
+                    title: t.diaper,           // 👈
+                    subtitle: t.trackChanges,  // 👈
                     onTap: () {
                       Navigator.pushNamed(
                         context,
@@ -120,26 +122,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   HomeActionCard(
                     icon: Icons.monitor_weight_rounded,
-                    title: "Growth",
-                    subtitle: "Update weight",
+                    title: t.growth,           // 👈
+                    subtitle: t.updateWeight,  // 👈
                     onTap: () async {
-                        await Navigator.pushNamed(
-                          context,
-                          "/growth_update",
-                        );
+                      await Navigator.pushNamed(
+                        context,
+                        "/growth_update",
+                      );
 
-                        await loadProfile();
-                      },
+                      await loadProfile();
+                    },
                   ),
-
-                  // HomeActionCard(
-                  //   icon: Icons.show_chart_rounded,
-                  //   title: "Growth Log",
-                  //   subtitle: "Measurements",
-                  //   onTap: () {
-                  //     Navigator.pushNamed(context, "/growth_history");
-                  //   },
-                  // ),
                 ],
               ),
             ),
@@ -154,9 +147,9 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Danger Zone",
-                    style: TextStyle(
+                  Text(
+                    t.dangerZone, // 👈
+                    style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w700,
                       color: Colors.grey,
@@ -180,15 +173,40 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        await ResetService.clearAll();
-                        if (!mounted) return;
-                        Navigator.pushReplacementNamed(
-                          context,
-                          "/onboarding",
+                        final t = AppLocalizations.of(context);
+
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(t.confirmResetTitle),
+                              content: Text(t.confirmResetContent),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, false),
+                                  child: Text(t.cancel),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: Text(
+                                    t.delete,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         );
+
+                        if (confirm == true) {
+                          await ResetService.clearAll();
+                          if (!mounted) return;
+                          Navigator.pushReplacementNamed(context, "/onboarding");
+                        }
                       },
+
                       icon: const Icon(Icons.delete_forever),
-                      label: const Text("Reset App (Clear All Data)"),
+                      label: Text(t.resetApp), // 👈
                     ),
                   ),
                 ],
