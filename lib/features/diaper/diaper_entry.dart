@@ -11,10 +11,12 @@ enum PeeAmount {
 }
 
 enum PoopColor {
-  yellow,
+  mustardYellow,
+  yellowGreen,
   brown,
-  green,
+  darkGreen,
   black,
+  whiteGray,
 }
 
 class DiaperEntry {

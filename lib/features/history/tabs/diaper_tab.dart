@@ -327,18 +327,44 @@ class _DiaperTabState extends State<DiaperTab> {
     }
   }
 
-  String _labelForPoopColor(PoopColor color, AppLocalizations l10n) {
+  // String _labelForPoopColor(PoopColor color, AppLocalizations l10n) {
+  //   switch (color) {
+  //     case PoopColor.yellow:
+  //       return l10n.yellow;
+  //     case PoopColor.brown:
+  //       return l10n.brown;
+  //     case PoopColor.green:
+  //       return l10n.green;
+  //     case PoopColor.black:
+  //       return l10n.black;
+  //   }
+  // }
+
+    String _labelForPoopColor(
+    PoopColor color,
+    AppLocalizations l10n,
+  ) {
     switch (color) {
-      case PoopColor.yellow:
-        return l10n.yellow;
+      case PoopColor.mustardYellow:
+        return  l10n.mustardYellow;
+
+      case PoopColor.yellowGreen:
+        return l10n.yellowGreen;
+
       case PoopColor.brown:
         return l10n.brown;
-      case PoopColor.green:
-        return l10n.green;
+
+      case PoopColor.darkGreen:
+        return l10n.darkGreen;
+
       case PoopColor.black:
         return l10n.black;
+
+      case PoopColor.whiteGray:
+        return l10n.whiteGray;
     }
   }
+
 
   Widget _emptyState(AppLocalizations l10n) {
     return Center(

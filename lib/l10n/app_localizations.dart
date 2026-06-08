@@ -60,6 +60,10 @@ class AppLocalizations {
       'brown': 'Brown',
       'green': 'Green',
       'black': 'Black',
+      'mustardYellow': 'Mustard Yellow',
+      'yellowGreen': 'Yellow Green',
+      'darkGreen': 'Dark Green',
+      'whiteGray': 'Gray White',
       'noFeedingSessionsYet': 'No feeding sessions yet',
       'startFeedingSessionHint': 'Start a feeding session to track your baby\'s feeding history in a clean timeline.',
       'totalFeedingDuration': 'Total feeding duration',
@@ -130,7 +134,8 @@ class AppLocalizations {
       "growthHistoryTitle": 'Growth History',
       "yearsShort": "y",
       "monthsShort": "m",
-      "daysShort": "d"
+      "daysShort": "d",
+      "dateAndTime": "Date & Time",
     },
     'tr': {
       'appTitle': 'BabyFeed Pro',
@@ -176,6 +181,10 @@ class AppLocalizations {
       'brown': 'Kahverengi',
       'green': 'Yeşil',
       'black': 'Siyah',
+      'mustardYellow': 'Hardal Sarısı',
+      'yellowGreen': 'Sarı-Yeşil',
+      'darkGreen': 'Koyu Yeşil',
+      'whiteGray': 'Gri-Beyaz',
       'noFeedingSessionsYet': 'Henüz beslenme kaydı yok',
       'startFeedingSessionHint': 'Temiz bir zaman çizelgesinde bebeğinizin beslenme geçmişini takip etmek için bir beslenme seansı başlatın.',
       'totalFeedingDuration': 'Toplam beslenme süresi',
@@ -245,7 +254,8 @@ class AppLocalizations {
       'growthRecordSaved': 'Büyüme kaydı kaydedildi',
       "yearsShort": "y",
       "monthsShort": "a",
-      "daysShort": "g"
+      "daysShort": "g",
+      "dateAndTime": "Tarih ve Saat",
     },
     'hu': {
         'appTitle': 'BabyFeed Pro',
@@ -291,6 +301,10 @@ class AppLocalizations {
         'brown': 'Barna',
         'green': 'Zöld',
         'black': 'Fekete',
+        'mustardYellow': 'Mustársárga',
+        'yellowGreen': 'Sárga-zöld',
+        'darkGreen': 'Sötétzöld',
+        'whiteGray': 'Szürke-fehér',
         'noFeedingSessionsYet': 'Még nincs etetési bejegyzés',
         'startFeedingSessionHint': 'Indíts etetési folyamatot, hogy tiszta idővonalon követhesd a baba etetési előzményeit.',
         'totalFeedingDuration': 'Összes etetési idő',
@@ -360,7 +374,8 @@ class AppLocalizations {
         'growthRecordSaved': 'Növekedési adat mentve',
         "yearsShort": "év",
         "monthsShort": "hó",
-        "daysShort": "nap"
+        "daysShort": "nap",
+        "dateAndTime": "Datum és idő",
       },
 
   };
@@ -421,6 +436,10 @@ class AppLocalizations {
   String get brown => _getString('brown');
   String get green => _getString('green');
   String get black => _getString('black');
+  String get mustardYellow => _getString('mustardYellow');
+  String get yellowGreen => _getString('yellowGreen');
+  String get darkGreen => _getString('darkGreen');
+  String get whiteGray => _getString('whiteGray');
   String get comingSoon => _getString('comingSoon');
   String get sleepTitle => _getString('sleepTitle');
   String get babyInfoTitle => _getString('babyInfoTitle');
