@@ -24,4 +24,24 @@ class GrowthStorage {
         .reversed
         .toList(); // en güncel en üstte
   }
+
+  Future<void> saveAllEntries(List<GrowthEntry> entries) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    final list = entries
+        .map((e) => jsonEncode(e.toJson()))
+        .toList();
+
+    await prefs.setStringList(key, list);
+  }
+
+  Future<void> deleteEntry(GrowthEntry entry) async {
+    final entries = await loadEntries();
+
+    entries.removeWhere(
+      (e) => e.date.toIso8601String() == entry.date.toIso8601String(),
+    );
+
+    await saveAllEntries(entries);
+  }
 }

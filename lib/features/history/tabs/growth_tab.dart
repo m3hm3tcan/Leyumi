@@ -12,6 +12,8 @@ class GrowthTab extends StatefulWidget {
 
 class _GrowthTabState extends State<GrowthTab> {
   List<GrowthEntry> entries = [];
+  GrowthEntry? recentlyDeleted;
+  int? recentlyDeletedIndex;
 
   @override
   void initState() {
@@ -25,195 +27,219 @@ class _GrowthTabState extends State<GrowthTab> {
     setState(() => entries = data);
   }
 
-  String formatDate(DateTime dt) {
-    return "${dt.day}.${dt.month}.${dt.year}";
-  }
+  Future<void> deleteEntry(GrowthEntry entry) async {
+    final l10n = AppLocalizations.of(context);
+    final index = entries.indexOf(entry);
 
-  Map<String, List<GrowthEntry>> _groupByDate(List<GrowthEntry> list) {
-    final map = <String, List<GrowthEntry>>{};
+    setState(() {
+      recentlyDeleted = entry;
+      recentlyDeletedIndex = index;
+      entries.removeAt(index);
+    });
 
-    for (final e in list) {
-      final key = formatDate(e.date);
-      map.putIfAbsent(key, () => []);
-      map[key]!.add(e);
-    }
+    await GrowthStorage().saveAllEntries(entries);
 
-    return map;
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.hideCurrentSnackBar();
+
+    final controller = messenger.showSnackBar(
+      SnackBar(
+        content: Text(l10n.entryDeleted),
+        duration: const Duration(seconds: 4),
+        action: SnackBarAction(
+          label: l10n.undo,
+          onPressed: () async {
+            if (!mounted) return;
+            if (recentlyDeleted != null && recentlyDeletedIndex != null) {
+              setState(() {
+                entries.insert(recentlyDeletedIndex!, recentlyDeleted!);
+                recentlyDeleted = null;
+                recentlyDeletedIndex = null;
+              });
+              await GrowthStorage().saveAllEntries(entries);
+            }
+          },
+        ),
+      ),
+    );
+
+    controller.closed.then((reason) {
+      if (reason != SnackBarClosedReason.action) {
+        if (!mounted) return;
+        setState(() {
+          recentlyDeleted = null;
+          recentlyDeletedIndex = null;
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    if (entries.isEmpty) return _emptyState(context);
 
-    final grouped = _groupByDate(entries);
-    final keys = grouped.keys.toList();
+    if (entries.isEmpty) return _emptyState(context);
 
     return Container(
       color: const Color(0xffF6F7FB),
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        itemCount: keys.length,
+        padding: const EdgeInsets.only(top: 16, bottom: 32),
+        itemCount: entries.length,
         itemBuilder: (context, i) {
-          final dateKey = keys[i];
-          final dayEntries = grouped[dateKey]!;
+          final e = entries[i];
+          final prev = i < entries.length - 1 ? entries[i + 1] : null;
 
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// DATE HEADER
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 56, top: 18, bottom: 8),
-                child: Text(
-                  dateKey,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.grey,
-                    decoration: TextDecoration.none,
+          final weight = e.weight.round();
+          final prevWeight = prev?.weight.round();
+          final weightDiff = prevWeight != null ? weight - prevWeight : null;
+
+          final heightDiff = prev != null ? e.height - prev.height : null;
+
+          final isLast = i == entries.length - 1;
+
+          return Dismissible(
+            key: ValueKey(e.date.toIso8601String()),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.red.shade400,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 20),
+              child: const Icon(Icons.delete_outline, color: Colors.white, size: 28),
+            ),
+            onDismissed: (_) => deleteEntry(e),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// TIMELINE
+                SizedBox(
+                  width: 50,
+                  child: Column(
+                    children: [
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: const BoxDecoration(
+                          color: Colors.blueAccent,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      Container(
+                        width: 2,
+                        height: isLast ? 40 : 80,
+                        color: isLast ? Colors.transparent : Colors.grey.shade300,
+                      ),
+                    ],
                   ),
                 ),
-              ),
 
-              /// ITEMS
-              ...List.generate(dayEntries.length, (index) {
-                final e = dayEntries[index];
-                final prev = index < dayEntries.length - 1
-                    ? dayEntries[index + 1]
-                    : null;
-
-                final isLast = index == dayEntries.length - 1;
-
-                /// WEIGHT
-                final weight = e.weight.round();
-                final prevWeight = prev?.weight.round();
-                final weightDiff =
-                    prevWeight != null ? weight - prevWeight : null;
-
-                /// HEIGHT
-                final heightDiff =
-                    prev != null ? e.height - prev.height : null;
-
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /// TIMELINE
-                    SizedBox(
-                      width: 40,
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 10,
-                            height: 10,
-                            decoration: const BoxDecoration(
-                              color: Colors.blueAccent,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          Container(
-                            width: 2,
-                            height: isLast ? 60 : 110,
-                            color: isLast
-                                ? Colors.transparent
-                                : Colors.grey.shade300,
-                          ),
-                        ],
-                      ),
+                /// CARD
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 16, bottom: 16),
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 14,
+                          offset: const Offset(0, 6),
+                        )
+                      ],
                     ),
-
-                    /// CARD
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.only(
-                            right: 16, bottom: 12),
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.04),
-                              blurRadius: 18,
-                              offset: const Offset(0, 8),
-                            )
-                          ],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        /// DATE
+                        Text(
+                          "${e.date.day.toString().padLeft(2, '0')}-"
+                          "${e.date.month.toString().padLeft(2, '0')}-"
+                          "${e.date.year}",
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.none,
+                          ),
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+
+                        const SizedBox(height: 10),
+
+                        /// WEIGHT + DELTA
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            /// WEIGHT + DELTA
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  "$weight",
-                                  style: const TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w900,
+                            Text(
+                              "$weight",
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.w900,
+                                decoration: TextDecoration.none,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                l10n.unitGr,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.none,
+                                ),
+                              ),
+                            ),
+                            if (weightDiff != null)
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10, bottom: 4),
+                                child: Text(
+                                  "${weightDiff > 0 ? "+" : ""}$weightDiff ${l10n.unitGr}",
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w700,
+                                    color: weightDiff > 0
+                                        ? Colors.green
+                                        : weightDiff < 0
+                                            ? Colors.red
+                                            : Colors.grey,
                                     decoration: TextDecoration.none,
                                   ),
                                 ),
-                                const SizedBox(width: 4),
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 4),
-                                  child: Text(
-                                    l10n.unitGr,
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                      decoration: TextDecoration.none,
-                                    ),
-                                  ),
-                                ),
-
-                                if (weightDiff != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 10, bottom: 4),
-                                    child: Text(
-                                      "${weightDiff > 0 ? "+" : ""}$weightDiff ${l10n.unitGr}",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: weightDiff > 0
-                                            ? Colors.green
-                                            : Colors.red,
-                                        decoration: TextDecoration.none,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-
-                            const SizedBox(height: 12),
-
-                            /// HEIGHT + DELTA
-                            _infoRow(
-                              l10n.height,
-                              "${e.height} ${l10n.unitCm}",
-                              heightDiff,
-                            ),
-
-                            if (e.headCircumference != null)
-                              _simpleRow(
-                                l10n.headCircumference,
-                                "${e.headCircumference} ${l10n.unitCm}",
-                              ),
-
-                            if (e.waistCircumference != null)
-                              _simpleRow(
-                                l10n.waistCircumference,
-                                "${e.waistCircumference} ${l10n.unitCm}",
                               ),
                           ],
                         ),
-                      ),
+
+                        const SizedBox(height: 14),
+
+                        /// HEIGHT + DELTA
+                        _infoRow(
+                          l10n.height,
+                          "${e.height} ${l10n.unitCm}",
+                          heightDiff,
+                        ),
+
+                        if (e.headCircumference != null)
+                          _simpleRow(
+                            l10n.headCircumference,
+                            "${e.headCircumference} ${l10n.unitCm}",
+                          ),
+
+                        if (e.waistCircumference != null)
+                          _simpleRow(
+                            l10n.waistCircumference,
+                            "${e.waistCircumference} ${l10n.unitCm}",
+                          ),
+                      ],
                     ),
-                  ],
-                );
-              }),
-            ],
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -228,7 +254,7 @@ class _GrowthTabState extends State<GrowthTab> {
           Text(
             "$label: $value",
             style: const TextStyle(
-              fontSize: 13,
+              fontSize: 14,
               fontWeight: FontWeight.w600,
               decoration: TextDecoration.none,
             ),
@@ -238,9 +264,13 @@ class _GrowthTabState extends State<GrowthTab> {
             Text(
               "${diff > 0 ? "+" : ""}${diff.toStringAsFixed(0)}",
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 13,
                 fontWeight: FontWeight.w700,
-                color: diff > 0 ? Colors.green : Colors.red,
+                color: diff > 0
+                    ? Colors.green
+                    : diff < 0
+                        ? Colors.red
+                        : Colors.grey,
                 decoration: TextDecoration.none,
               ),
             ),
@@ -267,12 +297,12 @@ class _GrowthTabState extends State<GrowthTab> {
 
   Widget _emptyState(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return Container(
-      color: const Color(0xffF6F7FB),
-      child: Center(
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
         child: Text(
           l10n.noGrowthDataYet,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             decoration: TextDecoration.none,
