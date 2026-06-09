@@ -102,7 +102,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     l10n.dateAndTime,
                     style: TextStyle(fontWeight: FontWeight.w700),
                   ),

@@ -504,6 +504,7 @@ class AppLocalizations {
   String get yearsShort => _getString('yearsShort');
   String get monthsShort => _getString('monthsShort');
   String get daysShort => _getString('daysShort');
+  String get dateAndTime => _getString('dateAndTime');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

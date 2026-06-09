@@ -457,15 +457,6 @@ class _FeedingScreenState extends State<FeedingScreen> {
             const SizedBox(height: 30),
 
             // -----------------------------
-            // ENTRY LOG
-            // -----------------------------
-            if (entries.isNotEmpty) ...[
-               buildSimpleSummary(entries),
-            ],
-
-            const SizedBox(height: 30),
-
-            // -----------------------------
             // FINISH SESSION
             // -----------------------------
             if (entries.isNotEmpty && activeSide == null) ...[
@@ -505,6 +496,15 @@ class _FeedingScreenState extends State<FeedingScreen> {
                 ),
               ),
             ],
+            
+            const SizedBox(height: 30),
+                        // -----------------------------
+            // ENTRY LOG
+            // -----------------------------
+            if (entries.isNotEmpty) ...[
+               buildSimpleSummary(entries),
+            ],
+
           ],
         ),
       ),
@@ -570,14 +570,14 @@ class _FeedingScreenState extends State<FeedingScreen> {
                   flex: (leftPct * 1000).toInt(),
                   child: Container(
                     height: 12,
-                    color: Colors.blue,
+                    color: Colors.pink,
                   ),
                 ),
                 Expanded(
                   flex: (rightPct * 1000).toInt(),
                   child: Container(
                     height: 12,
-                    color: Colors.pink,
+                    color: Colors.blue,
                   ),
                 ),
               ],
@@ -596,7 +596,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                     l10n.leftLabel,
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w600,
-                      color: Colors.blue,
+                      color: Colors.pink,
                     ),
                   ),
                   Text(
@@ -617,7 +617,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                     l10n.rightLabel,
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.w600,
-                      color: Colors.pink,
+                      color: Colors.blue,
                     ),
                   ),
                   Text(

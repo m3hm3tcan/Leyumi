@@ -42,6 +42,11 @@ class _DiaperTabState extends State<DiaperTab> {
 
   Future<void> load() async {
     final data = await DiaperStorage().loadEntries();
+
+    data.sort(
+      (a, b) => b.timestamp.compareTo(a.timestamp),
+    );
+
     setState(() {
       entries = data;
       loading = false;
@@ -94,16 +99,38 @@ class _DiaperTabState extends State<DiaperTab> {
     });
   }
 
-  Map<String, List<DiaperEntry>> group(AppLocalizations l10n) {
+  Map<String, List<DiaperEntry>> group(
+    AppLocalizations l10n,
+  ) {
     final Map<String, List<DiaperEntry>> map = {};
+
     for (final e in entries) {
       final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      final day = DateTime(e.timestamp.year, e.timestamp.month, e.timestamp.day);
-      final key = day == today ? l10n.today : l10n.older;
+
+      final today = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      );
+
+      final day = DateTime(
+        e.timestamp.year,
+        e.timestamp.month,
+        e.timestamp.day,
+      );
+
+      late String key;
+
+      if (day == today) {
+        key = l10n.today;
+      } else {
+        key = _formatSectionDate(day);
+      }
+
       map.putIfAbsent(key, () => []);
       map[key]!.add(e);
     }
+
     return map;
   }
 
@@ -130,8 +157,9 @@ class _DiaperTabState extends State<DiaperTab> {
                     child: Text(
                       section.key,
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.grey,
                         decoration: TextDecoration.none,
                       ),
                     ),
@@ -262,7 +290,7 @@ class _DiaperTabState extends State<DiaperTab> {
                   ),
                 ),
                 const SizedBox(height: 6),
-                const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+                const Icon(Icons.swipe_left_rounded, color: Colors.grey, size: 20),
               ],
             )
           ],
@@ -327,20 +355,7 @@ class _DiaperTabState extends State<DiaperTab> {
     }
   }
 
-  // String _labelForPoopColor(PoopColor color, AppLocalizations l10n) {
-  //   switch (color) {
-  //     case PoopColor.yellow:
-  //       return l10n.yellow;
-  //     case PoopColor.brown:
-  //       return l10n.brown;
-  //     case PoopColor.green:
-  //       return l10n.green;
-  //     case PoopColor.black:
-  //       return l10n.black;
-  //   }
-  // }
-
-    String _labelForPoopColor(
+  String _labelForPoopColor(
     PoopColor color,
     AppLocalizations l10n,
   ) {
@@ -363,6 +378,26 @@ class _DiaperTabState extends State<DiaperTab> {
       case PoopColor.whiteGray:
         return l10n.whiteGray;
     }
+  }
+
+  String _formatSectionDate(DateTime date) {
+    const months = [
+      '',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    return "${months[date.month]} ${date.day}, ${date.year}";
   }
 
 

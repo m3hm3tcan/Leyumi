@@ -29,6 +29,7 @@ class TimelineHeader extends StatelessWidget {
               fontWeight: FontWeight.w700,
               letterSpacing: 1.2,
               color: Colors.grey,
+              decoration: TextDecoration.none,
             ),
           ),
 
@@ -52,6 +53,7 @@ class TimelineHeader extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               color: Colors.grey,
+              decoration: TextDecoration.none,
             ),
           ),
 

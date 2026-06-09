@@ -40,13 +40,49 @@ class _FeedingTabState extends State<FeedingTab> {
     return map;
   }
 
-  String _getSection(DateTime date, AppLocalizations l10n) {
+  String _getSection(
+    DateTime date,
+    AppLocalizations l10n,
+  ) {
     final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final sessionDay = DateTime(date.year, date.month, date.day);
 
-    if (sessionDay == today) return l10n.today;
-    return l10n.older;
+    final today = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    );
+
+    final sessionDay = DateTime(
+      date.year,
+      date.month,
+      date.day,
+    );
+
+    if (sessionDay == today) {
+      return l10n.today;
+    }
+
+    return _formatSectionDate(sessionDay);
+}
+
+  String _formatSectionDate(DateTime date) {
+    const months = [
+      '',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    return "${months[date.month]} ${date.day}, ${date.year}";
   }
 
   Future<void> deleteSession(FeedingSession session) async {
@@ -82,11 +118,12 @@ class _FeedingTabState extends State<FeedingTab> {
 
                 /// STREAM STYLE TIMELINE
                 for (final entry in grouped.entries)
-                  TimelineSection(
-                    title: entry.key,
-                    sessions: entry.value,
-                    onDelete: deleteSession,
-                  ),
+                  // if (entry.key != l10n.today)
+                    TimelineSection(
+                      title: entry.key,
+                      sessions: entry.value,
+                      onDelete: deleteSession,
+                    ),
               ],
             ),
     );
