@@ -1,5 +1,5 @@
 name: babyfeedpro
-description: "A new Flutter project."
+description: "The Baby Feed Pro app. You can track your baby's feeding schedule, diaper changes, sleep patterns, and growth progress. The app provides insights and reminders to help you care for your baby effectively."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -33,6 +33,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   lottie: ^3.1.2
+  fl_chart: 1.2.0
   
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

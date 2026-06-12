@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:babyfeedpro/features/history/graphs/growth_graph.dart';
+import 'package:babyfeedpro/features/history/graphs/feeding_graph.dart';
 import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'tabs/feeding_tab.dart';
 import 'tabs/diaper_tab.dart';
 import 'tabs/growth_tab.dart';
 import 'widgets/hub_card.dart';
+
+
 
 class HistoryHubScreen extends StatelessWidget {
   const HistoryHubScreen({super.key});
@@ -69,6 +73,20 @@ class HistoryHubScreen extends StatelessWidget {
                       },
                     ),
 
+                    /// FEEDING GRAPH
+                    HubCard(
+                      title: l10n.feedingGraph,
+                      icon: Icons.show_chart,
+                      color: const Color(0xff3B82F6),
+                      subtitle: l10n.viewCharts,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const FeedingGraphScreen()),
+                        );
+                      },
+                    ),
+
                     HubCard(
                       title: l10n.growth,
                       icon: Icons.show_chart_rounded,
@@ -78,6 +96,20 @@ class HistoryHubScreen extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (_) => const GrowthTab()),
+                        );
+                      },
+                    ),
+
+                    /// GROWTH GRAPH (YENİ)
+                    HubCard(
+                      title: l10n.growthGraph,
+                      icon: Icons.area_chart_rounded,
+                      color: const Color(0xff16A34A),
+                      subtitle: l10n.viewCharts,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const GrowthGraphScreen()),
                         );
                       },
                     ),
@@ -93,6 +125,17 @@ class HistoryHubScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(builder: (_) => const DiaperTab()),
                         );
+                      },
+                    ),
+
+                    /// DIAPER GRAPH
+                    HubCard(
+                      title: l10n.diaperGraph,
+                      icon: Icons.bar_chart_rounded,
+                      color: const Color(0xffD97706),
+                      subtitle: l10n.viewCharts,
+                      onTap: () {
+                        // DiaperGraphScreen daha sonra eklenecek
                       },
                     ),
 

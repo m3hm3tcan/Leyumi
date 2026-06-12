@@ -136,6 +136,11 @@ class AppLocalizations {
       "monthsShort": "m",
       "daysShort": "d",
       "dateAndTime": "Date & Time",
+      "feedingGraph": "Feeding Graph",
+      "growthGraph": "Growth Graph",
+      "diaperGraph": "Diaper Graph",
+      "viewCharts" : "View charts",
+      "growthCharts" : "Growth Charts",
     },
     'tr': {
       'appTitle': 'BabyFeed Pro',
@@ -256,6 +261,11 @@ class AppLocalizations {
       "monthsShort": "a",
       "daysShort": "g",
       "dateAndTime": "Tarih ve Saat",
+      "feedingGraph": "Beslenme Grafiği",
+      "growthGraph": "Büyüme Grafiği",
+      "diaperGraph": "Pelenka Grafiği",
+      "viewCharts" : "Grafikleri Görüntüle",
+      "growthCharts" : "Büyüme Grafikleri",
     },
     'hu': {
         'appTitle': 'BabyFeed Pro',
@@ -376,6 +386,11 @@ class AppLocalizations {
         "monthsShort": "hó",
         "daysShort": "nap",
         "dateAndTime": "Datum és idő",
+        "feedingGraph": "Etetési grafikon",
+        "growthGraph": "Növekedési grafikon",
+        "diaperGraph": "Pelenka grafikon",
+        "viewCharts" : "Grafikonok megtekintése",
+        "growthCharts" : "Növekedési grafikonok",
       },
 
   };
@@ -505,6 +520,11 @@ class AppLocalizations {
   String get monthsShort => _getString('monthsShort');
   String get daysShort => _getString('daysShort');
   String get dateAndTime => _getString('dateAndTime');
+  String get feedingGraph => _getString('feedingGraph');
+  String get growthGraph => _getString('growthGraph');
+  String get diaperGraph => _getString('diaperGraph');
+  String get growthCharts => _getString('growthCharts');
+  String get viewCharts => _getString('viewCharts');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
