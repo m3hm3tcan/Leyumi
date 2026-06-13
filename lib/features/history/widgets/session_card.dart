@@ -81,6 +81,7 @@ class SessionCard extends StatelessWidget {
         children: [
           /// HEADER
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Icon(
                 Icons.schedule_rounded,
@@ -96,6 +97,11 @@ class SessionCard extends StatelessWidget {
                   color: UIColors.muted,
                   decoration: TextDecoration.none,
                 ),
+              ),
+              const Icon(
+                Icons.swipe_left_rounded,
+                color: Colors.grey,
+                size: 20,
               ),
             ],
           ),
