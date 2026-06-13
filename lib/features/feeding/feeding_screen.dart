@@ -4,12 +4,15 @@ import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'feeding_controller.dart';
 import 'feeding_entry.dart';
 import '../../services/feeding_storage.dart';
+import 'package:babyfeedpro/features/feeding/feeding_session.dart';
+
 
 class FeedingScreen extends StatefulWidget {
   const FeedingScreen({super.key});
 
   @override
   State<FeedingScreen> createState() => _FeedingScreenState();
+
 }
 
 class _FeedingScreenState extends State<FeedingScreen> {
@@ -27,6 +30,23 @@ class _FeedingScreenState extends State<FeedingScreen> {
     controller = FeedingController(onTick: (d) {
       setState(() => currentTimer = d);
     });
+  }
+
+  void _openManualAddModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => ManualFeedingModal(
+        onSave: (session) async {
+          await FeedingStorage().saveSession(session);
+          if (!mounted) return;
+          Navigator.pop(context);
+        },
+      ),
+    );
   }
 
   String formatTime(Duration d) {
@@ -132,7 +152,14 @@ class _FeedingScreenState extends State<FeedingScreen> {
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add, color: Colors.blueAccent),
+            onPressed: () => _openManualAddModal(),
+          ),
+        ],
       ),
+
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -643,6 +670,225 @@ class _FeedingScreenState extends State<FeedingScreen> {
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class ManualFeedingModal extends StatefulWidget {
+  final Function(FeedingSession) onSave;
+
+  const ManualFeedingModal({super.key, required this.onSave});
+
+  @override
+  State<ManualFeedingModal> createState() => _ManualFeedingModalState();
+}
+
+class _ManualFeedingModalState extends State<ManualFeedingModal> {
+  TimeOfDay? startTime;
+  TimeOfDay? endTime;
+
+  double leftRatio = 0.5; // %50 sol, %50 sağ
+
+  Duration totalDuration = Duration.zero;
+  Duration leftDuration = Duration.zero;
+  Duration rightDuration = Duration.zero;
+
+  void _pickStart() async {
+    final t = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (t != null) {
+      setState(() {
+        startTime = t;
+        _recalculate();
+      });
+    }
+  }
+
+  void _pickEnd() async {
+    final t = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    if (t != null) {
+      setState(() {
+        endTime = t;
+        _recalculate();
+      });
+    }
+  }
+
+  void _recalculate() {
+    if (startTime == null || endTime == null) return;
+
+    final now = DateTime.now();
+    final start = DateTime(now.year, now.month, now.day, startTime!.hour, startTime!.minute);
+    final end = DateTime(now.year, now.month, now.day, endTime!.hour, endTime!.minute);
+
+    if (end.isBefore(start)) return;
+
+    totalDuration = end.difference(start);
+
+    leftDuration = Duration(seconds: (totalDuration.inSeconds * leftRatio).round());
+    rightDuration = totalDuration - leftDuration;
+  }
+
+  void _save() {
+    if (startTime == null || endTime == null) return;
+
+    final now = DateTime.now();
+
+    // Kullanıcının seçtiği saatleri bugünün tarihiyle birleştiriyoruz
+    final start = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      startTime!.hour,
+      startTime!.minute,
+    );
+
+    final end = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      endTime!.hour,
+      endTime!.minute,
+    );
+
+    // FeedingSession modeline %100 uyumlu
+    final session = FeedingSession(
+      startTime: start,
+      endTime: end,
+      entries: [
+        FeedingEntry(side: FeedingSide.left, duration: leftDuration),
+        FeedingEntry(side: FeedingSide.right, duration: rightDuration),
+      ],
+      startWeightGr: null,
+      endWeightGr: null,
+      milkIntakeGr: null,
+    );
+
+    widget.onSave(session);
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 20,
+        right: 20,
+        top: 20,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 5,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(20),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          Text(
+            l10n.manualFeedingEntry,
+            style: GoogleFonts.poppins(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // START TIME
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.startTime),
+              TextButton(
+                onPressed: _pickStart,
+                child: Text(
+                  startTime == null
+                      ? l10n.select
+                      : "${startTime!.hour.toString().padLeft(2, '0')}:${startTime!.minute.toString().padLeft(2, '0')}",
+                ),
+              ),
+            ],
+          ),
+
+          // END TIME
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.endTime),
+              TextButton(
+                onPressed: _pickEnd,
+                child: Text(
+                  endTime == null
+                      ? l10n.select
+                      : "${endTime!.hour.toString().padLeft(2, '0')}:${endTime!.minute.toString().padLeft(2, '0')}",
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // SLIDER
+          Text(l10n.leftRightRatio),
+          Slider(
+            value: leftRatio,
+            onChanged: (v) {
+              setState(() {
+                leftRatio = v;
+                _recalculate();
+              });
+            },
+          ),
+
+          Text(
+            "${(leftRatio * 100).toStringAsFixed(0)}% Left — ${(100 - leftRatio * 100).toStringAsFixed(0)}% Right",
+          ),
+
+          const SizedBox(height: 20),
+
+          // DURATIONS
+          if (totalDuration.inSeconds > 0) ...[
+            Text("Total: ${totalDuration.inMinutes} min"),
+            Text("Left: ${leftDuration.inMinutes} min"),
+            Text("Right: ${rightDuration.inMinutes} min"),
+          ],
+
+          const SizedBox(height: 20),
+
+          ElevatedButton(
+            onPressed: _save,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 40),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+            ),
+            child: Text(
+              l10n.save,
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
         ],
       ),
     );

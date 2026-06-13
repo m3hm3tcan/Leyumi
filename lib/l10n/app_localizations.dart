@@ -141,6 +141,12 @@ class AppLocalizations {
       "diaperGraph": "Diaper Graph",
       "viewCharts" : "View charts",
       "growthCharts" : "Growth Charts",
+      "manualFeedingEntry": "Manual Feeding Entry",
+      "startTime": "Start Time",
+      "endTime": "End Time",
+      "select" : "Select",
+      "leftRightRatio": "Left/Right Ratio",
+
     },
     'tr': {
       'appTitle': 'BabyFeed Pro',
@@ -266,6 +272,11 @@ class AppLocalizations {
       "diaperGraph": "Pelenka Grafiği",
       "viewCharts" : "Grafikleri Görüntüle",
       "growthCharts" : "Büyüme Grafikleri",
+      "manualFeedingEntry": "Manuel Beslenme Kaydı",
+      "startTime": "Başlangıç Zamanı",
+      "endTime": "Bitiş Zamanı",
+      "select" : "Seç",
+      "leftRightRatio": "Sol/Sağ Oranı",
     },
     'hu': {
         'appTitle': 'BabyFeed Pro',
@@ -391,6 +402,11 @@ class AppLocalizations {
         "diaperGraph": "Pelenka grafikon",
         "viewCharts" : "Grafikonok megtekintése",
         "growthCharts" : "Növekedési grafikonok",
+        "manualFeedingEntry": "Manuális etetési bejegyzés",
+        "startTime": "Kezdési idő",
+        "endTime": "Befejezési idő",
+        "select" : "Kiválasztás",
+        "leftRightRatio": "Bal/Jobb arány",
       },
 
   };
@@ -525,6 +541,11 @@ class AppLocalizations {
   String get diaperGraph => _getString('diaperGraph');
   String get growthCharts => _getString('growthCharts');
   String get viewCharts => _getString('viewCharts');
+  String get manualFeedingEntry => _getString('manualFeedingEntry');
+  String get startTime => _getString('startTime');
+  String get endTime => _getString('endTime');
+  String get select => _getString('select');
+  String get leftRightRatio => _getString('leftRightRatio');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
