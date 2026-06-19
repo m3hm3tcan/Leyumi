@@ -92,6 +92,7 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
   }
 
   Widget _chartCard(String title, List<FlSpot> spots, Color color) {
+    final l10n = AppLocalizations.of(context);
     if (spots.isEmpty) {
       return Container(
         padding: const EdgeInsets.all(20),
@@ -100,7 +101,7 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(18),
         ),
-        child: Text("$title: No data"),
+        child: Text("${title}: ${l10n.noData}"),
       );
     }
 
@@ -165,7 +166,10 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
                         if (index < 0 || index >= filtered.length) return const SizedBox();
 
                         final date = filtered[index].date;
-                        final label = "${date.day}.${date.month}";
+                        final label = l10n.dateFormat
+                            .replaceFirst("{day}", date.day.toString())
+                            .replaceFirst("{month}", date.month.toString());
+
 
                         return Padding(
                           padding: const EdgeInsets.only(top: 6),
@@ -212,7 +216,7 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
         elevation: 0,
       ),
       body: entries.isEmpty
-          ? const Center(child: Text("No growth data"))
+          ? Center(child: Text(l10n.noGrowthData))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -222,10 +226,11 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _filterButton("7d", "7"),
-                      _filterButton("30d", "30"),
-                      _filterButton("90d", "90"),
-                      _filterButton("All", "all"),
+                      _filterButton(l10n.filter7d, "7"),
+                      _filterButton(l10n.filter30d, "30"),
+                      _filterButton(l10n.filter90d, "90"),
+                      _filterButton(l10n.filterAll, "all"),
+
                     ],
                   ),
 

@@ -146,15 +146,18 @@ class _FeedingScreenState extends State<FeedingScreen> {
     final entries = controller.currentSession?.entries ?? [];
 
     return Scaffold(
-      backgroundColor: const Color(0xffF7F8FC),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(l10n.feedingSessionTitle),
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add, color: Colors.blueAccent),
+            icon: Icon(
+                Icons.add,
+                color: Theme.of(context).colorScheme.primary,
+              ),
             onPressed: () => _openManualAddModal(),
           ),
         ],
@@ -181,7 +184,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                 decoration: InputDecoration(
                   hintText: l10n.exampleWeight,
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).cardColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -242,7 +245,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                             ? l10n.liveSession
                             : l10n.ready,
                         style: GoogleFonts.poppins(
-                          color: Colors.white,
+                          color: Theme.of(context).cardColor,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1,
                         ),
@@ -257,7 +260,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: 72,
                       fontWeight: FontWeight.w800,
-                      color: Colors.white,
+                      color: Theme.of(context).cardColor,
                     ),
                   ),
 
@@ -296,13 +299,13 @@ class _FeedingScreenState extends State<FeedingScreen> {
                       height: 145,
                       decoration: BoxDecoration(
                         color: activeSide == FeedingSide.left
-                            ? const Color(0xffFFE4EF)
-                            : Colors.white,
+                          ? Colors.pink.withOpacity(0.15)
+                          : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
                           color: activeSide == FeedingSide.left
                               ? Colors.pink
-                              : Colors.grey.shade200,
+                              : Theme.of(context).dividerColor,
                           width: 2,
                         ),
                         boxShadow: [
@@ -357,8 +360,8 @@ class _FeedingScreenState extends State<FeedingScreen> {
                                 ),
                                 child: Text(
                                   l10n.live,
-                                  style: const TextStyle(
-                                    color: Colors.white,
+                                  style: TextStyle(
+                                    color: Theme.of(context).cardColor,
                                     fontSize: 11,
                                     fontWeight: FontWeight.w700,
                                     decoration: TextDecoration.none,
@@ -384,13 +387,16 @@ class _FeedingScreenState extends State<FeedingScreen> {
                       height: 145,
                       decoration: BoxDecoration(
                         color: activeSide == FeedingSide.right
-                            ? const Color(0xffE9F5FF)
-                            : Colors.white,
+                          ? Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.15)
+                          : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(28),
                         border: Border.all(
                           color: activeSide == FeedingSide.right
                               ? const Color(0xff4DA3FF)
-                              : Colors.grey.shade200,
+                              : Theme.of(context).dividerColor,
                           width: 2,
                         ),
                         boxShadow: [
@@ -498,7 +504,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
                 decoration: InputDecoration(
                   hintText: l10n.exampleWeight,
                   filled: true,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).cardColor,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
@@ -565,7 +571,7 @@ class _FeedingScreenState extends State<FeedingScreen> {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
@@ -793,7 +799,7 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
             width: 40,
             height: 5,
             decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: Theme.of(context).dividerColor,
               borderRadius: BorderRadius.circular(20),
             ),
           ),
@@ -883,7 +889,7 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
               l10n.save,
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.w700,
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
               ),
             ),
           ),

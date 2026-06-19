@@ -75,10 +75,12 @@ class _BabyCardState extends State<BabyCard>
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(26),
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.black.withOpacity(0.25)
+              : Colors.black.withOpacity(0.06),
             blurRadius: 20,
             offset: const Offset(0, 10),
           )
@@ -130,7 +132,7 @@ class _BabyCardState extends State<BabyCard>
                           calculateAge(context, widget.profile.birthDate),
                           style: TextStyle(
                             fontSize: 13,
-                            color: Colors.grey.shade600,
+                            color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
                           ),
                         ),
                       ],
@@ -144,9 +146,17 @@ class _BabyCardState extends State<BabyCard>
               /// STATS
               Row(
                 children: [
-                  _stat(t.weight, "${widget.profile.weight} ${t.unitGr}"),
-                  _stat(t.height, "${widget.profile.height} ${t.unitCm}"),
-                ],
+                  _stat(
+                    context,
+                    t.weight,
+                    "${widget.profile.weight} ${t.unitGr}",
+                  ),
+                  _stat(
+                    context,
+                    t.height,
+                    "${widget.profile.height} ${t.unitCm}",
+                  ),
+                                  ],
               ),
             ],
           ),
@@ -154,8 +164,8 @@ class _BabyCardState extends State<BabyCard>
       ),
     );
   }
-
-  Widget _stat(String label, String value) {
+ 
+  Widget _stat(BuildContext context, String label, String value) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -164,7 +174,11 @@ class _BabyCardState extends State<BabyCard>
             label.toUpperCase(),
             style: TextStyle(
               fontSize: 10,
-              color: Colors.grey.shade500,
+              color: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.color
+                ?.withOpacity(0.6),
               letterSpacing: 1.2,
             ),
           ),

@@ -146,7 +146,16 @@ class AppLocalizations {
       "endTime": "End Time",
       "select" : "Select",
       "leftRightRatio": "Left/Right Ratio",
-
+      "noData": "No data",
+      "noGrowthData": "No growth data",
+      "filter7d": "7d",
+      "filter30d": "30d",
+      "filter90d": "90d",
+      "filterAll": "All",
+      "dateFormat": "{day}.{month}",
+      "quickActions" : "Actions",
+      "todayActivities" : "Today's Activity",
+      "last" : "Last",
     },
     'tr': {
       'appTitle': 'BabyFeed Pro',
@@ -277,6 +286,16 @@ class AppLocalizations {
       "endTime": "Bitiş Zamanı",
       "select" : "Seç",
       "leftRightRatio": "Sol/Sağ Oranı",
+      "noData": "Veri yok",
+      "noGrowthData": "Büyüme verisi yok",
+      "filter7d": "7g",
+      "filter30d": "30g",
+      "filter90d": "90g",
+      "filterAll": "Tümü",
+      "dateFormat": "{day}.{month}",
+      "quickActions" : "Gorevler",
+      "todayActivities" : "Bugünkü Aktiviteler",
+      "last" : "Son",
     },
     'hu': {
         'appTitle': 'BabyFeed Pro',
@@ -407,6 +426,17 @@ class AppLocalizations {
         "endTime": "Befejezési idő",
         "select" : "Kiválasztás",
         "leftRightRatio": "Bal/Jobb arány",
+        "noData": "Nincs adat",
+        "noGrowthData": "Nincs növekedési adat",
+        "filter7d": "7n",
+        "filter30d": "30n",
+        "filter90d": "90n",
+        "filterAll": "Összes",
+        "dateFormat": "{day}.{month}",
+        "quickActions" : "Akciók",
+        "todayActivities" : "Mai Tevékenységek",
+        "last" : "Utolsó",
+
       },
 
   };
@@ -546,6 +576,17 @@ class AppLocalizations {
   String get endTime => _getString('endTime');
   String get select => _getString('select');
   String get leftRightRatio => _getString('leftRightRatio');
+  String get noData => _getString('noData');
+  String get noGrowthData => _getString('noGrowthData');
+  String get filter7d => _getString('filter7d');
+  String get filter30d => _getString('filter30d');
+  String get filter90d => _getString('filter90d');
+  String get filterAll => _getString('filterAll');
+  String get dateFormat => _getString('dateFormat');
+  String get quickActions => _getString('quickActions');
+  String get todayActivities => _getString('todayActivities');
+  String get last => _getString('last');
+
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:babyfeedpro/l10n/app_localizations.dart';
 import '../../services/diaper_storage.dart';
 import 'diaper_entry.dart';
+import 'package:provider/provider.dart';
+import 'package:babyfeedpro/core/theme_provider.dart';
 
 class DiaperAddScreen extends StatefulWidget {
   const DiaperAddScreen({super.key});
@@ -80,10 +82,10 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
     final l10n = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(l10n.diaperScreenTitle),
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
       ),
       body: SingleChildScrollView(
@@ -96,7 +98,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
               padding: const EdgeInsets.all(14),
               margin: const EdgeInsets.only(bottom: 14),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Column(
@@ -112,7 +114,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
-                        color: const Color(0xffF6F7FB),
+                        color: Theme.of(context).scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
@@ -146,10 +148,12 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
-                        color: selected ? Colors.blue.shade50 : Colors.white,
+                        color: selected
+                          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                          : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: selected ? Colors.blue : Colors.grey.shade200,
+                          color: selected ? Colors.blue : Theme.of(context).dividerColor,
                         ),
                       ),
                       child: Center(
@@ -163,7 +167,9 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
-                                color: selected ? Colors.blue : Colors.black,
+                                color: selected
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).textTheme.bodyLarge?.color,
                               ),
                             ),
                           ],
@@ -192,10 +198,12 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 4),
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
-                          color: sel ? Colors.green.shade50 : Colors.white,
+                          color: sel
+                            ? Colors.green.withOpacity(0.15)
+                            : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: sel ? Colors.green : Colors.grey.shade200,
+                            color: sel ? Colors.green : Theme.of(context).dividerColor,
                           ),
                         ),
                         child: Center(child: Text(_labelForPeeAmount(p, l10n))),
@@ -242,7 +250,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                         border: Border.all(
                           color: selected
                               ? Colors.blue
-                              : Colors.grey.shade300,
+                              : Theme.of(context).dividerColor,
                           width: selected ? 2 : 1,
                         ),
                       ),
@@ -273,9 +281,9 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                           ),
 
                           if (selected)
-                            const Icon(
+                             Icon(
                               Icons.check_circle,
-                              color: Colors.blue,
+                              color: Theme.of(context).colorScheme.primary,
                               size: 20,
                             ),
                         ],
@@ -297,7 +305,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
               decoration: InputDecoration(
                 hintText: l10n.optionalNote,
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Theme.of(context).cardColor,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
