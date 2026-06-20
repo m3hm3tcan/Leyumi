@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/baby_profile.dart';
 import '../../services/baby_storage.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -18,7 +19,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final headCtrl = TextEditingController();
   final waistCtrl = TextEditingController();
 
-  String gender = "Erkek";
+  String gender = "Male"; // 👈 Lokalizasyon için İngilizce default
   DateTime? birthDate;
 
   Future<void> pickBirthDate() async {
@@ -36,10 +37,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void save() async {
+    final t = AppLocalizations.of(context);
+
     if (!_formKey.currentState!.validate()) return;
+
     if (birthDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Lütfen doğum tarihini seçin")),
+        SnackBar(content: Text(t.birthDateNotSelected)),
       );
       return;
     }
@@ -51,9 +55,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       weight: int.parse(weightCtrl.text),
       height: int.parse(heightCtrl.text),
       headCircumference:
-      headCtrl.text.isEmpty ? null : int.parse(headCtrl.text),
+          headCtrl.text.isEmpty ? null : int.parse(headCtrl.text),
       waistCircumference:
-      waistCtrl.text.isEmpty ? null : int.parse(waistCtrl.text),
+          waistCtrl.text.isEmpty ? null : int.parse(waistCtrl.text),
     );
 
     await BabyStorage().saveProfile(profile);
@@ -65,8 +69,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Bebek Bilgileri")),
+      appBar: AppBar(title: Text(t.babyInfoTitle)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Form(
@@ -76,9 +82,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               // NAME
               TextFormField(
                 controller: nameCtrl,
-                decoration: const InputDecoration(labelText: "Bebek Adı"),
+                decoration: InputDecoration(labelText: t.babyNameLabel),
                 validator: (v) =>
-                    v == null || v.isEmpty ? "Bu alan zorunludur" : null,
+                    v == null || v.isEmpty ? t.requiredField : null,
               ),
 
               const SizedBox(height: 20),
@@ -86,12 +92,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               // GENDER
               DropdownButtonFormField<String>(
                 value: gender,
-                items: const [
-                  DropdownMenuItem(value: "Erkek", child: Text("Erkek")),
-                  DropdownMenuItem(value: "Kız", child: Text("Kız")),
+                items: [
+                  DropdownMenuItem(
+                      value: "Male", child: Text(t.genderMale)),
+                  DropdownMenuItem(
+                      value: "Female", child: Text(t.genderFemale)),
                 ],
                 onChanged: (v) => setState(() => gender = v!),
-                decoration: const InputDecoration(labelText: "Cinsiyet"),
+                decoration: InputDecoration(labelText: t.genderLabel),
               ),
 
               const SizedBox(height: 20),
@@ -102,14 +110,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   Expanded(
                     child: Text(
                       birthDate == null
-                          ? "Doğum tarihi seçilmedi"
+                          ? t.birthDateNotSelected
                           : "${birthDate!.day}.${birthDate!.month}.${birthDate!.year}",
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
                   ElevatedButton(
                     onPressed: pickBirthDate,
-                    child: const Text("Tarih Seç"),
+                    child: Text(t.selectDate),
                   ),
                 ],
               ),
@@ -120,10 +128,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               TextFormField(
                 controller: weightCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Kilo (gr)"),
+                decoration: InputDecoration(labelText: t.weightGr),
                 validator: (v) =>
-                    v == null || v.isEmpty ? "Bu alan zorunludur" : null,
-            ),
+                    v == null || v.isEmpty ? t.requiredField : null,
+              ),
 
               const SizedBox(height: 20),
 
@@ -131,9 +139,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               TextFormField(
                 controller: heightCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Boy (cm)"),
+                decoration: InputDecoration(labelText: t.heightCm),
                 validator: (v) =>
-                    v == null || v.isEmpty ? "Bu alan zorunludur" : null,
+                    v == null || v.isEmpty ? t.requiredField : null,
               ),
 
               const SizedBox(height: 20),
@@ -143,7 +151,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: headCtrl,
                 keyboardType: TextInputType.number,
                 decoration:
-                    const InputDecoration(labelText: "Kafa Çevresi (opsiyonel)"),
+                    InputDecoration(labelText: t.headCircumferenceOptional),
               ),
 
               const SizedBox(height: 20),
@@ -152,7 +160,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 controller: waistCtrl,
                 keyboardType: TextInputType.number,
                 decoration:
-                    const InputDecoration(labelText: "Bel Çevresi (opsiyonel)"),
+                    InputDecoration(labelText: t.waistCircumferenceOptional),
               ),
 
               const SizedBox(height: 40),
@@ -162,7 +170,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 style: ElevatedButton.styleFrom(
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: const Text("Kaydet ve Devam Et"),
+                child: Text(t.saveContinue),
               ),
             ],
           ),

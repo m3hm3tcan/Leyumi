@@ -1,5 +1,7 @@
+enum FeedingSide { left, right }
+
 class FeedingEntry {
-  final String side; // "left" or "right"
+  final FeedingSide side;
   final Duration duration;
 
   FeedingEntry({
@@ -8,13 +10,15 @@ class FeedingEntry {
   });
 
   Map<String, dynamic> toJson() => {
-        "side": side,
+        "side": side.name,
         "duration": duration.inSeconds,
       };
 
   factory FeedingEntry.fromJson(Map<String, dynamic> json) {
     return FeedingEntry(
-      side: json["side"],
+      side: (json["side"] == "left")
+          ? FeedingSide.left
+          : FeedingSide.right,
       duration: Duration(seconds: json["duration"]),
     );
   }

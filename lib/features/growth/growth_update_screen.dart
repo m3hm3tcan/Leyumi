@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
 import '../../models/baby_profile.dart';
 import '../../models/growth_entry.dart';
 import '../../services/baby_storage.dart';
@@ -13,6 +14,7 @@ class GrowthUpdateScreen extends StatefulWidget {
 
 class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   BabyProfile? profile;
+  GrowthEntry? previousEntry;
 
   final weightCtrl = TextEditingController();
   final heightCtrl = TextEditingController();
@@ -27,105 +29,400 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
   Future<void> loadProfile() async {
     final p = await BabyStorage().loadProfile();
-    setState(() => profile = p);
+    final growth = await GrowthStorage().loadEntries();
+
+    if (!mounted) return;
+
+    setState(() {
+      profile = p;
+
+      if (growth.isNotEmpty) {
+        previousEntry = growth.first;
+      }
+    });
   }
 
-  void save() async {
+  Future<void> save() async {
     if (profile == null) return;
 
+    final l10n = AppLocalizations.of(context);
+
+    if (weightCtrl.text.isEmpty || heightCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.weightHeightRequired),
+        ),
+      );
+      return;
+    }
+
     final entry = GrowthEntry(
-        date: DateTime.now(),
-        weight: int.parse(weightCtrl.text), // GR
-        height: int.parse(heightCtrl.text),
-        headCircumference:
-            headCtrl.text.isEmpty ? null : int.parse(headCtrl.text),
-        waistCircumference:
-            waistCtrl.text.isEmpty ? null : int.parse(waistCtrl.text),
+      date: DateTime.now(),
+      weight: int.parse(weightCtrl.text),
+      height: int.parse(heightCtrl.text),
+      headCircumference:
+          headCtrl.text.isEmpty ? null : int.parse(headCtrl.text),
+      waistCircumference:
+          waistCtrl.text.isEmpty ? null : int.parse(waistCtrl.text),
     );
 
     await GrowthStorage().addEntry(entry);
 
-    // Baby profile'ı da güncelle
     final updated = BabyProfile(
-        name: profile!.name,
-        gender: profile!.gender,
-        birthDate: profile!.birthDate,
-        weight: entry.weight, // GR
-        height: entry.height,
-        headCircumference: entry.headCircumference,
-        waistCircumference: entry.waistCircumference,
+      name: profile!.name,
+      gender: profile!.gender,
+      birthDate: profile!.birthDate,
+      weight: entry.weight,
+      height: entry.height,
+      headCircumference: entry.headCircumference,
+      waistCircumference: entry.waistCircumference,
     );
 
     await BabyStorage().saveProfile(updated);
 
     if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.growthRecordSaved),
+      ),
+    );
+
     Navigator.pop(context);
   }
 
   @override
+  void dispose() {
+    weightCtrl.dispose();
+    heightCtrl.dispose();
+    headCtrl.dispose();
+    waistCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
+
     if (profile == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
+    final isBoy = profile!.gender.toLowerCase() == "male";
+    final primaryColor =
+        isBoy ? const Color(0xff4DA3FF) : const Color(0xffFF6B9D);
+    final surfaceColor = theme.cardColor;
+    final subtleSurface = isDark ? const Color(0xff262626) : const Color(0xffF4F6FA);
+    final secondaryTextColor =
+        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
+    final shadowColor = Colors.black.withAlpha(isDark ? 40 : 10);
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Growth Update")),
+      appBar: AppBar(
+        title: Text(l10n.growthUpdateTitle),
+        elevation: 0,
+      ),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
+
         child: Column(
           children: [
-            // DISABLED FIELDS
-            TextFormField(
-              initialValue: profile!.name,
-              decoration: const InputDecoration(labelText: "Bebek Adı"),
-              enabled: false,
-            ),
-            TextFormField(
-              initialValue: profile!.gender,
-              decoration: const InputDecoration(labelText: "Cinsiyet"),
-              enabled: false,
-            ),
-            TextFormField(
-              initialValue:
-                  "${profile!.birthDate.day}.${profile!.birthDate.month}.${profile!.birthDate.year}",
-              decoration: const InputDecoration(labelText: "Doğum Tarihi"),
-              enabled: false,
+            /// PROFILE CARD
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: surfaceColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: shadowColor,
+                    blurRadius: 12,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 28,
+                    backgroundColor: primaryColor.withAlpha(38),
+                    child: Icon(
+                      isBoy ? Icons.male : Icons.female,
+                      color: primaryColor,
+                      size: 28,
+                    ),
+                  ),
+
+                  const SizedBox(width: 14),
+
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          profile!.name,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+
+                        const SizedBox(height: 4),
+
+                        Text(
+                          l10n.currentGrowthSnapshot,
+                          style: TextStyle(
+                            color: secondaryTextColor,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // EDITABLE FIELDS
-            TextField(
+            /// CURRENT STATS
+            Row(
+              children: [
+                Expanded(
+                  child: _statCard(
+                    l10n.weight,
+                    "${profile!.weight} ${l10n.unitGr}",
+                    Icons.monitor_weight_outlined,
+                    surfaceColor: surfaceColor,
+                    secondaryTextColor: secondaryTextColor,
+                    iconColor: colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _statCard(
+                    l10n.height,
+                    "${profile!.height} ${l10n.unitCm}",
+                    Icons.height,
+                    surfaceColor: surfaceColor,
+                    secondaryTextColor: secondaryTextColor,
+                    iconColor: colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 16),
+
+            _growthField(
+              label: l10n.weight,
+              currentValue: profile!.weight,
               controller: weightCtrl,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Kilo (gr)"),
+              icon: Icons.monitor_weight_outlined,
+              unit: l10n.unitGr,
+              currentLabel: l10n.currentLabel,
+              hintText: l10n.enterNewValueHint,
+              surfaceColor: surfaceColor,
+              subtleSurface: subtleSurface,
+              secondaryTextColor: secondaryTextColor,
+              accentColor: primaryColor,
             ),
-            TextField(
+
+            _growthField(
+              label: l10n.height,
+              currentValue: profile!.height,
               controller: heightCtrl,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: "Boy (cm)"),
+              icon: Icons.height,
+              unit: l10n.unitCm,
+              currentLabel: l10n.currentLabel,
+              hintText: l10n.enterNewValueHint,
+              surfaceColor: surfaceColor,
+              subtleSurface: subtleSurface,
+              secondaryTextColor: secondaryTextColor,
+              accentColor: primaryColor,
             ),
-            TextField(
+
+            _growthField(
+              label: l10n.headCircumference,
+              currentValue: profile!.headCircumference ?? 0,
               controller: headCtrl,
-              keyboardType: TextInputType.number,
-              decoration:
-                  const InputDecoration(labelText: "Kafa Çevresi (opsiyonel)"),
+              icon: Icons.circle_outlined,
+              unit: l10n.unitCm,
+              currentLabel: l10n.currentLabel,
+              hintText: l10n.enterNewValueHint,
+              surfaceColor: surfaceColor,
+              subtleSurface: subtleSurface,
+              secondaryTextColor: secondaryTextColor,
+              accentColor: primaryColor,
             ),
-            TextField(
+
+            _growthField(
+              label: l10n.waistCircumference,
+              currentValue: profile!.waistCircumference ?? 0,
               controller: waistCtrl,
-              keyboardType: TextInputType.number,
-              decoration:
-                  const InputDecoration(labelText: "Bel Çevresi (opsiyonel)"),
+              icon: Icons.straighten,
+              unit: l10n.unitCm,
+              currentLabel: l10n.currentLabel,
+              hintText: l10n.enterNewValueHint,
+              surfaceColor: surfaceColor,
+              subtleSurface: subtleSurface,
+              secondaryTextColor: secondaryTextColor,
+              accentColor: primaryColor,
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 24),
 
-            ElevatedButton(
-              onPressed: save,
-              child: const Text("Kaydet"),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                onPressed: save,
+                icon: const Icon(Icons.favorite),
+                label: Text(
+                  l10n.saveGrowthRecord,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                  ),
+                ),
+              ),
             ),
+
+            const SizedBox(height: 24),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _statCard(
+    String title,
+    String value,
+    IconData icon,
+    {required Color surfaceColor,
+    required Color secondaryTextColor,
+    required Color iconColor,}
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: iconColor),
+
+          const SizedBox(height: 8),
+
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 14,
+            ),
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
+            title,
+            style: TextStyle(
+              color: secondaryTextColor,
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _growthField({
+    required String label,
+    required int currentValue,
+    required TextEditingController controller,
+    required IconData icon,
+    required String unit,
+    required String currentLabel,
+    required String hintText,
+    required Color surfaceColor,
+    required Color subtleSurface,
+    required Color secondaryTextColor,
+    required Color accentColor,
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: surfaceColor,
+        borderRadius: BorderRadius.circular(18),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon),
+
+              const SizedBox(width: 8),
+
+              Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 8),
+
+          Text(
+            "$currentLabel: $currentValue $unit",
+            style: TextStyle(
+              color: secondaryTextColor,
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
+          TextField(
+            controller: controller,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: subtleSurface,
+              hintText: hintText,
+              prefixIcon: Icon(icon, color: accentColor),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: accentColor.withAlpha(140),
+                  width: 1.5,
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
