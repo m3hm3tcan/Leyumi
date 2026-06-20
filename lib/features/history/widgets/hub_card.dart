@@ -18,19 +18,24 @@ class HubCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final secondaryTextColor =
+        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.cardColor,
           borderRadius: BorderRadius.circular(22),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withAlpha(isDark ? 35 : 13),
               blurRadius: 18,
               offset: const Offset(0, 8),
-            )
+            ),
           ],
         ),
         child: Column(
@@ -39,7 +44,7 @@ class HubCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withAlpha(31),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: Icon(icon, color: color),
@@ -57,7 +62,7 @@ class HubCard extends StatelessWidget {
               subtitle,
               style: TextStyle(
                 fontSize: 12,
-                color: Colors.grey.shade600,
+                color: secondaryTextColor,
               ),
             ),
           ],

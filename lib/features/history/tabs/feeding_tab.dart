@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:babyfeedpro/features/feeding/feeding_session.dart';
 import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'package:babyfeedpro/services/feeding_storage.dart';
-import 'package:babyfeedpro/features/feeding/feeding_session.dart';
+import 'package:flutter/material.dart';
 
 import '../widgets/timeline_section.dart';
 import '../widgets/today_summary_card.dart';
@@ -25,45 +25,33 @@ class _FeedingTabState extends State<FeedingTab> {
   Future<void> load() async {
     final data = await FeedingStorage().loadSessions();
     data.sort((a, b) => b.startTime.compareTo(a.startTime));
+    if (!mounted) return;
     setState(() => sessions = data);
   }
 
   Map<String, List<FeedingSession>> group(AppLocalizations l10n) {
-    final Map<String, List<FeedingSession>> map = {};
+    final map = <String, List<FeedingSession>>{};
 
-    for (final s in sessions) {
-      final key = _getSection(s.startTime, l10n);
+    for (final session in sessions) {
+      final key = _getSection(session.startTime, l10n);
       map.putIfAbsent(key, () => []);
-      map[key]!.add(s);
+      map[key]!.add(session);
     }
 
     return map;
   }
 
-  String _getSection(
-    DateTime date,
-    AppLocalizations l10n,
-  ) {
+  String _getSection(DateTime date, AppLocalizations l10n) {
     final now = DateTime.now();
-
-    final today = DateTime(
-      now.year,
-      now.month,
-      now.day,
-    );
-
-    final sessionDay = DateTime(
-      date.year,
-      date.month,
-      date.day,
-    );
+    final today = DateTime(now.year, now.month, now.day);
+    final sessionDay = DateTime(date.year, date.month, date.day);
 
     if (sessionDay == today) {
       return l10n.today;
     }
 
     return _formatSectionDate(sessionDay);
-}
+  }
 
   String _formatSectionDate(DateTime date) {
     const months = [
@@ -98,40 +86,39 @@ class _FeedingTabState extends State<FeedingTab> {
     final l10n = AppLocalizations.of(context);
     final grouped = group(l10n);
 
-    return Container(
-      color: const Color(0xffF6F7FB),
+    return ColoredBox(
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: sessions.isEmpty
           ? _emptyState(l10n)
           : ListView(
               padding: const EdgeInsets.only(bottom: 28),
               children: [
                 const SizedBox(height: 12),
-
-                /// TODAY SUMMARY (premium spacing)
                 if (grouped[l10n.today] != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: TodaySummaryCard(sessions: grouped[l10n.today]!),
                   ),
-
                 const SizedBox(height: 10),
-
-                /// STREAM STYLE TIMELINE
                 for (final entry in grouped.entries)
-                  // if (entry.key != l10n.today)
-                    TimelineSection(
-                      title: entry.key,
-                      sessions: entry.value,
-                      onDelete: deleteSession,
-                    ),
+                  TimelineSection(
+                    title: entry.key,
+                    sessions: entry.value,
+                    onDelete: deleteSession,
+                  ),
               ],
             ),
     );
   }
 
   Widget _emptyState(AppLocalizations l10n) {
-    return Container(
-      color: const Color(0xffF6F7FB),
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final secondaryTextColor =
+        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
+
+    return ColoredBox(
+      color: theme.scaffoldBackgroundColor,
       child: Center(
         child: Padding(
           padding: const EdgeInsets.all(28),
@@ -141,11 +128,11 @@ class _FeedingTabState extends State<FeedingTab> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withAlpha(13),
+                      color: Colors.black.withAlpha(isDark ? 35 : 13),
                       blurRadius: 18,
                       offset: const Offset(0, 8),
                     ),
@@ -157,9 +144,7 @@ class _FeedingTabState extends State<FeedingTab> {
                   color: Colors.blueGrey,
                 ),
               ),
-
               const SizedBox(height: 18),
-
               Text(
                 l10n.noFeedingSessionsYet,
                 style: const TextStyle(
@@ -168,14 +153,12 @@ class _FeedingTabState extends State<FeedingTab> {
                   decoration: TextDecoration.none,
                 ),
               ),
-
               const SizedBox(height: 8),
-
               Text(
                 l10n.startFeedingSessionHint,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.grey.shade600,
+                  color: secondaryTextColor,
                   fontSize: 13,
                   height: 1.4,
                   decoration: TextDecoration.none,

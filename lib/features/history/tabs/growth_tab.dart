@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:babyfeedpro/l10n/app_localizations.dart';
 import 'package:babyfeedpro/models/growth_entry.dart';
 import 'package:babyfeedpro/services/growth_storage.dart';
+import 'package:flutter/material.dart';
 
 class GrowthTab extends StatefulWidget {
   const GrowthTab({super.key});
@@ -24,6 +24,7 @@ class _GrowthTabState extends State<GrowthTab> {
   Future<void> load() async {
     final data = await GrowthStorage().loadEntries();
     data.sort((a, b) => b.date.compareTo(a.date));
+    if (!mounted) return;
     setState(() => entries = data);
   }
 
@@ -77,28 +78,31 @@ class _GrowthTabState extends State<GrowthTab> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final secondaryTextColor =
+        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
 
-    if (entries.isEmpty) return _emptyState(context);
+    if (entries.isEmpty) {
+      return _emptyState(context);
+    }
 
-    return Container(
-      color: const Color(0xffF6F7FB),
+    return ColoredBox(
+      color: theme.scaffoldBackgroundColor,
       child: ListView.builder(
         padding: const EdgeInsets.only(top: 16, bottom: 32),
         itemCount: entries.length,
-        itemBuilder: (context, i) {
-          final e = entries[i];
-          final prev = i < entries.length - 1 ? entries[i + 1] : null;
-
-          final weight = e.weight.round();
+        itemBuilder: (context, index) {
+          final entry = entries[index];
+          final prev = index < entries.length - 1 ? entries[index + 1] : null;
+          final weight = entry.weight.round();
           final prevWeight = prev?.weight.round();
           final weightDiff = prevWeight != null ? weight - prevWeight : null;
-
-          final heightDiff = prev != null ? e.height - prev.height : null;
-
-          final isLast = i == entries.length - 1;
+          final heightDiff = prev != null ? entry.height - prev.height : null;
+          final isLast = index == entries.length - 1;
 
           return Dismissible(
-            key: ValueKey(e.date.toIso8601String()),
+            key: ValueKey(entry.date.toIso8601String()),
             direction: DismissDirection.endToStart,
             background: Container(
               margin: const EdgeInsets.symmetric(vertical: 6),
@@ -108,13 +112,16 @@ class _GrowthTabState extends State<GrowthTab> {
               ),
               alignment: Alignment.centerRight,
               padding: const EdgeInsets.only(right: 20),
-              child: const Icon(Icons.delete_outline, color: Colors.white, size: 28),
+              child: const Icon(
+                Icons.delete_outline,
+                color: Colors.white,
+                size: 28,
+              ),
             ),
-            onDismissed: (_) => deleteEntry(e),
+            onDismissed: (_) => deleteEntry(entry),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// TIMELINE
                 SizedBox(
                   width: 50,
                   child: Column(
@@ -130,47 +137,43 @@ class _GrowthTabState extends State<GrowthTab> {
                       Container(
                         width: 2,
                         height: isLast ? 40 : 80,
-                        color: isLast ? Colors.transparent : Colors.grey.shade300,
+                        color: isLast
+                            ? Colors.transparent
+                            : secondaryTextColor.withAlpha(60),
                       ),
                     ],
                   ),
                 ),
-
-                /// CARD
                 Expanded(
                   child: Container(
                     margin: const EdgeInsets.only(right: 16, bottom: 16),
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: theme.cardColor,
                       borderRadius: BorderRadius.circular(22),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
+                          color: Colors.black.withAlpha(isDark ? 35 : 13),
                           blurRadius: 14,
                           offset: const Offset(0, 6),
-                        )
+                        ),
                       ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        /// DATE
                         Text(
-                          "${e.date.day.toString().padLeft(2, '0')}-"
-                          "${e.date.month.toString().padLeft(2, '0')}-"
-                          "${e.date.year}",
+                          "${entry.date.day.toString().padLeft(2, '0')}-"
+                          "${entry.date.month.toString().padLeft(2, '0')}-"
+                          "${entry.date.year}",
                           style: TextStyle(
                             fontSize: 12,
-                            color: Colors.grey.shade600,
+                            color: secondaryTextColor,
                             fontWeight: FontWeight.w600,
                             decoration: TextDecoration.none,
                           ),
                         ),
-
                         const SizedBox(height: 10),
-
-                        /// WEIGHT + DELTA
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -187,18 +190,22 @@ class _GrowthTabState extends State<GrowthTab> {
                               padding: const EdgeInsets.only(bottom: 4),
                               child: Text(
                                 l10n.unitGr,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
-                                  color: Colors.grey,
+                                  color: secondaryTextColor,
                                   decoration: TextDecoration.none,
                                 ),
                               ),
                             ),
                             if (weightDiff != null)
                               Padding(
-                                padding: const EdgeInsets.only(left: 10, bottom: 4),
+                                padding: const EdgeInsets.only(
+                                  left: 10,
+                                  bottom: 4,
+                                ),
                                 child: Text(
-                                  "${weightDiff > 0 ? "+" : ""}$weightDiff ${l10n.unitGr}",
+                                  "${weightDiff > 0 ? "+" : ""}"
+                                  "$weightDiff ${l10n.unitGr}",
                                   style: TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w700,
@@ -206,33 +213,27 @@ class _GrowthTabState extends State<GrowthTab> {
                                         ? Colors.green
                                         : weightDiff < 0
                                             ? Colors.red
-                                            : Colors.grey,
+                                            : secondaryTextColor,
                                     decoration: TextDecoration.none,
                                   ),
                                 ),
                               ),
                           ],
                         ),
-
                         const SizedBox(height: 14),
-
-                        /// HEIGHT + DELTA
-                        _infoRow(
-                          l10n.height,
-                          "${e.height} ${l10n.unitCm}",
-                          heightDiff,
-                        ),
-
-                        if (e.headCircumference != null)
+                        _infoRow(context, l10n.height,
+                            "${entry.height} ${l10n.unitCm}", heightDiff),
+                        if (entry.headCircumference != null)
                           _simpleRow(
+                            context,
                             l10n.headCircumference,
-                            "${e.headCircumference} ${l10n.unitCm}",
+                            "${entry.headCircumference} ${l10n.unitCm}",
                           ),
-
-                        if (e.waistCircumference != null)
+                        if (entry.waistCircumference != null)
                           _simpleRow(
+                            context,
                             l10n.waistCircumference,
-                            "${e.waistCircumference} ${l10n.unitCm}",
+                            "${entry.waistCircumference} ${l10n.unitCm}",
                           ),
                       ],
                     ),
@@ -246,7 +247,16 @@ class _GrowthTabState extends State<GrowthTab> {
     );
   }
 
-  Widget _infoRow(String label, String value, num? diff) {
+  Widget _infoRow(
+    BuildContext context,
+    String label,
+    String value,
+    num? diff,
+  ) {
+    final secondaryTextColor =
+        Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(170) ??
+            Colors.grey;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -270,24 +280,28 @@ class _GrowthTabState extends State<GrowthTab> {
                     ? Colors.green
                     : diff < 0
                         ? Colors.red
-                        : Colors.grey,
+                        : secondaryTextColor,
                 decoration: TextDecoration.none,
               ),
             ),
-          ]
+          ],
         ],
       ),
     );
   }
 
-  Widget _simpleRow(String label, String value) {
+  Widget _simpleRow(BuildContext context, String label, String value) {
+    final secondaryTextColor =
+        Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(170) ??
+            Colors.grey;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Text(
         "$label: $value",
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 13,
-          color: Colors.grey,
+          color: secondaryTextColor,
           fontWeight: FontWeight.w500,
           decoration: TextDecoration.none,
         ),
@@ -297,14 +311,19 @@ class _GrowthTabState extends State<GrowthTab> {
 
   Widget _emptyState(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final secondaryTextColor =
+        Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(170) ??
+            Colors.grey;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(28),
         child: Text(
           l10n.noGrowthDataYet,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
+            color: secondaryTextColor,
             decoration: TextDecoration.none,
           ),
         ),

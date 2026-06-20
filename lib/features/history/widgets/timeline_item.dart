@@ -12,18 +12,16 @@ class TimelineItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          /// ─────────────────────
-          /// TIMELINE (DOT + LINE)
-          /// ─────────────────────
           Padding(
             padding: const EdgeInsets.only(left: 14, right: 12),
             child: Column(
               children: [
-                /// DOT
                 Container(
                   width: 10,
                   height: 10,
@@ -32,15 +30,15 @@ class TimelineItem extends StatelessWidget {
                     shape: BoxShape.circle,
                   ),
                 ),
-
-                /// LINE
                 if (!isLast)
                   Expanded(
                     child: Container(
                       width: 2,
                       margin: const EdgeInsets.only(top: 4),
                       decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
+                        color: isDark
+                            ? const Color(0xff3A3A3A)
+                            : Colors.grey.shade300,
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -48,10 +46,6 @@ class TimelineItem extends StatelessWidget {
               ],
             ),
           ),
-
-          /// ─────────────────────
-          /// CONTENT
-          /// ─────────────────────
           Expanded(child: child),
         ],
       ),

@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:babyfeedpro/features/feeding/feeding_session.dart';
+import 'package:flutter/material.dart';
+
 import 'session_card.dart';
 import 'timeline_header.dart';
 import 'timeline_item.dart';
@@ -16,23 +17,15 @@ class TimelineSection extends StatelessWidget {
     required this.onDelete,
   });
 
-
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        /// ─────────────────────────────
-        /// SECTION HEADER (MODERN)
-        /// ─────────────────────────────
         TimelineHeader(
           title: title,
           count: sessions.length,
         ),
-
-        /// ─────────────────────────────
-        /// SESSION LIST
-        /// ─────────────────────────────
         ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -43,9 +36,7 @@ class TimelineSection extends StatelessWidget {
 
             return Dismissible(
               key: ValueKey(session.startTime.toIso8601String()),
-
               direction: DismissDirection.endToStart,
-
               background: Container(
                 margin: const EdgeInsets.only(
                   left: 48,
@@ -65,24 +56,12 @@ class TimelineSection extends StatelessWidget {
                   size: 28,
                 ),
               ),
-
-              onDismissed: (_) {
-                onDelete(session);
-              },
-
+              onDismissed: (_) => onDelete(session),
               child: TimelineItem(
                 isLast: index == sessions.length - 1,
-                child: SessionCard(
-                  session: session,
-                ),
+                child: SessionCard(session: session),
               ),
             );
-                  // return Padding(
-            //   padding: EdgeInsets.only(
-            //     bottom: index == sessions.length - 1 ? 8 : 0,
-            //   ),
-            //   child: SessionCard(session: session),
-            // );
           },
         ),
       ],
