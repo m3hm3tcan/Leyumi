@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:intl/intl.dart';
 import 'package:babyfeedpro/features/feeding/feeding_session.dart';
 import 'package:babyfeedpro/services/feeding_storage.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FeedingGraphScreen extends StatefulWidget {
   const FeedingGraphScreen({super.key});
@@ -24,6 +24,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
   Future<void> load() async {
     final data = await FeedingStorage().loadSessions();
     data.sort((a, b) => a.startTime.compareTo(b.startTime));
+    if (!mounted) return;
     setState(() => sessions = data);
   }
 
@@ -33,10 +34,6 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
     final cutoff = DateTime.now().subtract(Duration(days: days));
     return sessions.where((s) => s.startTime.isAfter(cutoff)).toList();
   }
-
-  // -------------------------------------------------------
-  // AGGREGATED MAPS
-  // -------------------------------------------------------
 
   String _dayKey(DateTime d) => "${d.year}-${d.month}-${d.day}";
 
@@ -50,7 +47,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
 
   Map<String, int> get dailyTotals {
     final map = <String, int>{};
-    for (var s in filtered) {
+    for (final s in filtered) {
       final key = _dayKey(s.startTime);
       map[key] = (map[key] ?? 0) + s.totalDuration.inSeconds;
     }
@@ -59,7 +56,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
 
   Map<String, int> get leftTotals {
     final map = <String, int>{};
-    for (var s in filtered) {
+    for (final s in filtered) {
       final key = _dayKey(s.startTime);
       map[key] = (map[key] ?? 0) + s.leftDuration.inSeconds;
     }
@@ -68,7 +65,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
 
   Map<String, int> get rightTotals {
     final map = <String, int>{};
-    for (var s in filtered) {
+    for (final s in filtered) {
       final key = _dayKey(s.startTime);
       map[key] = (map[key] ?? 0) + s.rightDuration.inSeconds;
     }
@@ -77,7 +74,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
 
   Map<String, int> get milkTotals {
     final map = <String, int>{};
-    for (var s in filtered) {
+    for (final s in filtered) {
       if (s.milkIntakeGr != null) {
         final key = _dayKey(s.startTime);
         map[key] = (map[key] ?? 0) + s.milkIntakeGr!;
@@ -85,10 +82,6 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
     }
     return map;
   }
-
-  // -------------------------------------------------------
-  // SPOTS
-  // -------------------------------------------------------
 
   List<FlSpot> _spots(Map<String, int> map, {bool minutes = true}) {
     return List.generate(sortedDays.length, (i) {
@@ -98,48 +91,55 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
     });
   }
 
-  // -------------------------------------------------------
-  // UI HELPERS
-  // -------------------------------------------------------
-
   String _formatDay(String key) {
     final p = key.split("-");
     final d = DateTime(int.parse(p[0]), int.parse(p[1]), int.parse(p[2]));
-    return DateFormat("dd MMM").format(d); // 05 Jun
+    return DateFormat("dd MMM").format(d);
   }
 
-  Widget _filterButton(String label, String value) {
+  Widget _filterButton(BuildContext context, String label, String value) {
+    final theme = Theme.of(context);
     final selected = filter == value;
+    final unselectedBorder =
+        theme.dividerColor.withAlpha(theme.brightness == Brightness.dark ? 90 : 160);
+
     return GestureDetector(
       onTap: () => setState(() => filter = value),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? Colors.blue.shade50 : Colors.white,
+          color: selected
+              ? Colors.blue.withAlpha(theme.brightness == Brightness.dark ? 35 : 20)
+              : theme.cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: selected ? Colors.blue : Colors.grey.shade300),
+          border: Border.all(color: selected ? Colors.blue : unselectedBorder),
         ),
         child: Text(
           label,
           style: TextStyle(
             fontWeight: FontWeight.w700,
-            color: selected ? Colors.blue : Colors.black,
+            color: selected
+                ? Colors.blue
+                : (theme.textTheme.bodyMedium?.color ?? Colors.black),
           ),
         ),
       ),
     );
   }
 
-  Widget _chartCard(String title, Widget chart) {
+  Widget _chartCard(BuildContext context, String title, Widget chart) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withAlpha(isDark ? 35 : 10),
             blurRadius: 12,
             offset: const Offset(0, 6),
           )
@@ -148,7 +148,10 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          ),
           const SizedBox(height: 14),
           chart,
         ],
@@ -156,7 +159,11 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
     );
   }
 
-  Widget _summaryCard() {
+  Widget _summaryCard(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final secondaryTextColor =
+        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
     final totalMin = filtered.fold<int>(0, (a, b) => a + b.totalDuration.inMinutes);
     final left = _sum(leftTotals);
     final right = _sum(rightTotals);
@@ -170,18 +177,32 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
       padding: const EdgeInsets.all(20),
       margin: const EdgeInsets.only(bottom: 20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(.04), blurRadius: 12, offset: const Offset(0, 4)),
+          BoxShadow(
+            color: Colors.black.withAlpha(isDark ? 35 : 10),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Summary", style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.grey)),
+          Text(
+            "Summary",
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: secondaryTextColor,
+            ),
+          ),
           const SizedBox(height: 12),
-          Text("$totalMin min", style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900)),
+          Text(
+            "$totalMin min",
+            style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900),
+          ),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -198,34 +219,58 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
   }
 
   Widget _metric(String title, String value, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: color.withOpacity(.08), borderRadius: BorderRadius.circular(16)),
-      child: Column(
-        children: [
-          Text(value, style: TextStyle(color: color, fontWeight: FontWeight.w800, fontSize: 18)),
-          const SizedBox(height: 4),
-          Text(title),
-        ],
-      ),
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: color.withAlpha(theme.brightness == Brightness.dark ? 30 : 20),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 18,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(title),
+            ],
+          ),
+        );
+      },
     );
   }
 
-  // -------------------------------------------------------
-  // BUILD
-  // -------------------------------------------------------
+  TextStyle _axisTextStyle(BuildContext context, {double size = 11}) {
+    final color =
+        Theme.of(context).textTheme.bodySmall?.color?.withAlpha(170) ?? Colors.grey;
+    return TextStyle(fontSize: size, color: color, fontWeight: FontWeight.w600);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final axisColor =
+        theme.textTheme.bodySmall?.color?.withAlpha(170) ?? Colors.grey;
+
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
       appBar: AppBar(
         title: const Text("Feeding Charts"),
-        backgroundColor: Colors.white,
         elevation: 0,
       ),
       body: sessions.isEmpty
-          ? const Center(child: Text("No feeding data"))
+          ? Center(
+              child: Text(
+                "No feeding data",
+                style: TextStyle(color: axisColor),
+              ),
+            )
           : Column(
               children: [
                 Padding(
@@ -233,30 +278,35 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _filterButton("7d", "7"),
-                      _filterButton("30d", "30"),
-                      _filterButton("90d", "90"),
-                      _filterButton("All", "all"),
+                      _filterButton(context, "7d", "7"),
+                      _filterButton(context, "30d", "30"),
+                      _filterButton(context, "90d", "90"),
+                      _filterButton(context, "All", "all"),
                     ],
                   ),
                 ),
-
                 Expanded(
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _summaryCard(),
-
-                        // DAILY TOTAL
+                        _summaryCard(context),
                         _chartCard(
+                          context,
                           "Daily Total Feeding",
                           SizedBox(
                             height: 200,
                             child: LineChart(
                               LineChartData(
                                 minY: 0,
-                                gridData: FlGridData(show: true, drawVerticalLine: false),
+                                gridData: FlGridData(
+                                  show: true,
+                                  drawVerticalLine: false,
+                                  getDrawingHorizontalLine: (_) => FlLine(
+                                    color: axisColor.withAlpha(60),
+                                    strokeWidth: 1,
+                                  ),
+                                ),
                                 borderData: FlBorderData(show: false),
                                 titlesData: FlTitlesData(
                                   leftTitles: AxisTitles(
@@ -266,11 +316,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
                                       getTitlesWidget: (value, meta) {
                                         return Text(
                                           "${value.toInt()} min",
-                                          style: const TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.grey,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: _axisTextStyle(context),
                                         );
                                       },
                                     ),
@@ -281,8 +327,13 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
                                       reservedSize: 28,
                                       getTitlesWidget: (value, meta) {
                                         final i = value.toInt();
-                                        if (i < 0 || i >= sortedDays.length) return const SizedBox();
-                                        return Text(_formatDay(sortedDays[i]), style: const TextStyle(fontSize: 11));
+                                        if (i < 0 || i >= sortedDays.length) {
+                                          return const SizedBox();
+                                        }
+                                        return Text(
+                                          _formatDay(sortedDays[i]),
+                                          style: _axisTextStyle(context, size: 11),
+                                        );
                                       },
                                     ),
                                   ),
@@ -300,16 +351,25 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
                             ),
                           ),
                         ),
-
-                        // LEFT / RIGHT SCATTER
                         _chartCard(
+                          context,
                           "Left / Right Feeding",
                           SizedBox(
                             height: 200,
                             child: ScatterChart(
                               ScatterChartData(
                                 minY: 0,
-                                gridData: FlGridData(show: true),
+                                gridData: FlGridData(
+                                  show: true,
+                                  getDrawingHorizontalLine: (_) => FlLine(
+                                    color: axisColor.withAlpha(60),
+                                    strokeWidth: 1,
+                                  ),
+                                  getDrawingVerticalLine: (_) => FlLine(
+                                    color: axisColor.withAlpha(40),
+                                    strokeWidth: 1,
+                                  ),
+                                ),
                                 borderData: FlBorderData(show: false),
                                 titlesData: FlTitlesData(
                                   leftTitles: AxisTitles(
@@ -321,11 +381,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
                                         if (value % 5 != 0) return const SizedBox();
                                         return Text(
                                           "${value.toInt()} min",
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.grey.shade600,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: _axisTextStyle(context, size: 10),
                                         );
                                       },
                                     ),
@@ -336,10 +392,12 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
                                       reservedSize: 28,
                                       getTitlesWidget: (value, meta) {
                                         final i = value.toInt();
-                                        if (i < 0 || i >= sortedDays.length) return const SizedBox();
+                                        if (i < 0 || i >= sortedDays.length) {
+                                          return const SizedBox();
+                                        }
                                         return Text(
                                           _formatDay(sortedDays[i]),
-                                          style: const TextStyle(fontSize: 11),
+                                          style: _axisTextStyle(context, size: 11),
                                         );
                                       },
                                     ),
@@ -350,14 +408,20 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
                                     (e) => ScatterSpot(
                                       e.x,
                                       e.y,
-                                      dotPainter: FlDotCirclePainter(color: Colors.pinkAccent, radius: 6),
+                                      dotPainter: FlDotCirclePainter(
+                                        color: Colors.pinkAccent,
+                                        radius: 6,
+                                      ),
                                     ),
                                   ),
                                   ..._spots(rightTotals).map(
                                     (e) => ScatterSpot(
                                       e.x,
                                       e.y,
-                                      dotPainter: FlDotCirclePainter(color: Colors.blueAccent, radius: 6),
+                                      dotPainter: FlDotCirclePainter(
+                                        color: Colors.blueAccent,
+                                        radius: 6,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -365,26 +429,49 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
                             ),
                           ),
                         ),
-
-                        // MILK TREND
                         _chartCard(
+                          context,
                           "Milk Intake (g)",
                           SizedBox(
                             height: 200,
                             child: LineChart(
                               LineChartData(
                                 minY: 0,
-                                gridData: FlGridData(show: true),
+                                gridData: FlGridData(
+                                  show: true,
+                                  getDrawingHorizontalLine: (_) => FlLine(
+                                    color: axisColor.withAlpha(60),
+                                    strokeWidth: 1,
+                                  ),
+                                  getDrawingVerticalLine: (_) => FlLine(
+                                    color: axisColor.withAlpha(40),
+                                    strokeWidth: 1,
+                                  ),
+                                ),
                                 borderData: FlBorderData(show: false),
                                 titlesData: FlTitlesData(
+                                  leftTitles: AxisTitles(
+                                    sideTitles: SideTitles(
+                                      showTitles: true,
+                                      reservedSize: 36,
+                                      getTitlesWidget: (value, meta) =>
+                                          Text(value.toInt().toString(),
+                                              style: _axisTextStyle(context)),
+                                    ),
+                                  ),
                                   bottomTitles: AxisTitles(
                                     sideTitles: SideTitles(
                                       showTitles: true,
                                       reservedSize: 28,
                                       getTitlesWidget: (value, meta) {
                                         final i = value.toInt();
-                                        if (i < 0 || i >= sortedDays.length) return const SizedBox();
-                                        return Text(_formatDay(sortedDays[i]), style: const TextStyle(fontSize: 11));
+                                        if (i < 0 || i >= sortedDays.length) {
+                                          return const SizedBox();
+                                        }
+                                        return Text(
+                                          _formatDay(sortedDays[i]),
+                                          style: _axisTextStyle(context, size: 11),
+                                        );
                                       },
                                     ),
                                   ),
