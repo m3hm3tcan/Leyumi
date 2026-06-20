@@ -1,6 +1,7 @@
 import 'dart:async';
-import 'feeding_session.dart';
+
 import 'feeding_entry.dart';
+import 'feeding_session.dart';
 
 class FeedingController {
   FeedingSession? currentSession;
@@ -8,8 +9,11 @@ class FeedingController {
   Duration _elapsed = Duration.zero;
   final Function(Duration) onTick;
 
-  int? startWeightGr; // Feeding öncesi kilo
-  int? endWeightGr;   // Feeding sonrası kilo
+  FeedingSide? activeSide;
+  DateTime? activeSideStartedAt;
+
+  int? startWeightGr;
+  int? endWeightGr;
 
   FeedingController({required this.onTick});
 
@@ -21,20 +25,26 @@ class FeedingController {
     endWeightGr = weightGr;
   }
 
-  void startSide(FeedingSide  side) {
+  void startSide(FeedingSide side, {DateTime? startedAt}) {
+    final now = startedAt ?? DateTime.now();
+
     if (currentSession == null) {
       currentSession = FeedingSession(
-        startTime: DateTime.now(),
-        endTime: DateTime.now(), // geçici, finishSession'da override edeceğiz
+        startTime: now,
+        endTime: now,
         entries: [],
         startWeightGr: startWeightGr,
       );
     }
 
-    _elapsed = Duration.zero;
+    activeSide = side;
+    activeSideStartedAt = now;
+    _elapsed = DateTime.now().difference(activeSideStartedAt!);
+    onTick(_elapsed);
 
+    _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      _elapsed += const Duration(seconds: 1);
+      _elapsed = DateTime.now().difference(activeSideStartedAt!);
       onTick(_elapsed);
     });
   }
@@ -42,12 +52,19 @@ class FeedingController {
   FeedingEntry stopSide(FeedingSide side) {
     _timer?.cancel();
 
+    final elapsed = activeSideStartedAt == null
+        ? _elapsed
+        : DateTime.now().difference(activeSideStartedAt!);
+
     final entry = FeedingEntry(
       side: side,
-      duration: _elapsed,
+      duration: elapsed,
     );
 
     currentSession!.entries.add(entry);
+    activeSide = null;
+    activeSideStartedAt = null;
+    _elapsed = Duration.zero;
 
     return entry;
   }
@@ -70,6 +87,41 @@ class FeedingController {
     );
 
     currentSession = null;
+    activeSide = null;
+    activeSideStartedAt = null;
+    _elapsed = Duration.zero;
+
     return session;
+  }
+
+  void restoreDraft({
+    required FeedingSession session,
+    required FeedingSide? draftActiveSide,
+    required DateTime? draftActiveSideStartedAt,
+    int? draftStartWeightGr,
+    int? draftEndWeightGr,
+  }) {
+    _timer?.cancel();
+    currentSession = session;
+    startWeightGr = draftStartWeightGr;
+    endWeightGr = draftEndWeightGr;
+    activeSide = draftActiveSide;
+    activeSideStartedAt = draftActiveSideStartedAt;
+
+    if (activeSide != null && activeSideStartedAt != null) {
+      _elapsed = DateTime.now().difference(activeSideStartedAt!);
+      onTick(_elapsed);
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+        _elapsed = DateTime.now().difference(activeSideStartedAt!);
+        onTick(_elapsed);
+      });
+    } else {
+      _elapsed = Duration.zero;
+      onTick(_elapsed);
+    }
+  }
+
+  void dispose() {
+    _timer?.cancel();
   }
 }

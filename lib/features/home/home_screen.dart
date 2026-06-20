@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:babyfeedpro/features/feeding/feeding_screen.dart';
 import 'package:babyfeedpro/features/history/history_hub_screen.dart';
@@ -19,7 +21,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final GlobalKey<_TodaySummaryCardState> _todaySummaryKey =
       GlobalKey<_TodaySummaryCardState>();
 
@@ -30,11 +32,25 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     loadProfile();
 
     Future.delayed(const Duration(milliseconds: 200), () {
       setState(() => opacity = 1);
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> loadProfile() async {
@@ -141,6 +157,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
               /// 🆕 TODAY SUMMARY
               TodaySummaryCard(key: _todaySummaryKey),
+
+              const SizedBox(height: 12),
+
+              const LiveFeedingHomeCard(),
 
               const SizedBox(height: 20),
 
@@ -399,6 +419,145 @@ class _StatItem extends StatelessWidget {
 }
 
 /// 🆕 MODERN ACTION CARD
+class LiveFeedingHomeCard extends StatefulWidget {
+  const LiveFeedingHomeCard({super.key});
+
+  @override
+  State<LiveFeedingHomeCard> createState() => _LiveFeedingHomeCardState();
+}
+
+class _LiveFeedingHomeCardState extends State<LiveFeedingHomeCard> {
+  Timer? _timer;
+  Map<String, dynamic>? _draft;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDraft();
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (mounted && _draft != null) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadDraft() async {
+    final draft = await FeedingStorage().loadActiveDraft();
+    if (!mounted) return;
+    setState(() {
+      _draft = draft;
+    });
+  }
+
+  String _format(Duration duration) {
+    final m = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "$m:$s";
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_draft == null) {
+      _loadDraft();
+      return const SizedBox.shrink();
+    }
+
+    final theme = Theme.of(context);
+    final activeSide = _draft!["activeSide"] as String?;
+    final activeStartedAtRaw = _draft!["activeSideStartedAt"] as String?;
+    final startedAt = activeStartedAtRaw == null
+        ? null
+        : DateTime.tryParse(activeStartedAtRaw);
+    final elapsed = startedAt == null
+        ? Duration.zero
+        : DateTime.now().difference(startedAt);
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xffFF8A65), Color(0xffFFB74D)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 10,
+            color: Colors.black.withOpacity(0.08),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.timer_outlined,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Live feeding devam ediyor",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  activeSide == null
+                      ? "Kaydedilmemis feeding taslagi hazir"
+                      : "${activeSide == "left" ? "Sol" : "Sag"} taraf - ${_format(elapsed)}",
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.92),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const FeedingScreen(),
+                ),
+              );
+              await _loadDraft();
+            },
+            child: Text(
+              "Ac",
+              style: TextStyle(
+                color: theme.cardColor,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class HomeActionCard extends StatefulWidget {
   final IconData icon;
   final String title;
