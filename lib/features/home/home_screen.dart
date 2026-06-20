@@ -20,6 +20,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final GlobalKey<_TodaySummaryCardState> _todaySummaryKey =
+      GlobalKey<_TodaySummaryCardState>();
+
   BabyProfile? profile;
   bool loading = true;
   double opacity = 0;
@@ -137,7 +140,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 16),
 
               /// 🆕 TODAY SUMMARY
-              const TodaySummaryCard(),
+              TodaySummaryCard(key: _todaySummaryKey),
 
               const SizedBox(height: 20),
 
@@ -173,34 +176,37 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: Icons.favorite,
                       title: t.feeding,
                       subtitle: t.startSession,
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => const FeedingScreen(),
                           ),
                         );
+                        await _todaySummaryKey.currentState?.loadStats();
                       },
                     ),
                     HomeActionCard(
                       icon: Icons.history,
                       title: t.history,
                       subtitle: t.pastFeedings,
-                      onTap: () {
-                        Navigator.push(
+                      onTap: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (_) => const HistoryHubScreen(),
                           ),
                         );
+                        await _todaySummaryKey.currentState?.loadStats();
                       },
                     ),
                     HomeActionCard(
                       icon: Icons.baby_changing_station,
                       title: t.diaper,
                       subtitle: t.trackChanges,
-                      onTap: () {
-                        Navigator.pushNamed(context, "/diaper");
+                      onTap: () async {
+                        await Navigator.pushNamed(context, "/diaper");
+                        await _todaySummaryKey.currentState?.loadStats();
                       },
                     ),
                     HomeActionCard(
@@ -266,11 +272,9 @@ class _TodaySummaryCardState extends State<TodaySummaryCard> {
   }
 
   Future<void> loadStats() async {
-    final feedingSessions =
-        await FeedingStorage().loadSessions();
+    final feedingSessions = await FeedingStorage().loadSessions();
 
-    final diaperEntries =
-        await DiaperStorage().loadEntries();
+    final diaperEntries = await DiaperStorage().loadEntries();
 
     final todayFeedings = feedingSessions.where(
       (s) => isToday(s.startTime),
@@ -292,14 +296,13 @@ class _TodaySummaryCardState extends State<TodaySummaryCard> {
 
     activities.sort();
 
+    if (!mounted) return;
+
     setState(() {
       feedingCount = todayFeedings.length;
       diaperCount = todayDiapers.length;
-
-      if (activities.isNotEmpty) {
-        lastActivity =
-            formatLast(activities.last);
-      }
+      lastActivity =
+          activities.isNotEmpty ? formatLast(activities.last) : "-";
     });
   }
 

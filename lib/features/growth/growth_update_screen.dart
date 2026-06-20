@@ -31,6 +31,8 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     final p = await BabyStorage().loadProfile();
     final growth = await GrowthStorage().loadEntries();
 
+    if (!mounted) return;
+
     setState(() {
       profile = p;
 
@@ -90,8 +92,20 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   }
 
   @override
+  void dispose() {
+    weightCtrl.dispose();
+    heightCtrl.dispose();
+    headCtrl.dispose();
+    waistCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final isDark = theme.brightness == Brightness.dark;
 
     if (profile == null) {
       return const Scaffold(
@@ -104,13 +118,15 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     final isBoy = profile!.gender.toLowerCase() == "male";
     final primaryColor =
         isBoy ? const Color(0xff4DA3FF) : const Color(0xffFF6B9D);
+    final surfaceColor = theme.cardColor;
+    final subtleSurface = isDark ? const Color(0xff262626) : const Color(0xffF4F6FA);
+    final secondaryTextColor =
+        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
+    final shadowColor = Colors.black.withAlpha(isDark ? 40 : 10);
 
     return Scaffold(
-      backgroundColor: const Color(0xffF6F7FB),
-
       appBar: AppBar(
         title: Text(l10n.growthUpdateTitle),
-        backgroundColor: Colors.white,
         elevation: 0,
       ),
 
@@ -124,11 +140,11 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: surfaceColor,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(10),
+                    color: shadowColor,
                     blurRadius: 12,
                     offset: const Offset(0, 4),
                   ),
@@ -165,8 +181,8 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
                         Text(
                           l10n.currentGrowthSnapshot,
-                          style: const TextStyle(
-                            color: Colors.grey,
+                          style: TextStyle(
+                            color: secondaryTextColor,
                             fontSize: 13,
                           ),
                         ),
@@ -187,6 +203,9 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
                     l10n.weight,
                     "${profile!.weight} ${l10n.unitGr}",
                     Icons.monitor_weight_outlined,
+                    surfaceColor: surfaceColor,
+                    secondaryTextColor: secondaryTextColor,
+                    iconColor: colorScheme.primary,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -195,6 +214,9 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
                     l10n.height,
                     "${profile!.height} ${l10n.unitCm}",
                     Icons.height,
+                    surfaceColor: surfaceColor,
+                    secondaryTextColor: secondaryTextColor,
+                    iconColor: colorScheme.primary,
                   ),
                 ),
               ],
@@ -210,6 +232,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               unit: l10n.unitGr,
               currentLabel: l10n.currentLabel,
               hintText: l10n.enterNewValueHint,
+              surfaceColor: surfaceColor,
+              subtleSurface: subtleSurface,
+              secondaryTextColor: secondaryTextColor,
+              accentColor: primaryColor,
             ),
 
             _growthField(
@@ -220,6 +246,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               unit: l10n.unitCm,
               currentLabel: l10n.currentLabel,
               hintText: l10n.enterNewValueHint,
+              surfaceColor: surfaceColor,
+              subtleSurface: subtleSurface,
+              secondaryTextColor: secondaryTextColor,
+              accentColor: primaryColor,
             ),
 
             _growthField(
@@ -230,6 +260,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               unit: l10n.unitCm,
               currentLabel: l10n.currentLabel,
               hintText: l10n.enterNewValueHint,
+              surfaceColor: surfaceColor,
+              subtleSurface: subtleSurface,
+              secondaryTextColor: secondaryTextColor,
+              accentColor: primaryColor,
             ),
 
             _growthField(
@@ -240,6 +274,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               unit: l10n.unitCm,
               currentLabel: l10n.currentLabel,
               hintText: l10n.enterNewValueHint,
+              surfaceColor: surfaceColor,
+              subtleSurface: subtleSurface,
+              secondaryTextColor: secondaryTextColor,
+              accentColor: primaryColor,
             ),
 
             const SizedBox(height: 24),
@@ -271,16 +309,19 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     String title,
     String value,
     IconData icon,
+    {required Color surfaceColor,
+    required Color secondaryTextColor,
+    required Color iconColor,}
   ) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
         children: [
-          Icon(icon),
+          Icon(icon, color: iconColor),
 
           const SizedBox(height: 8),
 
@@ -296,8 +337,8 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.grey,
+            style: TextStyle(
+              color: secondaryTextColor,
               fontSize: 12,
             ),
           ),
@@ -314,12 +355,16 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     required String unit,
     required String currentLabel,
     required String hintText,
+    required Color surfaceColor,
+    required Color subtleSurface,
+    required Color secondaryTextColor,
+    required Color accentColor,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surfaceColor,
         borderRadius: BorderRadius.circular(18),
       ),
 
@@ -345,8 +390,8 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
           Text(
             "$currentLabel: $currentValue $unit",
-            style: const TextStyle(
-              color: Colors.grey,
+            style: TextStyle(
+              color: secondaryTextColor,
             ),
           ),
 
@@ -356,9 +401,24 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
             controller: controller,
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
+              filled: true,
+              fillColor: subtleSurface,
               hintText: hintText,
+              prefixIcon: Icon(icon, color: accentColor),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: accentColor.withAlpha(140),
+                  width: 1.5,
+                ),
               ),
             ),
           ),
