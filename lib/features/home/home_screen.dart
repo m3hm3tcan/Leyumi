@@ -114,7 +114,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
 
       appBar: AppBar(
-        title: Text(t.appTitle),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(
+              'assets/icon/app_icon_foreground.png',
+              width: 28,
+              height: 28,
+            ),
+            const SizedBox(width: 8),
+            Text(t.appTitle),
+          ],
+        ),
         centerTitle: true,
         backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
