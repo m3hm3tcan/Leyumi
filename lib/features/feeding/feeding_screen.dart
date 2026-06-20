@@ -1,7 +1,7 @@
-import 'package:babyfeedpro/features/feeding/feeding_entry.dart';
-import 'package:babyfeedpro/features/feeding/feeding_session.dart';
-import 'package:babyfeedpro/l10n/app_localizations.dart';
-import 'package:babyfeedpro/services/feeding_storage.dart';
+import 'package:leyumi/features/feeding/feeding_entry.dart';
+import 'package:leyumi/features/feeding/feeding_session.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
+import 'package:leyumi/services/feeding_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 

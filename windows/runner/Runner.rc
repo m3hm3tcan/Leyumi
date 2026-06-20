@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.mjkostokdarksun" "\0"
-            VALUE "FileDescription", "babyfeedpro" "\0"
+            VALUE "FileDescription", "Leyumi" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "babyfeedpro" "\0"
+            VALUE "InternalName", "leyumi" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.mjkostokdarksun. All rights reserved." "\0"
-            VALUE "OriginalFilename", "babyfeedpro.exe" "\0"
-            VALUE "ProductName", "babyfeedpro" "\0"
+            VALUE "OriginalFilename", "leyumi.exe" "\0"
+            VALUE "ProductName", "Leyumi" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

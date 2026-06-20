@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:babyfeedpro/features/feeding/feeding_screen.dart';
-import 'package:babyfeedpro/features/history/history_hub_screen.dart';
-import 'package:babyfeedpro/models/baby_profile.dart';
-import 'package:babyfeedpro/services/baby_storage.dart';
-import 'package:babyfeedpro/widgets/baby_card.dart';
-import 'package:babyfeedpro/services/reset_service.dart';
-import 'package:babyfeedpro/l10n/app_localizations.dart';
-import 'package:babyfeedpro/services/diaper_storage.dart';
-import 'package:babyfeedpro/services/feeding_storage.dart';
+import 'package:leyumi/features/feeding/feeding_screen.dart';
+import 'package:leyumi/features/history/history_hub_screen.dart';
+import 'package:leyumi/models/baby_profile.dart';
+import 'package:leyumi/services/baby_storage.dart';
+import 'package:leyumi/widgets/baby_card.dart';
+import 'package:leyumi/services/reset_service.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
+import 'package:leyumi/services/diaper_storage.dart';
+import 'package:leyumi/services/feeding_storage.dart';
 
 import 'package:provider/provider.dart';
 import '../../core/theme_provider.dart';
@@ -123,7 +123,32 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               height: 28,
             ),
             const SizedBox(width: 8),
-            Text(t.appTitle),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  t.appTitle,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    height: 1.1,
+                  ),
+                ),
+                Text(
+                  t.appSubtitle,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w400,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.65),
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
         centerTitle: true,

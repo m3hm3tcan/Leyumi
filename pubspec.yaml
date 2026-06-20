@@ -1,5 +1,5 @@
-name: babyfeedpro
-description: "The Baby Feed Pro app. You can track your baby's feeding schedule, diaper changes, sleep patterns, and growth progress. The app provides insights and reminders to help you care for your baby effectively."
+name: leyumi
+description: "Leyumi is your all-in-one baby care companion, designed to help parents track feeding, diaper changes, growth, pumping sessions, and more."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev

@@ -1,5 +1,5 @@
-import 'package:babyfeedpro/features/diaper/diaper_entry.dart';
-import 'package:babyfeedpro/services/diaper_storage.dart';
+import 'package:leyumi/features/diaper/diaper_entry.dart';
+import 'package:leyumi/services/diaper_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 

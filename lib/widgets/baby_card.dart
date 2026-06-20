@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../models/baby_profile.dart';
-import 'package:babyfeedpro/l10n/app_localizations.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
 
 class BabyCard extends StatefulWidget {
   final BabyProfile profile;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:babyfeedpro/features/feeding/feeding_session.dart';
-import 'package:babyfeedpro/l10n/app_localizations.dart';
+import 'package:leyumi/features/feeding/feeding_session.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
 
 class TodaySummaryCard extends StatelessWidget {
   final List<FeedingSession> sessions;

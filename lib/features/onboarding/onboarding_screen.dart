@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/baby_profile.dart';
 import '../../services/baby_storage.dart';
-import 'package:babyfeedpro/l10n/app_localizations.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});

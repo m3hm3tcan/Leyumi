@@ -1,5 +1,5 @@
-import 'package:babyfeedpro/features/feeding/feeding_session.dart';
-import 'package:babyfeedpro/services/feeding_storage.dart';
+import 'package:leyumi/features/feeding/feeding_session.dart';
+import 'package:leyumi/services/feeding_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';

@@ -17,13 +17,13 @@ void main() async {
   runApp(
     ChangeNotifierProvider(
       create: (_) => ThemeProvider(),
-      child: const BabyFeedApp(),
+      child: const LeyumiApp(),
     ),
   );
 }
 
-class BabyFeedApp extends StatelessWidget {
-  const BabyFeedApp({super.key});
+class LeyumiApp extends StatelessWidget {
+  const LeyumiApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,7 @@ class BabyFeedApp extends StatelessWidget {
       builder: (context, themeProvider, _) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: "BabyFeed Pro",
+          title: "Leyumi - Growing with your little light. 🌙✨",
 
           /// 🌍 LOCALIZATION
           localizationsDelegates: const [

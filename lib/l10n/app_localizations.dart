@@ -17,7 +17,8 @@ class AppLocalizations {
 
   static const Map<String, Map<String, String>> _localizedStrings = {
     'en': {
-      'appTitle': 'BabyFeed Pro',
+      'appTitle': 'Leyumi',
+      'appSubtitle': 'Growing with your little light. 🌙✨',
       'homeTitle': 'Home',
       'feeding': 'Feeding',
       'history': 'History',
@@ -158,7 +159,8 @@ class AppLocalizations {
       "last" : "Last",
     },
     'tr': {
-      'appTitle': 'BabyFeed Pro',
+      'appTitle': 'Leyumi',
+      'appSubtitle': 'Küçük ışığınızla birlikte büyüyoruz. 🌙✨',
       'homeTitle': 'Ana Sayfa',
       'feeding': 'Beslenme',
       'history': 'Geçmiş',
@@ -298,7 +300,8 @@ class AppLocalizations {
       "last" : "Son",
     },
     'hu': {
-        'appTitle': 'BabyFeed Pro',
+        'appTitle': 'Leyumi',
+        'appSubtitle': 'Együtt növekszünk a kis fényeddel. 🌙✨',
         'homeTitle': 'Főoldal',
         'feeding': 'Etetés',
         'history': 'Előzmények',
@@ -448,6 +451,7 @@ class AppLocalizations {
   }
 
   String get appTitle => _getString('appTitle');
+  String get appSubtitle => _getString('appSubtitle');
   String get homeTitle => _getString('homeTitle');
   String get feeding => _getString('feeding');
   String get history => _getString('history');

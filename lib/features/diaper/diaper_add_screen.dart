@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:babyfeedpro/l10n/app_localizations.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
 import '../../services/diaper_storage.dart';
 import 'diaper_entry.dart';
 import 'package:provider/provider.dart';
-import 'package:babyfeedpro/core/theme_provider.dart';
+import 'package:leyumi/core/theme_provider.dart';
 
 class DiaperAddScreen extends StatefulWidget {
   const DiaperAddScreen({super.key});

@@ -1,4 +1,4 @@
-import 'package:babyfeedpro/features/feeding/feeding_session.dart';
+import 'package:leyumi/features/feeding/feeding_session.dart';
 import 'package:flutter/material.dart';
 
 import 'session_card.dart';

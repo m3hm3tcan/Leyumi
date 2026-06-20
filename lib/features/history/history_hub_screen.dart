@@ -1,7 +1,7 @@
-import 'package:babyfeedpro/features/history/graphs/diaper_graph.dart';
-import 'package:babyfeedpro/features/history/graphs/feeding_graph.dart';
-import 'package:babyfeedpro/features/history/graphs/growth_graph.dart';
-import 'package:babyfeedpro/l10n/app_localizations.dart';
+import 'package:leyumi/features/history/graphs/diaper_graph.dart';
+import 'package:leyumi/features/history/graphs/feeding_graph.dart';
+import 'package:leyumi/features/history/graphs/growth_graph.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 import 'tabs/diaper_tab.dart';

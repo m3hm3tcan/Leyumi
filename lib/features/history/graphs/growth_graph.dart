@@ -1,6 +1,6 @@
-import 'package:babyfeedpro/l10n/app_localizations.dart';
-import 'package:babyfeedpro/models/growth_entry.dart';
-import 'package:babyfeedpro/services/growth_storage.dart';
+import 'package:leyumi/l10n/app_localizations.dart';
+import 'package:leyumi/models/growth_entry.dart';
+import 'package:leyumi/services/growth_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 

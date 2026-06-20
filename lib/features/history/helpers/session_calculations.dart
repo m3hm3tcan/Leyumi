@@ -1,4 +1,4 @@
-import 'package:babyfeedpro/features/feeding/feeding_session.dart';
+import 'package:leyumi/features/feeding/feeding_session.dart';
 
 Duration calculateLeftTotal(FeedingSession session) {
   return session.entries
