@@ -50,6 +50,7 @@ class AppLocalizations {
       'diaperScreenTitle': 'Add Diaper Entry',
       'diaperType': 'Diaper Type',
       'peeAmountTitle': 'Pee Amount',
+      'poopAmountTitle': 'Poop Amount',
       'poopColor': 'Poop Color',
       'optionalNote': 'Optional note',
       'saveDiaperRecord': 'Save Diaper Record',
@@ -192,6 +193,7 @@ class AppLocalizations {
       'diaperScreenTitle': 'Bez Kaydı Ekle',
       'diaperType': 'Bez Tipi',
       'peeAmountTitle': 'İdrar Miktarı',
+      'poopAmountTitle': 'Dışkı Miktarı',
       'poopColor': 'Dışkı Rengi',
       'optionalNote': 'Opsiyonel not',
       'saveDiaperRecord': 'Bez Kaydını Kaydet',
@@ -333,6 +335,7 @@ class AppLocalizations {
         'diaperScreenTitle': 'Pelenka bejegyzés hozzáadása',
         'diaperType': 'Pelenka típusa',
         'peeAmountTitle': 'Pisi mennyisége',
+        'poopAmountTitle': 'Kaki mennyisége',
         'poopColor': 'Kaki színe',
         'optionalNote': 'Opcionális megjegyzés',
         'saveDiaperRecord': 'Pelenka bejegyzés mentése',
@@ -490,6 +493,7 @@ class AppLocalizations {
   String get diaperScreenTitle => _getString('diaperScreenTitle');
   String get diaperType => _getString('diaperType');
   String get peeAmountTitle => _getString('peeAmountTitle');
+  String get poopAmountTitle => _getString('poopAmountTitle');
   String get poopColor => _getString('poopColor');
   String get optionalNote => _getString('optionalNote');
   String get saveDiaperRecord => _getString('saveDiaperRecord');

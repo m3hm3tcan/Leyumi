@@ -12,6 +12,12 @@ enum PeeAmount {
   large,
 }
 
+enum PoopAmount {
+  small,
+  medium,
+  large,
+}
+
 enum PoopColor {
   mustardYellow,
   yellowGreen,
@@ -28,6 +34,8 @@ class DiaperEntry {
 
   final PeeAmount? peeAmount;
 
+  final PoopAmount? poopAmount;
+
   final PoopColor? poopColor;
 
   final String? note;
@@ -36,6 +44,7 @@ class DiaperEntry {
     required this.timestamp,
     required this.type,
     this.peeAmount,
+    this.poopAmount,
     this.poopColor,
     this.note,
   });
@@ -46,16 +55,24 @@ class DiaperEntry {
   static PoopColor _mapOldPoopColor(String? value) {
     switch (value) {
       case "yellow":
+      case "mustardYellow":
         return PoopColor.mustardYellow;
 
       case "green":
+      case "yellowGreen":
         return PoopColor.yellowGreen;
 
       case "brown":
         return PoopColor.brown;
 
+      case "darkGreen":
+        return PoopColor.darkGreen;
+
       case "black":
         return PoopColor.black;
+
+      case "whiteGray":
+        return PoopColor.whiteGray;
 
       // Eski kayıtlarda olmayan ama null gelebilecek durumlar için
       default:
@@ -82,6 +99,14 @@ class DiaperEntry {
             )
           : null,
 
+      // Eski kayıtlarda bu alan bulunmaz; null kalması geriye dönük uyumludur.
+      poopAmount: json["poopAmount"] != null
+          ? PoopAmount.values.firstWhere(
+              (e) => e.name == json["poopAmount"],
+              orElse: () => PoopAmount.medium,
+            )
+          : null,
+
       // MIGRATION: Yeni enum yoksa eski değerleri dönüştür
       poopColor: json["poopColor"] != null
           ? _mapOldPoopColor(json["poopColor"])
@@ -98,6 +123,7 @@ class DiaperEntry {
         "timestamp": timestamp.toIso8601String(),
         "type": type.name,
         "peeAmount": peeAmount?.name,
+        "poopAmount": poopAmount?.name,
         "poopColor": poopColor?.name,
         "note": note,
       };

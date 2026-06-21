@@ -24,6 +24,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   final GlobalKey<_TodaySummaryCardState> _todaySummaryKey =
       GlobalKey<_TodaySummaryCardState>();
+  final GlobalKey<_LiveFeedingHomeCardState> _liveFeedingKey =
+      GlobalKey<_LiveFeedingHomeCardState>();
 
   BabyProfile? profile;
   bool loading = true;
@@ -50,6 +52,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed && mounted) {
       setState(() {});
+      _liveFeedingKey.currentState?.refresh();
     }
   }
 
@@ -196,7 +199,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               const SizedBox(height: 12),
 
-              const LiveFeedingHomeCard(),
+              LiveFeedingHomeCard(key: _liveFeedingKey),
 
               const SizedBox(height: 20),
 
@@ -240,6 +243,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         );
                         await _todaySummaryKey.currentState?.loadStats();
+                        await _liveFeedingKey.currentState?.refresh();
                       },
                     ),
                     HomeActionCard(
@@ -491,6 +495,8 @@ class _LiveFeedingHomeCardState extends State<LiveFeedingHomeCard> {
     });
   }
 
+  Future<void> refresh() => _loadDraft();
+
   String _format(Duration duration) {
     final m = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
     final s = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
@@ -500,7 +506,6 @@ class _LiveFeedingHomeCardState extends State<LiveFeedingHomeCard> {
   @override
   Widget build(BuildContext context) {
     if (_draft == null) {
-      _loadDraft();
       return const SizedBox.shrink();
     }
 
