@@ -378,7 +378,16 @@ class _DiaperTabState extends State<DiaperTab> {
     final parts = <String>[];
 
     if (entry.peeAmount != null) {
-      parts.add('${l10n.amount}: ${_labelForPeeAmount(entry.peeAmount!, l10n)}');
+      parts.add(
+        '${l10n.peeAmountTitle}: '
+        '${_labelForPeeAmount(entry.peeAmount!, l10n)}',
+      );
+    }
+    if (entry.poopAmount != null) {
+      parts.add(
+        '${l10n.poopAmountTitle}: '
+        '${_labelForPoopAmount(entry.poopAmount!, l10n)}',
+      );
     }
     if (entry.poopColor != null) {
       parts.add('${l10n.color}: ${_labelForPoopColor(entry.poopColor!, l10n)}');
@@ -397,6 +406,17 @@ class _DiaperTabState extends State<DiaperTab> {
       case PeeAmount.medium:
         return l10n.medium;
       case PeeAmount.large:
+        return l10n.large;
+    }
+  }
+
+  String _labelForPoopAmount(PoopAmount amount, AppLocalizations l10n) {
+    switch (amount) {
+      case PoopAmount.small:
+        return l10n.small;
+      case PoopAmount.medium:
+        return l10n.medium;
+      case PoopAmount.large:
         return l10n.large;
     }
   }

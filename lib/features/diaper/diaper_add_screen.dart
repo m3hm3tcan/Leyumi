@@ -15,6 +15,7 @@ class DiaperAddScreen extends StatefulWidget {
 class _DiaperAddScreenState extends State<DiaperAddScreen> {
   DiaperType type = DiaperType.pee;
   PeeAmount? peeAmount = PeeAmount.medium;
+  PoopAmount? poopAmount = PoopAmount.medium;
   PoopColor? poopColor = PoopColor.mustardYellow;
   DateTime selectedDateTime = DateTime.now();
 
@@ -26,6 +27,9 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
       type: type,
       peeAmount: type == DiaperType.pee || type == DiaperType.both
           ? peeAmount
+          : null,
+      poopAmount: type == DiaperType.poop || type == DiaperType.both
+          ? poopAmount
           : null,
       poopColor: type == DiaperType.poop || type == DiaperType.both
           ? poopColor
@@ -217,6 +221,40 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
             // POOP COLOR
             if (type == DiaperType.poop || type == DiaperType.both) ...[
               const SizedBox(height: 12),
+              Text(
+                l10n.poopAmountTitle,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: PoopAmount.values.map((amount) {
+                  final selected = amount == poopAmount;
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => poopAmount = amount),
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: selected
+                              ? Colors.orange.withOpacity(0.15)
+                              : Theme.of(context).cardColor,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: selected
+                                ? Colors.orange
+                                : Theme.of(context).dividerColor,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(_labelForPoopAmount(amount, l10n)),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              const SizedBox(height: 12),
               Text(l10n.poopColor, style: const TextStyle(fontWeight: FontWeight.w700)),
 
               const SizedBox(height: 8),
@@ -244,12 +282,15 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: selected
-                            ? Colors.blue.shade50
-                            : Colors.white,
+                            ? Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withOpacity(0.12)
+                            : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: selected
-                              ? Colors.blue
+                              ? Theme.of(context).colorScheme.primary
                               : Theme.of(context).dividerColor,
                           width: selected ? 2 : 1,
                         ),
@@ -352,6 +393,17 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
       case PeeAmount.medium:
         return l10n.medium;
       case PeeAmount.large:
+        return l10n.large;
+    }
+  }
+
+  String _labelForPoopAmount(PoopAmount amount, AppLocalizations l10n) {
+    switch (amount) {
+      case PoopAmount.small:
+        return l10n.small;
+      case PoopAmount.medium:
+        return l10n.medium;
+      case PoopAmount.large:
         return l10n.large;
     }
   }
