@@ -6,6 +6,7 @@ class HubCard extends StatelessWidget {
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
+  final bool isPremium;
 
   const HubCard({
     super.key,
@@ -14,6 +15,7 @@ class HubCard extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.onTap,
+    this.isPremium = false,
   });
 
   @override
@@ -41,13 +43,52 @@ class HubCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withAlpha(31),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(icon, color: color),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: color.withAlpha(31),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: color),
+                ),
+                const Spacer(),
+                if (isPremium)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Color(0xff6558E8), Color(0xffA45DE7)],
+                      ),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.workspace_premium_rounded,
+                          color: Colors.white,
+                          size: 12,
+                        ),
+                        SizedBox(width: 3),
+                        Text(
+                          'PRO',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: .5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
             const Spacer(),
             Text(

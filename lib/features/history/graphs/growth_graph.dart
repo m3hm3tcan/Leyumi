@@ -1,8 +1,12 @@
+import 'package:leyumi/core/premium/premium_feature.dart';
+import 'package:leyumi/core/premium/premium_provider.dart';
+import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:leyumi/models/growth_entry.dart';
 import 'package:leyumi/services/growth_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class GrowthGraphScreen extends StatefulWidget {
   const GrowthGraphScreen({super.key});
@@ -222,6 +226,17 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final premium = context.watch<PremiumProvider>();
+
+    if (!premium.isLoaded) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (!premium.hasAccess(PremiumFeature.advancedAnalytics)) {
+      return const PremiumPaywallScreen(
+        feature: PremiumFeature.advancedAnalytics,
+      );
+    }
+
     final theme = Theme.of(context);
     final secondaryTextColor =
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;

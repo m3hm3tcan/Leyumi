@@ -1,3 +1,5 @@
+import 'package:leyumi/core/premium/premium_access.dart';
+import 'package:leyumi/core/premium/premium_feature.dart';
 import 'package:leyumi/features/history/graphs/diaper_graph.dart';
 import 'package:leyumi/features/history/graphs/feeding_graph.dart';
 import 'package:leyumi/features/history/graphs/growth_graph.dart';
@@ -73,12 +75,12 @@ class HistoryHubScreen extends StatelessWidget {
                       icon: Icons.show_chart,
                       color: const Color(0xff3B82F6),
                       subtitle: l10n.viewCharts,
+                      isPremium: true,
                       onTap: () {
-                        Navigator.push(
+                        PremiumAccess.open(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const FeedingGraphScreen(),
-                          ),
+                          feature: PremiumFeature.advancedAnalytics,
+                          builder: (_) => const FeedingGraphScreen(),
                         );
                       },
                     ),
@@ -101,12 +103,12 @@ class HistoryHubScreen extends StatelessWidget {
                       icon: Icons.bar_chart_rounded,
                       color: const Color(0xffD97706),
                       subtitle: l10n.viewCharts,
+                      isPremium: true,
                       onTap: () {
-                        Navigator.push(
+                        PremiumAccess.open(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const DiaperGraphScreen(),
-                          ),
+                          feature: PremiumFeature.advancedAnalytics,
+                          builder: (_) => const DiaperGraphScreen(),
                         );
                       },
                     ),
@@ -129,12 +131,12 @@ class HistoryHubScreen extends StatelessWidget {
                       icon: Icons.area_chart_rounded,
                       color: const Color(0xff16A34A),
                       subtitle: l10n.viewCharts,
+                      isPremium: true,
                       onTap: () {
-                        Navigator.push(
+                        PremiumAccess.open(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const GrowthGraphScreen(),
-                          ),
+                          feature: PremiumFeature.advancedAnalytics,
+                          builder: (_) => const GrowthGraphScreen(),
                         );
                       },
                     ),

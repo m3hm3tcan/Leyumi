@@ -8,6 +8,7 @@ import 'features/home/home_screen.dart';
 import 'features/growth/growth_update_screen.dart';
 import 'features/diaper/diaper_add_screen.dart';
 import 'l10n/app_localizations.dart';
+import 'core/premium/premium_provider.dart';
 import 'core/theme_provider.dart';
 
 void main() async {
@@ -15,8 +16,11 @@ void main() async {
   await SharedPreferences.getInstance();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => PremiumProvider()),
+      ],
       child: const LeyumiApp(),
     ),
   );

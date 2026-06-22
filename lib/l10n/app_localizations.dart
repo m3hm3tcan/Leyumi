@@ -17,6 +17,20 @@ class AppLocalizations {
 
   static const Map<String, Map<String, String>> _localizedStrings = {
     'en': {
+      'premiumTitle': 'Leyumi Premium',
+      'unlockPremium': 'Unlock more with Premium',
+      'premiumDescription':
+          'Turn your baby care records into clear insights and keep everything safely connected.',
+      'premiumIncludes': 'Premium features',
+      'premiumAnalytics': 'Advanced feeding, diaper and growth analytics',
+      'premiumPdfReports': 'PDF doctor reports',
+      'premiumMultipleChildren': 'Multiple child profiles',
+      'premiumCloudBackup': 'Cloud backup and device sync',
+      'premiumSmartReminders': 'Smart reminders',
+      'premiumMilkInventory': 'Milk inventory management',
+      'upgradeToPremium': 'Upgrade to Premium',
+      'premiumPurchaseComingSoon':
+          'Premium purchasing will be available soon.',
       'confirmDeleteTitle': 'Delete record?',
       'confirmDeleteContent':
           'Are you sure you want to delete this record? This action can be undone for a short time.',
@@ -168,6 +182,20 @@ class AppLocalizations {
       "last" : "Last",
     },
     'tr': {
+      'premiumTitle': 'Leyumi Premium',
+      'unlockPremium': 'Premium ile daha fazlasını keşfedin',
+      'premiumDescription':
+          'Bebek bakım kayıtlarınızı anlaşılır analizlere dönüştürün ve verilerinizi güvenle bağlantılı tutun.',
+      'premiumIncludes': 'Premium özellikler',
+      'premiumAnalytics': 'Gelişmiş beslenme, bez ve büyüme analizleri',
+      'premiumPdfReports': 'PDF doktor raporları',
+      'premiumMultipleChildren': 'Çoklu çocuk profili',
+      'premiumCloudBackup': 'Bulut yedekleme ve cihaz senkronizasyonu',
+      'premiumSmartReminders': 'Akıllı hatırlatmalar',
+      'premiumMilkInventory': 'Süt stoğu yönetimi',
+      'upgradeToPremium': 'Premium’a Geç',
+      'premiumPurchaseComingSoon':
+          'Premium satın alma çok yakında kullanıma açılacak.',
       'confirmDeleteTitle': 'Kayıt silinsin mi?',
       'confirmDeleteContent':
           'Bu kaydı silmek istediğinizden emin misiniz? İşlemi kısa bir süre içinde geri alabilirsiniz.',
@@ -318,6 +346,21 @@ class AppLocalizations {
       "last" : "Son",
     },
     'hu': {
+        'premiumTitle': 'Leyumi Premium',
+        'unlockPremium': 'Fedezz fel többet a Premiummal',
+        'premiumDescription':
+            'Alakítsd a babaápolási adatokat áttekinthető elemzésekké, és tarts mindent biztonságosan összekapcsolva.',
+        'premiumIncludes': 'Premium funkciók',
+        'premiumAnalytics':
+            'Fejlett etetési, pelenka- és növekedési elemzések',
+        'premiumPdfReports': 'PDF orvosi jelentések',
+        'premiumMultipleChildren': 'Több gyermekprofil',
+        'premiumCloudBackup': 'Felhőmentés és eszközszinkronizálás',
+        'premiumSmartReminders': 'Intelligens emlékeztetők',
+        'premiumMilkInventory': 'Tejkészlet kezelése',
+        'upgradeToPremium': 'Váltás Premiumra',
+        'premiumPurchaseComingSoon':
+            'A Premium vásárlás hamarosan elérhető lesz.',
         'confirmDeleteTitle': 'Törlöd a bejegyzést?',
         'confirmDeleteContent':
             'Biztosan törölni szeretnéd ezt a bejegyzést? A művelet rövid ideig visszavonható.',
@@ -477,6 +520,19 @@ class AppLocalizations {
         key;
   }
 
+  String get premiumTitle => _getString('premiumTitle');
+  String get unlockPremium => _getString('unlockPremium');
+  String get premiumDescription => _getString('premiumDescription');
+  String get premiumIncludes => _getString('premiumIncludes');
+  String get premiumAnalytics => _getString('premiumAnalytics');
+  String get premiumPdfReports => _getString('premiumPdfReports');
+  String get premiumMultipleChildren => _getString('premiumMultipleChildren');
+  String get premiumCloudBackup => _getString('premiumCloudBackup');
+  String get premiumSmartReminders => _getString('premiumSmartReminders');
+  String get premiumMilkInventory => _getString('premiumMilkInventory');
+  String get upgradeToPremium => _getString('upgradeToPremium');
+  String get premiumPurchaseComingSoon =>
+      _getString('premiumPurchaseComingSoon');
   String get appTitle => _getString('appTitle');
   String get appSubtitle => _getString('appSubtitle');
   String get homeTitle => _getString('homeTitle');

@@ -2,9 +2,13 @@ import 'dart:math' as math;
 
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:leyumi/core/premium/premium_feature.dart';
+import 'package:leyumi/core/premium/premium_provider.dart';
 import 'package:leyumi/features/feeding/feeding_session.dart';
 import 'package:leyumi/features/history/graphs/graph_style.dart';
+import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/services/feeding_storage.dart';
+import 'package:provider/provider.dart';
 
 class FeedingGraphScreen extends StatefulWidget {
   const FeedingGraphScreen({super.key});
@@ -224,6 +228,16 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final premium = context.watch<PremiumProvider>();
+    if (!premium.isLoaded) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+    if (!premium.hasAccess(PremiumFeature.advancedAnalytics)) {
+      return const PremiumPaywallScreen(
+        feature: PremiumFeature.advancedAnalytics,
+      );
+    }
+
     if (loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
