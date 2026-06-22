@@ -1,8 +1,10 @@
-import 'package:leyumi/features/feeding/feeding_session.dart';
-import 'package:leyumi/services/feeding_storage.dart';
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:leyumi/features/feeding/feeding_session.dart';
+import 'package:leyumi/features/history/graphs/graph_style.dart';
+import 'package:leyumi/services/feeding_storage.dart';
 
 class FeedingGraphScreen extends StatefulWidget {
   const FeedingGraphScreen({super.key});
@@ -13,7 +15,8 @@ class FeedingGraphScreen extends StatefulWidget {
 
 class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
   List<FeedingSession> sessions = [];
-  String filter = "30";
+  bool loading = true;
+  String filter = '30';
 
   @override
   void initState() {
@@ -25,476 +28,528 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
     final data = await FeedingStorage().loadSessions();
     data.sort((a, b) => a.startTime.compareTo(b.startTime));
     if (!mounted) return;
-    setState(() => sessions = data);
-  }
-
-  List<FeedingSession> get filtered {
-    if (filter == "all") return sessions;
-    final days = int.parse(filter);
-    final cutoff = DateTime.now().subtract(Duration(days: days));
-    return sessions.where((s) => s.startTime.isAfter(cutoff)).toList();
-  }
-
-  String _dayKey(DateTime d) => "${d.year}-${d.month}-${d.day}";
-
-  List<String> get sortedDays {
-    final keys = filtered.map((s) => _dayKey(s.startTime)).toSet().toList();
-    keys.sort();
-    return keys;
-  }
-
-  int _sum(Map<String, int> map) => map.values.fold(0, (a, b) => a + b);
-
-  Map<String, int> get dailyTotals {
-    final map = <String, int>{};
-    for (final s in filtered) {
-      final key = _dayKey(s.startTime);
-      map[key] = (map[key] ?? 0) + s.totalDuration.inSeconds;
-    }
-    return map;
-  }
-
-  Map<String, int> get leftTotals {
-    final map = <String, int>{};
-    for (final s in filtered) {
-      final key = _dayKey(s.startTime);
-      map[key] = (map[key] ?? 0) + s.leftDuration.inSeconds;
-    }
-    return map;
-  }
-
-  Map<String, int> get rightTotals {
-    final map = <String, int>{};
-    for (final s in filtered) {
-      final key = _dayKey(s.startTime);
-      map[key] = (map[key] ?? 0) + s.rightDuration.inSeconds;
-    }
-    return map;
-  }
-
-  Map<String, int> get milkTotals {
-    final map = <String, int>{};
-    for (final s in filtered) {
-      if (s.milkIntakeGr != null) {
-        final key = _dayKey(s.startTime);
-        map[key] = (map[key] ?? 0) + s.milkIntakeGr!;
-      }
-    }
-    return map;
-  }
-
-  List<FlSpot> _spots(Map<String, int> map, {bool minutes = true}) {
-    return List.generate(sortedDays.length, (i) {
-      final key = sortedDays[i];
-      final value = map[key] ?? 0;
-      return FlSpot(i.toDouble(), minutes ? value / 60 : value.toDouble());
+    setState(() {
+      sessions = data;
+      loading = false;
     });
   }
 
-  String _formatDay(String key) {
-    final p = key.split("-");
-    final d = DateTime(int.parse(p[0]), int.parse(p[1]), int.parse(p[2]));
-    return DateFormat("dd MMM").format(d);
+  List<FeedingSession> get filtered {
+    if (filter == 'all') return sessions;
+    final cutoff = DateTime.now().subtract(Duration(days: int.parse(filter)));
+    return sessions
+        .where((session) => session.startTime.isAfter(cutoff))
+        .toList();
   }
 
-  Widget _filterButton(BuildContext context, String label, String value) {
-    final theme = Theme.of(context);
-    final selected = filter == value;
-    final unselectedBorder =
-        theme.dividerColor.withAlpha(theme.brightness == Brightness.dark ? 90 : 160);
+  DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
 
-    return GestureDetector(
-      onTap: () => setState(() => filter = value),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected
-              ? Colors.blue.withAlpha(theme.brightness == Brightness.dark ? 35 : 20)
-              : theme.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: selected ? Colors.blue : unselectedBorder),
+  List<DateTime> get sortedDays {
+    final days = filtered
+        .map((session) => _dateOnly(session.startTime))
+        .toSet()
+        .toList();
+    days.sort();
+    return days;
+  }
+
+  Map<DateTime, int> _dailySeconds(
+    int Function(FeedingSession session) selector,
+  ) {
+    final result = <DateTime, int>{};
+    for (final session in filtered) {
+      final day = _dateOnly(session.startTime);
+      result[day] = (result[day] ?? 0) + selector(session);
+    }
+    return result;
+  }
+
+  Map<DateTime, int> get dailyTotals =>
+      _dailySeconds((session) => session.totalDuration.inSeconds);
+
+  Map<DateTime, int> get leftTotals =>
+      _dailySeconds((session) => session.leftDuration.inSeconds);
+
+  Map<DateTime, int> get rightTotals =>
+      _dailySeconds((session) => session.rightDuration.inSeconds);
+
+  Map<DateTime, int> get milkTotals {
+    final result = <DateTime, int>{};
+    for (final session in filtered) {
+      if (session.milkIntakeGr == null) continue;
+      final day = _dateOnly(session.startTime);
+      result[day] = (result[day] ?? 0) + session.milkIntakeGr!;
+    }
+    return result;
+  }
+
+  List<FlSpot> _spots(Map<DateTime, int> values, {bool seconds = true}) {
+    return List.generate(sortedDays.length, (index) {
+      final value = values[sortedDays[index]] ?? 0;
+      return FlSpot(index.toDouble(), seconds ? value / 60 : value.toDouble());
+    });
+  }
+
+  int _sum(Map<DateTime, int> values) =>
+      values.values.fold(0, (sum, value) => sum + value);
+
+  double _maxFor(List<Map<DateTime, int>> series, {required bool seconds}) {
+    final values = <double>[];
+    for (final map in series) {
+      values.addAll(
+        sortedDays.map((day) {
+          final value = map[day] ?? 0;
+          return seconds ? value / 60 : value.toDouble();
+        }),
+      );
+    }
+    return chartMaximum(values, minimum: seconds ? 10 : 50);
+  }
+
+  FlTitlesData _titles({
+    required double interval,
+    required String Function(double value) valueLabel,
+  }) {
+    return FlTitlesData(
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      leftTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          reservedSize: 39,
+          interval: interval,
+          getTitlesWidget: (value, meta) {
+            if (value == meta.max) return const SizedBox();
+            return SideTitleWidget(
+              meta: meta,
+              child: Text(valueLabel(value), style: graphAxisStyle(context)),
+            );
+          },
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: selected
-                ? Colors.blue
-                : (theme.textTheme.bodyMedium?.color ?? Colors.black),
-          ),
-        ),
       ),
-    );
-  }
-
-  Widget _chartCard(BuildContext context, String title, Widget chart) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(isDark ? 35 : 10),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-          ),
-          const SizedBox(height: 14),
-          chart,
-        ],
-      ),
-    );
-  }
-
-  Widget _summaryCard(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final secondaryTextColor =
-        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
-    final totalMin = filtered.fold<int>(0, (a, b) => a + b.totalDuration.inMinutes);
-    final left = _sum(leftTotals);
-    final right = _sum(rightTotals);
-    final milk = _sum(milkTotals);
-
-    final total = left + right;
-    final leftPct = total == 0 ? 0 : (left / total * 100).round();
-    final rightPct = total == 0 ? 0 : (right / total * 100).round();
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(isDark ? 35 : 10),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "Summary",
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: secondaryTextColor,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            "$totalMin min",
-            style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w900),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Expanded(child: _metric("Left", "$leftPct%", Colors.pinkAccent)),
-              const SizedBox(width: 10),
-              Expanded(child: _metric("Right", "$rightPct%", Colors.blueAccent)),
-              const SizedBox(width: 10),
-              Expanded(child: _metric("Milk", "${milk}g", Colors.green)),
-            ],
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _metric(String title, String value, Color color) {
-    return Builder(
-      builder: (context) {
-        final theme = Theme.of(context);
-        return Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: color.withAlpha(theme.brightness == Brightness.dark ? 30 : 20),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Column(
-            children: [
-              Text(
-                value,
-                style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 18,
-                ),
+      bottomTitles: AxisTitles(
+        sideTitles: SideTitles(
+          showTitles: true,
+          reservedSize: 34,
+          interval: 1,
+          getTitlesWidget: (value, meta) {
+            final index = value.round();
+            if (value != index || index < 0 || index >= sortedDays.length) {
+              return const SizedBox();
+            }
+            if (!shouldShowLabel(index, sortedDays.length)) {
+              return const SizedBox();
+            }
+            return SideTitleWidget(
+              meta: meta,
+              space: 9,
+              child: Text(
+                compactDate(sortedDays[index], context),
+                style: graphAxisStyle(context),
               ),
-              const SizedBox(height: 4),
-              Text(title),
-            ],
-          ),
-        );
-      },
+            );
+          },
+        ),
+      ),
     );
   }
 
-  TextStyle _axisTextStyle(BuildContext context, {double size = 11}) {
-    final color =
-        Theme.of(context).textTheme.bodySmall?.color?.withAlpha(170) ?? Colors.grey;
-    return TextStyle(fontSize: size, color: color, fontWeight: FontWeight.w600);
+  LineTouchData _touchData({
+    required String unit,
+    required List<String> labels,
+  }) {
+    return LineTouchData(
+      touchTooltipData: LineTouchTooltipData(
+        getTooltipColor: (_) => const Color(0xff202535),
+        tooltipBorderRadius: BorderRadius.circular(12),
+        tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        fitInsideHorizontally: true,
+        fitInsideVertically: true,
+        getTooltipItems: (spots) {
+          return spots.map((spot) {
+            final index = spot.x.round();
+            final prefix = labels.length > spot.barIndex
+                ? '${labels[spot.barIndex]}: '
+                : '';
+            return LineTooltipItem(
+              '${spot.barIndex == 0 ? '${compactDate(sortedDays[index], context)}\n' : ''}'
+              '$prefix${spot.y.round()} $unit',
+              TextStyle(
+                color:
+                    spot.bar.gradient?.colors.first ??
+                    spot.bar.color ??
+                    Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+              ),
+            );
+          }).toList();
+        },
+      ),
+    );
+  }
+
+  LineChartBarData _line({
+    required List<FlSpot> spots,
+    required Color color,
+    bool fill = false,
+  }) {
+    return LineChartBarData(
+      spots: spots,
+      isCurved: spots.length > 2,
+      curveSmoothness: 0.22,
+      color: color,
+      barWidth: 3,
+      isStrokeCapRound: true,
+      dotData: FlDotData(
+        show: spots.length <= 10,
+        getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
+          radius: 3.5,
+          color: Theme.of(context).cardColor,
+          strokeWidth: 2.5,
+          strokeColor: color,
+        ),
+      ),
+      belowBarData: BarAreaData(
+        show: fill,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [color.withAlpha(55), color.withAlpha(2)],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final axisColor =
-        theme.textTheme.bodySmall?.color?.withAlpha(170) ?? Colors.grey;
+    if (loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Feeding Charts"),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('Feeding Analytics')),
       body: sessions.isEmpty
-          ? Center(
-              child: Text(
-                "No feeding data",
-                style: TextStyle(color: axisColor),
-              ),
-            )
+          ? const Center(child: Text('No feeding data'))
           : Column(
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _filterButton(context, "7d", "7"),
-                      _filterButton(context, "30d", "30"),
-                      _filterButton(context, "90d", "90"),
-                      _filterButton(context, "All", "all"),
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+                  child: GraphFilterBar(
+                    value: filter,
+                    options: const [
+                      ('7d', '7'),
+                      ('30d', '30'),
+                      ('90d', '90'),
+                      ('All', 'all'),
                     ],
+                    onChanged: (value) => setState(() => filter = value),
                   ),
                 ),
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      children: [
-                        _summaryCard(context),
-                        _chartCard(
-                          context,
-                          "Daily Total Feeding",
-                          SizedBox(
-                            height: 200,
-                            child: LineChart(
-                              LineChartData(
-                                minY: 0,
-                                gridData: FlGridData(
-                                  show: true,
-                                  drawVerticalLine: false,
-                                  getDrawingHorizontalLine: (_) => FlLine(
-                                    color: axisColor.withAlpha(60),
-                                    strokeWidth: 1,
-                                  ),
-                                ),
-                                borderData: FlBorderData(show: false),
-                                titlesData: FlTitlesData(
-                                  leftTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      reservedSize: 40,
-                                      getTitlesWidget: (value, meta) {
-                                        return Text(
-                                          "${value.toInt()} min",
-                                          style: _axisTextStyle(context),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  bottomTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      reservedSize: 28,
-                                      getTitlesWidget: (value, meta) {
-                                        final i = value.toInt();
-                                        if (i < 0 || i >= sortedDays.length) {
-                                          return const SizedBox();
-                                        }
-                                        return Text(
-                                          _formatDay(sortedDays[i]),
-                                          style: _axisTextStyle(context, size: 11),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                lineBarsData: [
-                                  LineChartBarData(
-                                    spots: _spots(dailyTotals),
-                                    isCurved: true,
-                                    color: Colors.blueAccent,
-                                    barWidth: 3,
-                                    dotData: FlDotData(show: false),
-                                  ),
-                                ],
-                              ),
-                            ),
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+                    child: filtered.isEmpty
+                        ? const PremiumChartCard(
+                            title: 'No data in this range',
+                            subtitle:
+                                'Choose a wider time range to see feeding trends.',
+                            child: SizedBox(height: 80),
+                          )
+                        : Column(
+                            children: [
+                              _summaryCard(),
+                              _dailyTotalChart(),
+                              _sideBalanceChart(),
+                              _milkChart(),
+                            ],
                           ),
-                        ),
-                        _chartCard(
-                          context,
-                          "Left / Right Feeding",
-                          SizedBox(
-                            height: 200,
-                            child: ScatterChart(
-                              ScatterChartData(
-                                minY: 0,
-                                gridData: FlGridData(
-                                  show: true,
-                                  getDrawingHorizontalLine: (_) => FlLine(
-                                    color: axisColor.withAlpha(60),
-                                    strokeWidth: 1,
-                                  ),
-                                  getDrawingVerticalLine: (_) => FlLine(
-                                    color: axisColor.withAlpha(40),
-                                    strokeWidth: 1,
-                                  ),
-                                ),
-                                borderData: FlBorderData(show: false),
-                                titlesData: FlTitlesData(
-                                  leftTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      interval: 5,
-                                      reservedSize: 38,
-                                      getTitlesWidget: (value, meta) {
-                                        if (value % 5 != 0) return const SizedBox();
-                                        return Text(
-                                          "${value.toInt()} min",
-                                          style: _axisTextStyle(context, size: 10),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                  bottomTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      reservedSize: 28,
-                                      getTitlesWidget: (value, meta) {
-                                        final i = value.toInt();
-                                        if (i < 0 || i >= sortedDays.length) {
-                                          return const SizedBox();
-                                        }
-                                        return Text(
-                                          _formatDay(sortedDays[i]),
-                                          style: _axisTextStyle(context, size: 11),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                scatterSpots: [
-                                  ..._spots(leftTotals).map(
-                                    (e) => ScatterSpot(
-                                      e.x,
-                                      e.y,
-                                      dotPainter: FlDotCirclePainter(
-                                        color: Colors.pinkAccent,
-                                        radius: 6,
-                                      ),
-                                    ),
-                                  ),
-                                  ..._spots(rightTotals).map(
-                                    (e) => ScatterSpot(
-                                      e.x,
-                                      e.y,
-                                      dotPainter: FlDotCirclePainter(
-                                        color: Colors.blueAccent,
-                                        radius: 6,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        _chartCard(
-                          context,
-                          "Milk Intake (g)",
-                          SizedBox(
-                            height: 200,
-                            child: LineChart(
-                              LineChartData(
-                                minY: 0,
-                                gridData: FlGridData(
-                                  show: true,
-                                  getDrawingHorizontalLine: (_) => FlLine(
-                                    color: axisColor.withAlpha(60),
-                                    strokeWidth: 1,
-                                  ),
-                                  getDrawingVerticalLine: (_) => FlLine(
-                                    color: axisColor.withAlpha(40),
-                                    strokeWidth: 1,
-                                  ),
-                                ),
-                                borderData: FlBorderData(show: false),
-                                titlesData: FlTitlesData(
-                                  leftTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      reservedSize: 36,
-                                      getTitlesWidget: (value, meta) =>
-                                          Text(value.toInt().toString(),
-                                              style: _axisTextStyle(context)),
-                                    ),
-                                  ),
-                                  bottomTitles: AxisTitles(
-                                    sideTitles: SideTitles(
-                                      showTitles: true,
-                                      reservedSize: 28,
-                                      getTitlesWidget: (value, meta) {
-                                        final i = value.toInt();
-                                        if (i < 0 || i >= sortedDays.length) {
-                                          return const SizedBox();
-                                        }
-                                        return Text(
-                                          _formatDay(sortedDays[i]),
-                                          style: _axisTextStyle(context, size: 11),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                lineBarsData: [
-                                  LineChartBarData(
-                                    spots: _spots(milkTotals, minutes: false),
-                                    isCurved: true,
-                                    color: Colors.green,
-                                    barWidth: 3,
-                                    dotData: FlDotData(show: true),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ],
             ),
+    );
+  }
+
+  Widget _summaryCard() {
+    final totalMinutes = filtered.fold<int>(
+      0,
+      (sum, session) => sum + session.totalDuration.inMinutes,
+    );
+    final average = filtered.isEmpty
+        ? 0
+        : (totalMinutes / filtered.length).round();
+    final totalMilk = _sum(milkTotals);
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 18),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xff4F7DFF), Color(0xff745EE8)],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: graphBlue.withAlpha(55),
+            blurRadius: 24,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'TOTAL FEEDING TIME',
+            style: TextStyle(
+              color: Colors.white.withAlpha(180),
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 1.1,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            _durationLabel(totalMinutes),
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 18),
+          Row(
+            children: [
+              Expanded(child: _summaryValue('${filtered.length}', 'Sessions')),
+              _summaryDivider(),
+              Expanded(child: _summaryValue('$average min', 'Average')),
+              _summaryDivider(),
+              Expanded(child: _summaryValue('${totalMilk}g', 'Milk')),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryValue(String value, String label) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+          ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          label,
+          style: TextStyle(
+            color: Colors.white.withAlpha(175),
+            fontSize: 10,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _summaryDivider() {
+    return Container(
+      width: 1,
+      height: 30,
+      margin: const EdgeInsets.symmetric(horizontal: 12),
+      color: Colors.white.withAlpha(45),
+    );
+  }
+
+  String _durationLabel(int minutes) {
+    final hours = minutes ~/ 60;
+    final remaining = minutes % 60;
+    if (hours == 0) return '$remaining min';
+    if (remaining == 0) return '${hours}h';
+    return '${hours}h ${remaining}m';
+  }
+
+  Widget _dailyTotalChart() {
+    final maxY = _maxFor([dailyTotals], seconds: true);
+    final interval = niceInterval(maxY);
+    return PremiumChartCard(
+      title: 'Daily feeding time',
+      subtitle: 'Total active feeding minutes per day',
+      trailing: _trendPill(_spots(dailyTotals)),
+      child: SizedBox(
+        height: 230,
+        child: LineChart(
+          LineChartData(
+            minX: 0,
+            maxX: math.max(0, sortedDays.length - 1).toDouble(),
+            minY: 0,
+            maxY: maxY,
+            gridData: premiumGrid(context, interval: interval),
+            borderData: FlBorderData(show: false),
+            titlesData: _titles(
+              interval: interval,
+              valueLabel: (value) => '${value.round()}m',
+            ),
+            lineTouchData: _touchData(unit: 'min', labels: const ['Total']),
+            lineBarsData: [
+              _line(spots: _spots(dailyTotals), color: graphBlue, fill: true),
+            ],
+          ),
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic,
+        ),
+      ),
+    );
+  }
+
+  Widget _sideBalanceChart() {
+    final maxY = _maxFor([leftTotals, rightTotals], seconds: true);
+    final interval = niceInterval(maxY);
+    return PremiumChartCard(
+      title: 'Left & right balance',
+      subtitle: 'Daily feeding duration on each side',
+      trailing: const GraphLegend(
+        items: [(graphPink, 'Left'), (graphBlue, 'Right')],
+        alignment: WrapAlignment.end,
+      ),
+      child: SizedBox(
+        height: 230,
+        child: LineChart(
+          LineChartData(
+            minX: 0,
+            maxX: math.max(0, sortedDays.length - 1).toDouble(),
+            minY: 0,
+            maxY: maxY,
+            gridData: premiumGrid(context, interval: interval),
+            borderData: FlBorderData(show: false),
+            titlesData: _titles(
+              interval: interval,
+              valueLabel: (value) => '${value.round()}m',
+            ),
+            lineTouchData: _touchData(
+              unit: 'min',
+              labels: const ['Left', 'Right'],
+            ),
+            lineBarsData: [
+              _line(spots: _spots(leftTotals), color: graphPink),
+              _line(spots: _spots(rightTotals), color: graphBlue),
+            ],
+          ),
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeOutCubic,
+        ),
+      ),
+    );
+  }
+
+  Widget _milkChart() {
+    final maxY = _maxFor([milkTotals], seconds: false);
+    final interval = niceInterval(maxY);
+    final hasMilk = milkTotals.values.any((value) => value > 0);
+
+    return PremiumChartCard(
+      title: 'Milk intake',
+      subtitle: 'Recorded intake from weight-based sessions',
+      trailing: _valuePill('${_sum(milkTotals)}g total', graphGreen),
+      child: hasMilk
+          ? SizedBox(
+              height: 230,
+              child: LineChart(
+                LineChartData(
+                  minX: 0,
+                  maxX: math.max(0, sortedDays.length - 1).toDouble(),
+                  minY: 0,
+                  maxY: maxY,
+                  gridData: premiumGrid(context, interval: interval),
+                  borderData: FlBorderData(show: false),
+                  titlesData: _titles(
+                    interval: interval,
+                    valueLabel: (value) => '${value.round()}g',
+                  ),
+                  lineTouchData: _touchData(unit: 'g', labels: const ['Milk']),
+                  lineBarsData: [
+                    _line(
+                      spots: _spots(milkTotals, seconds: false),
+                      color: graphGreen,
+                      fill: true,
+                    ),
+                  ],
+                ),
+                duration: const Duration(milliseconds: 350),
+                curve: Curves.easeOutCubic,
+              ),
+            )
+          : SizedBox(
+              height: 110,
+              child: Center(
+                child: Text(
+                  'No milk intake has been recorded for this period.',
+                  textAlign: TextAlign.center,
+                  style: graphAxisStyle(context, fontSize: 12),
+                ),
+              ),
+            ),
+    );
+  }
+
+  Widget _trendPill(List<FlSpot> spots) {
+    if (spots.length < 2) return const SizedBox();
+    final change = spots.last.y - spots[spots.length - 2].y;
+    final color = change >= 0 ? graphGreen : graphPink;
+    final icon = change >= 0
+        ? Icons.arrow_upward_rounded
+        : Icons.arrow_downward_rounded;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withAlpha(18),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: color),
+          const SizedBox(width: 3),
+          Text(
+            '${change.abs().round()}m',
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _valuePill(String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withAlpha(18),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        value,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:leyumi/features/feeding/feeding_session.dart';
+import 'package:leyumi/features/history/helpers/delete_confirmation.dart';
 import 'package:flutter/material.dart';
 
 import 'session_card.dart';
@@ -56,6 +57,7 @@ class TimelineSection extends StatelessWidget {
                   size: 28,
                 ),
               ),
+              confirmDismiss: (_) => confirmHistoryDelete(context),
               onDismissed: (_) => onDelete(session),
               child: TimelineItem(
                 isLast: index == sessions.length - 1,

@@ -1,4 +1,5 @@
 import 'package:leyumi/features/diaper/diaper_entry.dart';
+import 'package:leyumi/features/history/helpers/delete_confirmation.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:leyumi/services/diaper_storage.dart';
 import 'package:flutter/material.dart';
@@ -243,6 +244,7 @@ class _DiaperTabState extends State<DiaperTab> {
         padding: const EdgeInsets.only(right: 20),
         child: const Icon(Icons.delete_outline, color: Colors.white, size: 28),
       ),
+      confirmDismiss: (_) => confirmHistoryDelete(context),
       onDismissed: (_) => deleteEntry(entry),
       child: Container(
         padding: const EdgeInsets.all(12),

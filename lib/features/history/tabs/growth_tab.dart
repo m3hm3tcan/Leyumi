@@ -1,3 +1,4 @@
+import 'package:leyumi/features/history/helpers/delete_confirmation.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:leyumi/models/growth_entry.dart';
 import 'package:leyumi/services/growth_storage.dart';
@@ -118,6 +119,7 @@ class _GrowthTabState extends State<GrowthTab> {
                 size: 28,
               ),
             ),
+            confirmDismiss: (_) => confirmHistoryDelete(context),
             onDismissed: (_) => deleteEntry(entry),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

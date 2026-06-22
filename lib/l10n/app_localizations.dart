@@ -17,6 +17,13 @@ class AppLocalizations {
 
   static const Map<String, Map<String, String>> _localizedStrings = {
     'en': {
+      'confirmDeleteTitle': 'Delete record?',
+      'confirmDeleteContent':
+          'Are you sure you want to delete this record? This action can be undone for a short time.',
+      'confirmSaveTitle': 'Save feeding record?',
+      'confirmSaveContent':
+          'Are you sure you want to save this feeding record?',
+      'dontSave': "Don't save",
       'appTitle': 'Leyumi',
       'appSubtitle': 'Growing with your little light. 🌙✨',
       'homeTitle': 'Home',
@@ -92,6 +99,7 @@ class AppLocalizations {
       'babyWeightGr': 'Baby Weight (g)',
       'exampleWeight': 'e.g. 2500',
       'liveSession': 'Live Session',
+      'backLiveSession': 'Ongoing breastfeeding was recorded in the background.',
       'ready': 'Ready',
       'tapLeftOrRightToStart': 'Tap left or right to start',
       'leftSide': 'Left Side',
@@ -160,6 +168,13 @@ class AppLocalizations {
       "last" : "Last",
     },
     'tr': {
+      'confirmDeleteTitle': 'Kayıt silinsin mi?',
+      'confirmDeleteContent':
+          'Bu kaydı silmek istediğinizden emin misiniz? İşlemi kısa bir süre içinde geri alabilirsiniz.',
+      'confirmSaveTitle': 'Beslenme kaydı kaydedilsin mi?',
+      'confirmSaveContent':
+          'Bu beslenme kaydını kaydetmek istediğinizden emin misiniz?',
+      'dontSave': 'Kaydetme',
       'appTitle': 'Leyumi',
       'appSubtitle': 'Küçük ışığınızla birlikte büyüyoruz. 🌙✨',
       'homeTitle': 'Ana Sayfa',
@@ -235,6 +250,7 @@ class AppLocalizations {
       'babyWeightGr': 'Bebeğin Kilosu (gr)',
       'exampleWeight': 'Örn: 2500',
       'liveSession': 'Canlı Seans',
+      'backLiveSession' : 'Devam eden emizrme arka planda kaydedildi.',
       'ready': 'Hazır',
       'tapLeftOrRightToStart': 'Başlamak için sola veya sağa dokun',
       'leftSide': 'Sol Meme',
@@ -302,6 +318,13 @@ class AppLocalizations {
       "last" : "Son",
     },
     'hu': {
+        'confirmDeleteTitle': 'Törlöd a bejegyzést?',
+        'confirmDeleteContent':
+            'Biztosan törölni szeretnéd ezt a bejegyzést? A művelet rövid ideig visszavonható.',
+        'confirmSaveTitle': 'Mented az etetési bejegyzést?',
+        'confirmSaveContent':
+            'Biztosan menteni szeretnéd ezt az etetési bejegyzést?',
+        'dontSave': 'Ne mentsd',
         'appTitle': 'Leyumi',
         'appSubtitle': 'Együtt növekszünk a kis fényeddel. 🌙✨',
         'homeTitle': 'Főoldal',
@@ -377,6 +400,7 @@ class AppLocalizations {
         'babyWeightGr': 'Baba súlya (g)',
         'exampleWeight': 'pl. 2500',
         'liveSession': 'Élő folyamat',
+        'backLiveSession': 'A háttérben rögzítették a folyamatos szoptatást.',
         'ready': 'Kész',
         'tapLeftOrRightToStart': 'Kezdéshez érintsd meg a bal vagy jobb oldalt',
         'leftSide': 'Bal oldal',
@@ -470,6 +494,11 @@ class AppLocalizations {
   String get confirmResetContent => _getString('confirmResetContent');
   String get cancel => _getString('cancel');
   String get delete => _getString('delete');
+  String get confirmDeleteTitle => _getString('confirmDeleteTitle');
+  String get confirmDeleteContent => _getString('confirmDeleteContent');
+  String get confirmSaveTitle => _getString('confirmSaveTitle');
+  String get confirmSaveContent => _getString('confirmSaveContent');
+  String get dontSave => _getString('dontSave');
   String get today => _getString('today');
   String get older => _getString('older');
   String get noFeedingSessionsYet => _getString('noFeedingSessionsYet');
@@ -594,7 +623,7 @@ class AppLocalizations {
   String get quickActions => _getString('quickActions');
   String get todayActivities => _getString('todayActivities');
   String get last => _getString('last');
-
+  String get backLiveSession => _getString('backLiveSession');
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

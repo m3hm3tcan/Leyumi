@@ -1,7 +1,10 @@
-import 'package:leyumi/features/diaper/diaper_entry.dart';
-import 'package:leyumi/services/diaper_storage.dart';
+import 'dart:math' as math;
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:leyumi/features/diaper/diaper_entry.dart';
+import 'package:leyumi/features/history/graphs/graph_style.dart';
+import 'package:leyumi/services/diaper_storage.dart';
 
 class DiaperGraphScreen extends StatefulWidget {
   const DiaperGraphScreen({super.key});
@@ -11,9 +14,13 @@ class DiaperGraphScreen extends StatefulWidget {
 }
 
 class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
+  static const _peeColor = Color(0xff56A8F5);
+  static const _poopColor = Color(0xffD89A62);
+  static const _bothColor = Color(0xffA878E8);
+
   List<DiaperEntry> entries = [];
   bool loading = true;
-  String filter = "30";
+  String filter = '30';
   int tabIndex = 0;
 
   @override
@@ -32,274 +39,216 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
     });
   }
 
-  Map<String, int> get dailyTotals {
-    final map = <String, int>{};
-    for (final e in filtered) {
-      final key = "${e.timestamp.year}-${e.timestamp.month}-${e.timestamp.day}";
-      map[key] = (map[key] ?? 0) + 1;
-    }
-    return map;
-  }
-
   List<DiaperEntry> get filtered {
-    if (filter == "all") return entries;
-    final days = int.parse(filter);
-    final cutoff = DateTime.now().subtract(Duration(days: days));
-    return entries.where((e) => e.timestamp.isAfter(cutoff)).toList();
+    if (filter == 'all') return entries;
+    final cutoff = DateTime.now().subtract(Duration(days: int.parse(filter)));
+    return entries.where((entry) => entry.timestamp.isAfter(cutoff)).toList();
   }
 
-  List<String> get sortedDays {
-    final keys = dailyTotals.keys.toList();
-    keys.sort((a, b) {
-      final pa = a.split("-");
-      final pb = b.split("-");
-      final da = DateTime(int.parse(pa[0]), int.parse(pa[1]), int.parse(pa[2]));
-      final db = DateTime(int.parse(pb[0]), int.parse(pb[1]), int.parse(pb[2]));
-      return da.compareTo(db);
-    });
-    return keys;
+  DateTime _dateOnly(DateTime date) =>
+      DateTime(date.year, date.month, date.day);
+
+  List<DateTime> get sortedDays {
+    final days = filtered
+        .map((entry) => _dateOnly(entry.timestamp))
+        .toSet()
+        .toList();
+    days.sort();
+    return days;
   }
 
-  List<FlSpot> get dailySpots {
-    final days = sortedDays;
-    return List.generate(days.length, (i) {
-      final count = dailyTotals[days[i]] ?? 0;
-      return FlSpot(i.toDouble(), count.toDouble());
-    });
+  Map<DateTime, List<DiaperEntry>> get entriesByDay {
+    final result = <DateTime, List<DiaperEntry>>{};
+    for (final entry in filtered) {
+      result.putIfAbsent(_dateOnly(entry.timestamp), () => []).add(entry);
+    }
+    return result;
   }
+
+  List<FlSpot> get dailySpots => List.generate(sortedDays.length, (index) {
+    return FlSpot(
+      index.toDouble(),
+      (entriesByDay[sortedDays[index]]?.length ?? 0).toDouble(),
+    );
+  });
+
+  int _typeCount(DiaperType type) =>
+      filtered.where((entry) => entry.type == type).length;
 
   Map<int, int> get hourlyCounts {
-    final map = <int, int>{};
-    for (int i = 0; i < 24; i++) {
-      map[i] = 0;
+    final result = <int, int>{for (var hour = 0; hour < 24; hour++) hour: 0};
+    for (final entry in filtered) {
+      result[entry.timestamp.hour] = result[entry.timestamp.hour]! + 1;
     }
-    for (final e in filtered) {
-      final hour = e.timestamp.hour;
-      map[hour] = map[hour]! + 1;
-    }
-    return map;
+    return result;
+  }
+
+  double get _dailyMax => chartMaximum(
+    entriesByDay.values.map((dayEntries) => dayEntries.length.toDouble()),
+    minimum: 4,
+  );
+
+  double get _hourlyMax => chartMaximum(
+    hourlyCounts.values.map((value) => value.toDouble()),
+    minimum: 2,
+  );
+
+  List<BarChartGroupData> get stackedBars {
+    return List.generate(sortedDays.length, (index) {
+      final dayEntries = entriesByDay[sortedDays[index]] ?? [];
+      final pee = dayEntries
+          .where((entry) => entry.type == DiaperType.pee)
+          .length;
+      final poop = dayEntries
+          .where((entry) => entry.type == DiaperType.poop)
+          .length;
+      final both = dayEntries
+          .where((entry) => entry.type == DiaperType.both)
+          .length;
+      final total = pee + poop + both;
+
+      return BarChartGroupData(
+        x: index,
+        barRods: [
+          BarChartRodData(
+            toY: total.toDouble(),
+            width: math.max(
+              7,
+              math.min(16, 230 / math.max(sortedDays.length, 1)),
+            ),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(6)),
+            rodStackItems: [
+              BarChartRodStackItem(0, pee.toDouble(), _peeColor),
+              BarChartRodStackItem(
+                pee.toDouble(),
+                (pee + poop).toDouble(),
+                _poopColor,
+              ),
+              BarChartRodStackItem(
+                (pee + poop).toDouble(),
+                total.toDouble(),
+                _bothColor,
+              ),
+            ],
+            backDrawRodData: BackgroundBarChartRodData(
+              show: true,
+              toY: _dailyMax,
+              color: Theme.of(context).dividerColor.withAlpha(22),
+            ),
+          ),
+        ],
+      );
+    });
   }
 
   List<BarChartGroupData> get hourlyBars {
-    return List.generate(24, (i) {
-      final count = hourlyCounts[i]!.toDouble();
+    return List.generate(24, (hour) {
       return BarChartGroupData(
-        x: i,
+        x: hour,
         barRods: [
           BarChartRodData(
-            toY: count,
-            color: Colors.blueAccent,
-            width: 12,
-            borderRadius: BorderRadius.circular(4),
+            toY: hourlyCounts[hour]!.toDouble(),
+            width: 7,
+            color: graphBlue,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
+            backDrawRodData: BackgroundBarChartRodData(
+              show: true,
+              toY: _hourlyMax,
+              color: Theme.of(context).dividerColor.withAlpha(22),
+            ),
           ),
         ],
       );
     });
-  }
-
-  TextStyle _axisTextStyle(BuildContext context, {double size = 12}) {
-    final color =
-        Theme.of(context).textTheme.bodySmall?.color?.withAlpha(170) ?? Colors.grey;
-    return TextStyle(fontSize: size, color: color, fontWeight: FontWeight.w600);
-  }
-
-  FlTitlesData buildHourTitles(BuildContext context) {
-    return FlTitlesData(
-      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      leftTitles: AxisTitles(
-        sideTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 42,
-          getTitlesWidget: (value, meta) {
-            return Text("${value.toInt()}x", style: _axisTextStyle(context));
-          },
-        ),
-      ),
-      bottomTitles: AxisTitles(
-        sideTitles: SideTitles(
-          showTitles: true,
-          reservedSize: 28,
-          getTitlesWidget: (value, meta) {
-            final hour = value.toInt();
-            if (hour < 0 || hour > 23) return const SizedBox();
-            return Text("$hour", style: _axisTextStyle(context, size: 11));
-          },
-        ),
-      ),
-    );
-  }
-
-  List<BarChartGroupData> get stackedBars {
-    final days = sortedDays;
-    return List.generate(days.length, (i) {
-      final key = days[i];
-      final pee = (dailyPee[key] ?? 0).toDouble();
-      final poop = (dailyPoop[key] ?? 0).toDouble();
-      final both = (dailyBoth[key] ?? 0).toDouble();
-
-      return BarChartGroupData(
-        x: i,
-        barRods: [
-          BarChartRodData(
-            toY: pee + poop + both,
-            rodStackItems: [
-              BarChartRodStackItem(0, pee, Colors.blueAccent),
-              BarChartRodStackItem(pee, pee + poop, Colors.brown.shade400),
-              BarChartRodStackItem(
-                pee + poop,
-                pee + poop + both,
-                Colors.purpleAccent,
-              ),
-            ],
-            width: 18,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ],
-      );
-    });
-  }
-
-  FlGridData appleGrid(BuildContext context) {
-    final color =
-        Theme.of(context).textTheme.bodySmall?.color?.withAlpha(60) ?? Colors.grey;
-    return FlGridData(
-      show: true,
-      drawVerticalLine: false,
-      horizontalInterval: 1,
-      getDrawingHorizontalLine: (value) => FlLine(
-        color: color,
-        strokeWidth: 1,
-      ),
-    );
-  }
-
-  Map<String, int> get dailyPee {
-    final map = <String, int>{};
-    for (final e in filtered) {
-      if (e.type == DiaperType.pee) {
-        final key = "${e.timestamp.year}-${e.timestamp.month}-${e.timestamp.day}";
-        map[key] = (map[key] ?? 0) + 1;
-      }
-    }
-    return map;
-  }
-
-  Map<String, int> get dailyPoop {
-    final map = <String, int>{};
-    for (final e in filtered) {
-      if (e.type == DiaperType.poop) {
-        final key = "${e.timestamp.year}-${e.timestamp.month}-${e.timestamp.day}";
-        map[key] = (map[key] ?? 0) + 1;
-      }
-    }
-    return map;
-  }
-
-  Map<String, int> get dailyBoth {
-    final map = <String, int>{};
-    for (final e in filtered) {
-      if (e.type == DiaperType.both) {
-        final key = "${e.timestamp.year}-${e.timestamp.month}-${e.timestamp.day}";
-        map[key] = (map[key] ?? 0) + 1;
-      }
-    }
-    return map;
   }
 
   Map<PeeAmount, int> get peeAmountTotals {
-    final map = <PeeAmount, int>{
+    final totals = <PeeAmount, int>{
       PeeAmount.small: 0,
       PeeAmount.medium: 0,
       PeeAmount.large: 0,
     };
-
-    for (final e in filtered) {
-      if (e.peeAmount != null) {
-        map[e.peeAmount!] = map[e.peeAmount!]! + 1;
+    for (final entry in filtered) {
+      if (entry.peeAmount != null) {
+        totals[entry.peeAmount!] = totals[entry.peeAmount!]! + 1;
       }
     }
-    return map;
+    return totals;
+  }
+
+  String _percentage(PeeAmount amount) {
+    final total = peeAmountTotals.values.fold(0, (sum, count) => sum + count);
+    if (total == 0) return '0%';
+    return '${(peeAmountTotals[amount]! / total * 100).round()}%';
   }
 
   List<PieChartSectionData> get peeAmountSections {
     final totals = peeAmountTotals;
-    final total = totals.values.fold(0, (a, b) => a + b);
-
+    final total = totals.values.fold(0, (sum, count) => sum + count);
     if (total == 0) {
       return [
         PieChartSectionData(
           value: 1,
-          color: Colors.grey.shade300,
-          title: "No Data",
-          radius: 60,
+          color: Theme.of(context).dividerColor.withAlpha(70),
+          showTitle: false,
+          radius: 28,
         ),
       ];
     }
 
-    return [
-      PieChartSectionData(
-        value: totals[PeeAmount.small]!.toDouble(),
-        color: Colors.lightBlueAccent,
-        title: "${(totals[PeeAmount.small]! / total * 100).toStringAsFixed(0)}%",
-        radius: 60,
-        titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-      ),
-      PieChartSectionData(
-        value: totals[PeeAmount.medium]!.toDouble(),
-        color: Colors.blueAccent,
-        title: "${(totals[PeeAmount.medium]! / total * 100).toStringAsFixed(0)}%",
-        radius: 60,
-        titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-      ),
-      PieChartSectionData(
-        value: totals[PeeAmount.large]!.toDouble(),
-        color: Colors.indigo,
-        title: "${(totals[PeeAmount.large]! / total * 100).toStringAsFixed(0)}%",
-        radius: 60,
-        titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-      ),
-    ];
+    const colors = [Color(0xff8DD7FF), graphBlue, Color(0xff3F4FA8)];
+    return PeeAmount.values.map((amount) {
+      final value = totals[amount]!.toDouble();
+      return PieChartSectionData(
+        value: value,
+        color: colors[amount.index],
+        showTitle: false,
+        radius: 30,
+      );
+    }).toList();
   }
 
-  Map<String, String> get peeAmountPercentages {
-    final totals = peeAmountTotals;
-    final total = totals.values.fold(0, (a, b) => a + b);
-    if (total == 0) {
-      return {"small": "0%", "medium": "0%", "large": "0%"};
-    }
-    return {
-      "small": "${(totals[PeeAmount.small]! / total * 100).toStringAsFixed(0)}%",
-      "medium": "${(totals[PeeAmount.medium]! / total * 100).toStringAsFixed(0)}%",
-      "large": "${(totals[PeeAmount.large]! / total * 100).toStringAsFixed(0)}%",
-    };
-  }
-
-  FlTitlesData buildTitles(BuildContext context) {
+  FlTitlesData _dayTitles({required double interval}) {
     return FlTitlesData(
-      topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-      rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+      rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       leftTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: 42,
+          reservedSize: 32,
+          interval: interval,
           getTitlesWidget: (value, meta) {
-            return Text("${value.toInt()}x", style: _axisTextStyle(context));
+            if (value == meta.max) return const SizedBox();
+            return SideTitleWidget(
+              meta: meta,
+              child: Text(
+                value.toInt().toString(),
+                style: graphAxisStyle(context),
+              ),
+            );
           },
         ),
       ),
       bottomTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: 32,
+          reservedSize: 34,
+          interval: 1,
           getTitlesWidget: (value, meta) {
-            if (value % 1 != 0) return const SizedBox();
-            final i = value.toInt();
-            if (i < 0 || i >= sortedDays.length) return const SizedBox();
-            final d = sortedDays[i].split("-");
-            return Text(
-              "${d[2]}/${d[1]}",
-              style: _axisTextStyle(context),
+            final index = value.round();
+            if (value != index || index < 0 || index >= sortedDays.length) {
+              return const SizedBox();
+            }
+            if (!shouldShowLabel(index, sortedDays.length)) {
+              return const SizedBox();
+            }
+            return SideTitleWidget(
+              meta: meta,
+              space: 9,
+              child: Text(
+                compactDate(sortedDays[index], context),
+                style: graphAxisStyle(context),
+              ),
             );
           },
         ),
@@ -307,88 +256,236 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
     );
   }
 
+  LineTouchData _lineTouchData() {
+    return LineTouchData(
+      touchTooltipData: LineTouchTooltipData(
+        getTooltipColor: (_) => const Color(0xff202535),
+        tooltipBorderRadius: BorderRadius.circular(12),
+        tooltipPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        fitInsideHorizontally: true,
+        fitInsideVertically: true,
+        getTooltipItems: (spots) => spots.map((spot) {
+          final index = spot.x.round();
+          return LineTooltipItem(
+            '${compactDate(sortedDays[index], context)}\n${spot.y.toInt()} changes',
+            const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  BarTouchData _barTouchData({required bool hourly}) {
+    return BarTouchData(
+      touchTooltipData: BarTouchTooltipData(
+        getTooltipColor: (_) => const Color(0xff202535),
+        tooltipBorderRadius: BorderRadius.circular(12),
+        fitInsideHorizontally: true,
+        fitInsideVertically: true,
+        getTooltipItem: (group, groupIndex, rod, rodIndex) {
+          final label = hourly
+              ? '${group.x.toString().padLeft(2, '0')}:00'
+              : compactDate(sortedDays[group.x], context);
+          return BarTooltipItem(
+            '$label\n${rod.toY.toInt()} changes',
+            const TextStyle(
+              color: Colors.white,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final secondaryTextColor =
-        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
-
     if (loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    if (entries.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("Diaper Analytics")),
-        body: Center(
-          child: Text("No diaper data", style: TextStyle(color: secondaryTextColor)),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Diaper Analytics"),
-        elevation: 0,
-      ),
-      body: Column(
-        children: [
-          _buildFilters(context),
-          const SizedBox(height: 12),
-          _buildTabs(context),
-          const SizedBox(height: 12),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: tabIndex == 0 ? _buildOverview(context) : _buildInsights(context),
+      appBar: AppBar(title: const Text('Diaper Analytics')),
+      body: entries.isEmpty
+          ? const Center(child: Text('No diaper data'))
+          : Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                  child: GraphFilterBar(
+                    value: filter,
+                    options: const [
+                      ('7d', '7'),
+                      ('30d', '30'),
+                      ('90d', '90'),
+                      ('All', 'all'),
+                    ],
+                    onChanged: (value) => setState(() => filter = value),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _tabBar(),
+                ),
+                const SizedBox(height: 8),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+                    child: filtered.isEmpty
+                        ? _emptyRange()
+                        : tabIndex == 0
+                        ? _buildOverview()
+                        : _buildInsights(),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
+    );
+  }
+
+  Widget _tabBar() {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: theme.dividerColor.withAlpha(24),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [_tabButton('Overview', 0), _tabButton('Insights', 1)],
       ),
     );
   }
 
-  Widget _buildOverview(BuildContext context) {
+  Widget _tabButton(String label, int index) {
+    final selected = tabIndex == index;
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => setState(() => tabIndex = index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          padding: const EdgeInsets.symmetric(vertical: 9),
+          decoration: BoxDecoration(
+            color: selected ? Theme.of(context).cardColor : Colors.transparent,
+            borderRadius: BorderRadius.circular(11),
+            boxShadow: selected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(12),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: selected
+                  ? graphBlue
+                  : Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.color?.withAlpha(160),
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOverview() {
+    final interval = niceInterval(_dailyMax);
     return Column(
       children: [
-        _chartCard(
-          context,
-          "Daily Changes (Total Diapers)",
-          SizedBox(
-            height: 220,
+        _summaryStrip(),
+        PremiumChartCard(
+          title: 'Daily changes',
+          subtitle: 'Tap a point to see the exact day and total',
+          trailing: _valuePill('${filtered.length} total', graphBlue),
+          child: SizedBox(
+            height: 230,
             child: LineChart(
               LineChartData(
+                minX: 0,
+                maxX: math.max(0, sortedDays.length - 1).toDouble(),
                 minY: 0,
-                gridData: appleGrid(context),
-                titlesData: buildTitles(context),
+                maxY: _dailyMax,
+                gridData: premiumGrid(context, interval: interval),
+                titlesData: _dayTitles(interval: interval),
                 borderData: FlBorderData(show: false),
+                lineTouchData: _lineTouchData(),
                 lineBarsData: [
                   LineChartBarData(
                     spots: dailySpots,
-                    isCurved: true,
-                    color: Colors.blueAccent,
+                    isCurved: dailySpots.length > 2,
+                    curveSmoothness: 0.22,
+                    color: graphBlue,
                     barWidth: 3,
-                    dotData: FlDotData(show: true),
+                    isStrokeCapRound: true,
+                    dotData: FlDotData(
+                      show: dailySpots.length <= 10,
+                      getDotPainter: (spot, percent, bar, index) {
+                        return FlDotCirclePainter(
+                          radius: 3.5,
+                          color: Theme.of(context).cardColor,
+                          strokeWidth: 2.5,
+                          strokeColor: graphBlue,
+                        );
+                      },
+                    ),
+                    belowBarData: BarAreaData(
+                      show: true,
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          graphBlue.withAlpha(65),
+                          graphBlue.withAlpha(2),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutCubic,
             ),
           ),
         ),
-        _chartCard(
-          context,
-          "Pee / Poop / Both (Stacked)",
-          SizedBox(
-            height: 240,
+        PremiumChartCard(
+          title: 'Daily composition',
+          subtitle: 'Pee, poop and mixed changes by day',
+          trailing: const GraphLegend(
+            items: [
+              (_peeColor, 'Pee'),
+              (_poopColor, 'Poop'),
+              (_bothColor, 'Both'),
+            ],
+            alignment: WrapAlignment.end,
+          ),
+          child: SizedBox(
+            height: 235,
             child: BarChart(
               BarChartData(
-                gridData: appleGrid(context),
+                minY: 0,
+                maxY: _dailyMax,
+                alignment: BarChartAlignment.spaceAround,
+                gridData: premiumGrid(context, interval: interval),
+                titlesData: _dayTitles(interval: interval),
                 borderData: FlBorderData(show: false),
-                titlesData: buildTitles(context),
+                barTouchData: _barTouchData(hourly: false),
                 barGroups: stackedBars,
               ),
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutCubic,
             ),
           ),
         ),
@@ -396,45 +493,139 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
     );
   }
 
-  Widget _buildInsights(BuildContext context) {
+  Widget _buildInsights() {
+    final totalPeeAmounts = peeAmountTotals.values.fold(
+      0,
+      (sum, value) => sum + value,
+    );
+    final interval = niceInterval(_hourlyMax);
     return Column(
       children: [
-        _chartCard(
-          context,
-          "Pee Amount Distribution",
-          Column(
+        PremiumChartCard(
+          title: 'Pee amount distribution',
+          subtitle: '$totalPeeAmounts changes include an amount',
+          child: Row(
             children: [
               SizedBox(
-                height: 240,
-                child: PieChart(
-                  PieChartData(
-                    sectionsSpace: 4,
-                    centerSpaceRadius: 40,
-                    sections: peeAmountSections,
-                  ),
+                width: 150,
+                height: 150,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    PieChart(
+                      PieChartData(
+                        sectionsSpace: 3,
+                        centerSpaceRadius: 48,
+                        startDegreeOffset: -90,
+                        sections: peeAmountSections,
+                      ),
+                    ),
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '$totalPeeAmounts',
+                          style: const TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        Text(
+                          'recorded',
+                          style: graphAxisStyle(context, fontSize: 10),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 16),
-              _legendItem(Colors.lightBlueAccent, "Small", peeAmountPercentages["small"]!),
-              const SizedBox(height: 6),
-              _legendItem(Colors.blueAccent, "Medium", peeAmountPercentages["medium"]!),
-              const SizedBox(height: 6),
-              _legendItem(Colors.indigo, "Large", peeAmountPercentages["large"]!),
+              const SizedBox(width: 18),
+              Expanded(
+                child: Column(
+                  children: [
+                    _distributionRow(
+                      const Color(0xff8DD7FF),
+                      'Small',
+                      _percentage(PeeAmount.small),
+                    ),
+                    _distributionRow(
+                      graphBlue,
+                      'Medium',
+                      _percentage(PeeAmount.medium),
+                    ),
+                    _distributionRow(
+                      const Color(0xff3F4FA8),
+                      'Large',
+                      _percentage(PeeAmount.large),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
-        _chartCard(
-          context,
-          "Hourly Activity Histogram",
-          SizedBox(
-            height: 260,
+        PremiumChartCard(
+          title: 'Activity by hour',
+          subtitle: 'See when diaper changes happen most often',
+          child: SizedBox(
+            height: 235,
             child: BarChart(
               BarChartData(
-                gridData: appleGrid(context),
+                minY: 0,
+                maxY: _hourlyMax,
+                alignment: BarChartAlignment.spaceAround,
+                gridData: premiumGrid(context, interval: interval),
                 borderData: FlBorderData(show: false),
-                titlesData: buildHourTitles(context),
+                barTouchData: _barTouchData(hourly: true),
+                titlesData: FlTitlesData(
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 30,
+                      interval: interval,
+                      getTitlesWidget: (value, meta) {
+                        if (value == meta.max) return const SizedBox();
+                        return SideTitleWidget(
+                          meta: meta,
+                          child: Text(
+                            value.toInt().toString(),
+                            style: graphAxisStyle(context),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 32,
+                      getTitlesWidget: (value, meta) {
+                        final hour = value.toInt();
+                        if (hour < 0 || hour > 23 || hour % 4 != 0) {
+                          return const SizedBox();
+                        }
+                        return SideTitleWidget(
+                          meta: meta,
+                          space: 9,
+                          child: Text(
+                            hour.toString().padLeft(2, '0'),
+                            style: graphAxisStyle(context),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
                 barGroups: hourlyBars,
               ),
+              duration: const Duration(milliseconds: 350),
+              curve: Curves.easeOutCubic,
             ),
           ),
         ),
@@ -442,156 +633,121 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
     );
   }
 
-  Widget _chartCard(BuildContext context, String title, Widget chart) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      margin: const EdgeInsets.only(bottom: 20),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(isDark ? 35 : 10),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _summaryStrip() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 18),
+      child: Row(
         children: [
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+          Expanded(
+            child: _summaryMetric(
+              'Pee',
+              _typeCount(DiaperType.pee),
+              _peeColor,
+              Icons.water_drop_rounded,
+            ),
           ),
-          const SizedBox(height: 14),
-          chart,
-        ],
-      ),
-    );
-  }
-
-  Widget _legendItem(Color color, String label, String value) {
-    return Row(
-      children: [
-        Container(
-          width: 14,
-          height: 14,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          "$label: $value",
-          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildFilters(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _filterButton(context, "7d", "7"),
-          _filterButton(context, "30d", "30"),
-          _filterButton(context, "90d", "90"),
-          _filterButton(context, "All", "all"),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTabs(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          _tabButton(context, "Overview", 0),
           const SizedBox(width: 10),
-          _tabButton(context, "Insights", 1),
+          Expanded(
+            child: _summaryMetric(
+              'Poop',
+              _typeCount(DiaperType.poop),
+              _poopColor,
+              Icons.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: _summaryMetric(
+              'Both',
+              _typeCount(DiaperType.both),
+              _bothColor,
+              Icons.blur_circular_rounded,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _filterButton(BuildContext context, String label, String value) {
-    final theme = Theme.of(context);
-    final selected = filter == value;
-    final unselectedBorder =
-        theme.dividerColor.withAlpha(theme.brightness == Brightness.dark ? 90 : 160);
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          filter = value;
-        });
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected
-              ? Colors.blue.withAlpha(theme.brightness == Brightness.dark ? 35 : 20)
-              : theme.cardColor,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected ? Colors.blue : unselectedBorder,
+  Widget _summaryMetric(String label, int value, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      decoration: BoxDecoration(
+        color: color.withAlpha(18),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withAlpha(45)),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$value',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Text(label, style: graphAxisStyle(context, fontSize: 10)),
+            ],
           ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-            color: selected
-                ? Colors.blue
-                : (theme.textTheme.bodyMedium?.color ?? Colors.black),
-          ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _tabButton(BuildContext context, String label, int index) {
-    final theme = Theme.of(context);
-    final selected = tabIndex == index;
-    final unselectedBorder =
-        theme.dividerColor.withAlpha(theme.brightness == Brightness.dark ? 90 : 160);
-
-    return Expanded(
-      child: GestureDetector(
-        onTap: () {
-          setState(() {
-            tabIndex = index;
-          });
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: selected
-                ? Colors.blue.withAlpha(theme.brightness == Brightness.dark ? 35 : 20)
-                : theme.cardColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: selected ? Colors.blue : unselectedBorder,
-            ),
+  Widget _distributionRow(Color color, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-          child: Center(
+          const SizedBox(width: 9),
+          Expanded(
             child: Text(
               label,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: selected
-                    ? Colors.blue
-                    : (theme.textTheme.bodyMedium?.color ?? Colors.black),
-              ),
+              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
             ),
           ),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w900),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _valuePill(String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withAlpha(20),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        value,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
         ),
       ),
+    );
+  }
+
+  Widget _emptyRange() {
+    return PremiumChartCard(
+      title: 'No data in this range',
+      subtitle: 'Choose a wider time range to see your diaper trends.',
+      child: const SizedBox(height: 80),
     );
   }
 }

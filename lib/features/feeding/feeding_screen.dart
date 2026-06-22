@@ -7,6 +7,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'feeding_controller.dart';
 
+enum _SaveDecision { save, discard }
+
 class FeedingScreen extends StatefulWidget {
   const FeedingScreen({super.key});
 
@@ -176,7 +178,49 @@ class _FeedingScreenState extends State<FeedingScreen>
     await _persistDraft();
   }
 
+  Future<_SaveDecision?> _confirmSave() {
+    final l10n = AppLocalizations.of(context);
+    return showDialog<_SaveDecision>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          icon: const Icon(
+            Icons.save_outlined,
+            color: Colors.green,
+            size: 32,
+          ),
+          title: Text(l10n.confirmSaveTitle),
+          content: Text(l10n.confirmSaveContent),
+          actions: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.pop(dialogContext, _SaveDecision.discard),
+              child: Text(l10n.dontSave),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, _SaveDecision.save),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.green.shade600,
+              ),
+              child: Text(l10n.save),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> finishSession() async {
+    final decision = await _confirmSave();
+    if (!mounted || decision == null) return;
+
+    if (decision == _SaveDecision.discard) {
+      await _storage.clearActiveDraft();
+      if (!mounted) return;
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      return;
+    }
+
     if (endWeightCtrl.text.isNotEmpty) {
       controller.setEndWeight(int.parse(endWeightCtrl.text));
     }
@@ -475,8 +519,8 @@ class _FeedingScreenState extends State<FeedingScreen>
                                     color: const Color(0xff4DA3FF),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
-                                  child: const Text(
-                                    "LIVE",
+                                  child: Text(
+                                    l10n.live,
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 11,
@@ -763,8 +807,45 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
     rightDuration = totalDuration - leftDuration;
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (startTime == null || endTime == null) return;
+
+    final l10n = AppLocalizations.of(context);
+    final decision = await showDialog<_SaveDecision>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          icon: const Icon(
+            Icons.save_outlined,
+            color: Colors.green,
+            size: 32,
+          ),
+          title: Text(l10n.confirmSaveTitle),
+          content: Text(l10n.confirmSaveContent),
+          actions: [
+            TextButton(
+              onPressed: () =>
+                  Navigator.pop(dialogContext, _SaveDecision.discard),
+              child: Text(l10n.dontSave),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(dialogContext, _SaveDecision.save),
+              style: FilledButton.styleFrom(backgroundColor: Colors.green),
+              child: Text(l10n.save),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (!mounted || decision == null) return;
+
+    if (decision == _SaveDecision.discard) {
+      await FeedingStorage().clearActiveDraft();
+      if (!mounted) return;
+      Navigator.of(context).popUntil((route) => route.isFirst);
+      return;
+    }
 
     final now = DateTime.now();
     final start = DateTime(
