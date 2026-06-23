@@ -102,7 +102,7 @@ class PremiumPaywallScreen extends StatelessWidget {
                 icon: Icons.picture_as_pdf_rounded,
                 title: l10n.premiumPdfReports,
                 active: feature == PremiumFeature.pdfReports,
-                available: false,
+                available: true,
               ),
               _featureTile(
                 context,
