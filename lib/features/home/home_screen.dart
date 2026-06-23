@@ -195,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             children: [
               BabyCard(profile: profile!),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: 4),
 
               /// 🆕 TODAY SUMMARY
               TodaySummaryCard(key: _todaySummaryKey),
@@ -204,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
               LiveFeedingHomeCard(key: _liveFeedingKey),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
 
               /// QUICK ACTIONS TITLE
               Padding(
@@ -221,80 +221,127 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 10),
 
-              /// MODERN GRID
+              /// COMPACT QUICK ACTIONS
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 14,
-                  childAspectRatio: 1.1,
-                  children: [
-                    HomeActionCard(
-                      icon: Icons.favorite,
-                      title: t.feeding,
-                      subtitle: t.startSession,
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const FeedingScreen(),
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    const gap = 12.0;
+                    final compactWidth = (constraints.maxWidth - gap) / 2;
+
+                    return Wrap(
+                      spacing: gap,
+                      runSpacing: gap,
+                      children: [
+                        SizedBox(
+                          width: compactWidth,
+                          height: 112,
+                          child: HomeActionCard(
+                            icon: Icons.favorite_rounded,
+                            title: t.feeding,
+                            subtitle: t.startSession,
+                            colors: const [
+                              Color(0xffF26B8A),
+                              Color(0xffFF9A8B),
+                            ],
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const FeedingScreen(),
+                                ),
+                              );
+                              await _todaySummaryKey.currentState?.loadStats();
+                              await _liveFeedingKey.currentState?.refresh();
+                            },
                           ),
-                        );
-                        await _todaySummaryKey.currentState?.loadStats();
-                        await _liveFeedingKey.currentState?.refresh();
-                      },
-                    ),
-                    HomeActionCard(
-                      icon: Icons.history,
-                      title: t.history,
-                      subtitle: t.pastFeedings,
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const HistoryHubScreen(),
+                        ),
+                        SizedBox(
+                          width: compactWidth,
+                          height: 112,
+                          child: HomeActionCard(
+                            icon: Icons.inventory_2_rounded,
+                            title: t.milkInventory,
+                            subtitle: t.premiumMilkInventory,
+                            colors: const [
+                              Color(0xff5687E8),
+                              Color(0xff72C6EF),
+                            ],
+                            isPremium: true,
+                            onTap: () {
+                              PremiumAccess.open(
+                                context,
+                                feature: PremiumFeature.milkInventory,
+                                builder: (_) => const MilkInventoryScreen(),
+                              );
+                            },
                           ),
-                        );
-                        await _todaySummaryKey.currentState?.loadStats();
-                      },
-                    ),
-                    HomeActionCard(
-                      icon: Icons.inventory_2_rounded,
-                      title: t.milkInventory,
-                      subtitle: t.premiumMilkInventory,
-                      isPremium: true,
-                      onTap: () {
-                        PremiumAccess.open(
-                          context,
-                          feature: PremiumFeature.milkInventory,
-                          builder: (_) => const MilkInventoryScreen(),
-                        );
-                      },
-                    ),
-                    HomeActionCard(
-                      icon: Icons.baby_changing_station,
-                      title: t.diaper,
-                      subtitle: t.trackChanges,
-                      onTap: () async {
-                        await Navigator.pushNamed(context, "/diaper");
-                        await _todaySummaryKey.currentState?.loadStats();
-                      },
-                    ),
-                    HomeActionCard(
-                      icon: Icons.monitor_weight,
-                      title: t.growth,
-                      subtitle: t.updateWeight,
-                      onTap: () async {
-                        await Navigator.pushNamed(context, "/growth_update");
-                        await loadProfile();
-                      },
-                    ),
-                  ],
+                        ),
+                        SizedBox(
+                          width: compactWidth,
+                          height: 112,
+                          child: HomeActionCard(
+                            icon: Icons.baby_changing_station_rounded,
+                            title: t.diaper,
+                            subtitle: t.trackChanges,
+                            colors: const [
+                              Color(0xff38AFA9),
+                              Color(0xff6DD5C3),
+                            ],
+                            onTap: () async {
+                              await Navigator.pushNamed(context, "/diaper");
+                              await _todaySummaryKey.currentState?.loadStats();
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: compactWidth,
+                          height: 112,
+                          child: HomeActionCard(
+                            icon: Icons.monitor_weight_rounded,
+                            title: t.growth,
+                            subtitle: t.updateWeight,
+                            colors: const [
+                              Color(0xffED8A52),
+                              Color(0xffF6BD60),
+                            ],
+                            onTap: () async {
+                              await Navigator.pushNamed(
+                                context,
+                                "/growth_update",
+                              );
+                              await loadProfile();
+                            },
+                          ),
+                        ),
+                        SizedBox(
+                          width: constraints.maxWidth,
+                          height: 88,
+                          child: HomeActionCard(
+                            icon: Icons.history_rounded,
+                            title: t.history,
+                            subtitle: t.pastFeedings,
+                            colors: const [
+                              Color(0xff7568C9),
+                              Color(0xffA78BDA),
+                            ],
+                            isWide: true,
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const HistoryHubScreen(),
+                                ),
+                              );
+                              await _todaySummaryKey.currentState?.loadStats();
+                            },
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
 
@@ -390,7 +437,7 @@ class _TodaySummaryCardState extends State<TodaySummaryCard> {
       margin: const EdgeInsets.symmetric(
         horizontal: 16,
       ),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
@@ -416,7 +463,7 @@ class _TodaySummaryCardState extends State<TodaySummaryCard> {
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
 
           Row(
             mainAxisAlignment:
@@ -621,6 +668,8 @@ class HomeActionCard extends StatefulWidget {
   final String subtitle;
   final VoidCallback onTap;
   final bool isPremium;
+  final bool isWide;
+  final List<Color> colors;
 
   const HomeActionCard({
     super.key,
@@ -628,7 +677,9 @@ class HomeActionCard extends StatefulWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    required this.colors,
     this.isPremium = false,
+    this.isWide = false,
   });
 
   @override
@@ -650,83 +701,149 @@ class _HomeActionCardState extends State<HomeActionCard> {
         duration: const Duration(milliseconds: 120),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: const LinearGradient(
-              colors: [Color(0xff6C8EFF), Color(0xff88E0EF)],
+            borderRadius: BorderRadius.circular(18),
+            gradient: LinearGradient(
+              colors: widget.colors,
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.08),
-                blurRadius: 10,
-                offset: const Offset(0, 6),
+                blurRadius: 12,
+                offset: const Offset(0, 5),
               )
             ],
           ),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(13),
+          child: widget.isWide ? _wideContent() : _compactContent(),
+        ),
+      ),
+    );
+  }
+
+  Widget _icon() {
+    return Container(
+      width: 38,
+      height: 38,
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.20),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.14)),
+      ),
+      child: Icon(widget.icon, color: Colors.white, size: 22),
+    );
+  }
+
+  Widget _premiumBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.18),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.workspace_premium_rounded,
+            color: Colors.white,
+            size: 11,
+          ),
+          SizedBox(width: 3),
+          Text(
+            'PRO',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 8,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 0.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _compactContent() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            _icon(),
+            const Spacer(),
+            if (widget.isPremium) _premiumBadge(),
+          ],
+        ),
+        const Spacer(),
+        Text(
+          widget.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w800,
+            fontSize: 15,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          widget.subtitle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.white.withOpacity(0.84),
+            fontSize: 10.5,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _wideContent() {
+    return Row(
+      children: [
+        _icon(),
+        const SizedBox(width: 13),
+        Expanded(
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Icon(
-                    widget.icon,
-                    color: Theme.of(context).cardColor,
-                    size: 28,
-                  ),
-                  const Spacer(),
-                  if (widget.isPremium)
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withAlpha(35),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.workspace_premium_rounded,
-                            color: Colors.white,
-                            size: 11,
-                          ),
-                          SizedBox(width: 3),
-                          Text(
-                            'PRO',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-              const Spacer(),
               Text(
                 widget.title,
-                style: TextStyle(
-                  color: Theme.of(context).cardColor,
-                  fontWeight: FontWeight.bold,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w800,
+                  fontSize: 16,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 widget.subtitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: Theme.of(context).cardColor,
-                  fontSize: 12,
+                  color: Colors.white.withOpacity(0.84),
+                  fontSize: 11,
                 ),
               ),
             ],
           ),
         ),
-      ),
+        if (widget.isPremium) ...[
+          _premiumBadge(),
+          const SizedBox(width: 8),
+        ],
+        const Icon(
+          Icons.arrow_forward_ios_rounded,
+          color: Colors.white70,
+          size: 15,
+        ),
+      ],
     );
   }
 }
