@@ -17,6 +17,61 @@ class AppLocalizations {
 
   static const Map<String, Map<String, String>> _localizedStrings = {
     'en': {
+      'milkInventory': 'Milk Inventory',
+      'addMilk': 'Add Milk',
+      'saveMilk': 'Save Milk',
+      'totalMilkStock': 'Total milk stock',
+      'refrigerator': 'Refrigerator',
+      'freezer': 'Freezer',
+      'bottles': 'Bottles',
+      'all': 'All',
+      'noStoredMilk': 'No stored milk yet',
+      'noStoredMilkHint':
+          'Add your first expressed milk bottle and Leyumi will track its freshness.',
+      'labelNumber': 'Label number',
+      'amountMl': 'Amount (ml)',
+      'storageLocation': 'Storage location',
+      'expressedAt': 'Expressed date and time',
+      'pumpedFrom': 'Pumped from',
+      'mixed': 'Mixed',
+      'unspecified': 'Not specified',
+      'freshFor': 'Fresh for',
+      'useWithin': 'Use within',
+      'expired': 'Expired',
+      'bestBefore': 'Best before',
+      'hoursShort': 'h',
+      'useMilk': 'Use milk',
+      'confirm': 'Confirm',
+      'moveToFreezer': 'Move to freezer',
+      'moveToRefrigerator': 'Move to refrigerator',
+      'deleteMilkTitle': 'Delete milk bottle?',
+      'deleteMilkContent':
+          'Are you sure you want to remove this milk bottle from inventory?',
+      'milkStorageSafetyNote':
+          'Fresh milk: up to 4 days refrigerated; best used within 6 months frozen. Smaller portions can help reduce waste.',
+      'invalidMilkEntry':
+          'Enter a label and a milk amount between 1 and 500 ml.',
+      'duplicateMilkLabel': 'This label number is already in use.',
+      'discardMilk': 'Discard milk',
+      'editMilkRecord': 'Edit record',
+      'deleteIncorrectRecord': 'Delete incorrect record',
+      'saveChanges': 'Save changes',
+      'milkHistory': 'Milk History',
+      'usedAndRemainingMilk': 'Used and remaining milk',
+      'remainingMilk': 'Remaining',
+      'usedMilk': 'Used milk',
+      'discardedMilk': 'Discarded',
+      'activity': 'Activity',
+      'insights': 'Insights',
+      'noMilkHistory': 'No milk activity yet',
+      'dailyMilkMovement': 'Added and used milk',
+      'last14Days': 'Last 14 days',
+      'stockOverTime': 'Milk stock over time',
+      'addedMilk': 'Added milk',
+      'milkAdded': 'Milk added',
+      'remaining': 'Remaining',
+      'movedToFreezer': 'Moved to freezer',
+      'recordCorrected': 'Record corrected',
       'premiumTitle': 'Leyumi Premium',
       'unlockPremium': 'Unlock more with Premium',
       'premiumDescription':
@@ -182,6 +237,61 @@ class AppLocalizations {
       "last" : "Last",
     },
     'tr': {
+      'milkInventory': 'Süt Stoğu',
+      'addMilk': 'Süt Ekle',
+      'saveMilk': 'Sütü Kaydet',
+      'totalMilkStock': 'Toplam süt stoğu',
+      'refrigerator': 'Buzdolabı',
+      'freezer': 'Dondurucu',
+      'bottles': 'Şişe',
+      'all': 'Tümü',
+      'noStoredMilk': 'Henüz kayıtlı süt yok',
+      'noStoredMilkHint':
+          'İlk sağılmış süt şişenizi ekleyin; Leyumi tazelik süresini takip etsin.',
+      'labelNumber': 'Etiket numarası',
+      'amountMl': 'Miktar (ml)',
+      'storageLocation': 'Saklama yeri',
+      'expressedAt': 'Sağım tarihi ve saati',
+      'pumpedFrom': 'Sağılan taraf',
+      'mixed': 'Karışık',
+      'unspecified': 'Belirtilmedi',
+      'freshFor': 'Tazelik süresi',
+      'useWithin': 'Şu süre içinde kullanın:',
+      'expired': 'Süresi doldu',
+      'bestBefore': 'Son kullanım',
+      'hoursShort': 'sa',
+      'useMilk': 'Sütü Kullan',
+      'confirm': 'Onayla',
+      'moveToFreezer': 'Dondurucuya taşı',
+      'moveToRefrigerator': 'Buzdolabına taşı',
+      'deleteMilkTitle': 'Süt şişesi silinsin mi?',
+      'deleteMilkContent':
+          'Bu süt şişesini stoktan kaldırmak istediğinizden emin misiniz?',
+      'milkStorageSafetyNote':
+          'Taze süt buzdolabında 4 güne kadar; dondurucuda en iyi 6 ay içinde kullanılır. Küçük porsiyonlar israfı azaltabilir.',
+      'invalidMilkEntry':
+          'Etiket ve 1–500 ml arasında geçerli bir süt miktarı girin.',
+      'duplicateMilkLabel': 'Bu etiket numarası zaten kullanılıyor.',
+      'discardMilk': 'Sütü At',
+      'editMilkRecord': 'Kaydı Düzenle',
+      'deleteIncorrectRecord': 'Yanlış Kaydı Sil',
+      'saveChanges': 'Değişiklikleri Kaydet',
+      'milkHistory': 'Süt Geçmişi',
+      'usedAndRemainingMilk': 'Kullanılan ve kalan süt',
+      'remainingMilk': 'Kalan',
+      'usedMilk': 'Kullanılan süt',
+      'discardedMilk': 'Atılan süt',
+      'activity': 'Hareketler',
+      'insights': 'Analizler',
+      'noMilkHistory': 'Henüz süt hareketi yok',
+      'dailyMilkMovement': 'Eklenen ve kullanılan süt',
+      'last14Days': 'Son 14 gün',
+      'stockOverTime': 'Zaman içinde süt stoğu',
+      'addedMilk': 'Eklenen süt',
+      'milkAdded': 'Süt eklendi',
+      'remaining': 'Kalan',
+      'movedToFreezer': 'Dondurucuya taşındı',
+      'recordCorrected': 'Kayıt düzeltildi',
       'premiumTitle': 'Leyumi Premium',
       'unlockPremium': 'Premium ile daha fazlasını keşfedin',
       'premiumDescription':
@@ -346,6 +456,61 @@ class AppLocalizations {
       "last" : "Son",
     },
     'hu': {
+        'milkInventory': 'Tejkészlet',
+        'addMilk': 'Tej hozzáadása',
+        'saveMilk': 'Tej mentése',
+        'totalMilkStock': 'Teljes tejkészlet',
+        'refrigerator': 'Hűtőszekrény',
+        'freezer': 'Fagyasztó',
+        'bottles': 'Palackok',
+        'all': 'Összes',
+        'noStoredMilk': 'Még nincs tárolt tej',
+        'noStoredMilkHint':
+            'Add hozzá az első lefejt tejet, és a Leyumi követi a frissességét.',
+        'labelNumber': 'Címkeszám',
+        'amountMl': 'Mennyiség (ml)',
+        'storageLocation': 'Tárolás helye',
+        'expressedAt': 'Fejés dátuma és ideje',
+        'pumpedFrom': 'Fejés oldala',
+        'mixed': 'Vegyes',
+        'unspecified': 'Nincs megadva',
+        'freshFor': 'Friss még',
+        'useWithin': 'Használd fel',
+        'expired': 'Lejárt',
+        'bestBefore': 'Minőségét megőrzi',
+        'hoursShort': 'ó',
+        'useMilk': 'Tej felhasználása',
+        'confirm': 'Megerősítés',
+        'moveToFreezer': 'Áthelyezés a fagyasztóba',
+        'moveToRefrigerator': 'Áthelyezés a hűtőbe',
+        'deleteMilkTitle': 'Törlöd a tejes palackot?',
+        'deleteMilkContent':
+            'Biztosan eltávolítod ezt a tejes palackot a készletből?',
+        'milkStorageSafetyNote':
+            'A friss tej hűtőben legfeljebb 4 napig, fagyasztva lehetőleg 6 hónapon belül használható fel. A kisebb adagok csökkenthetik a pazarlást.',
+        'invalidMilkEntry':
+            'Adj meg egy címkét és 1–500 ml közötti tejmennyiséget.',
+        'duplicateMilkLabel': 'Ez a címkeszám már használatban van.',
+        'discardMilk': 'Tej kiöntése',
+        'editMilkRecord': 'Bejegyzés szerkesztése',
+        'deleteIncorrectRecord': 'Hibás bejegyzés törlése',
+        'saveChanges': 'Módosítások mentése',
+        'milkHistory': 'Tejelőzmények',
+        'usedAndRemainingMilk': 'Felhasznált és megmaradt tej',
+        'remainingMilk': 'Megmaradt',
+        'usedMilk': 'Felhasznált tej',
+        'discardedMilk': 'Kiöntött tej',
+        'activity': 'Tevékenység',
+        'insights': 'Elemzések',
+        'noMilkHistory': 'Még nincs tejjel kapcsolatos esemény',
+        'dailyMilkMovement': 'Hozzáadott és felhasznált tej',
+        'last14Days': 'Utolsó 14 nap',
+        'stockOverTime': 'Tejkészlet időbeli változása',
+        'addedMilk': 'Hozzáadott tej',
+        'milkAdded': 'Tej hozzáadva',
+        'remaining': 'Megmaradt',
+        'movedToFreezer': 'Fagyasztóba helyezve',
+        'recordCorrected': 'Bejegyzés javítva',
         'premiumTitle': 'Leyumi Premium',
         'unlockPremium': 'Fedezz fel többet a Premiummal',
         'premiumDescription':
@@ -520,6 +685,57 @@ class AppLocalizations {
         key;
   }
 
+  String get milkInventory => _getString('milkInventory');
+  String get addMilk => _getString('addMilk');
+  String get saveMilk => _getString('saveMilk');
+  String get totalMilkStock => _getString('totalMilkStock');
+  String get refrigerator => _getString('refrigerator');
+  String get freezer => _getString('freezer');
+  String get bottles => _getString('bottles');
+  String get all => _getString('all');
+  String get noStoredMilk => _getString('noStoredMilk');
+  String get noStoredMilkHint => _getString('noStoredMilkHint');
+  String get labelNumber => _getString('labelNumber');
+  String get amountMl => _getString('amountMl');
+  String get storageLocation => _getString('storageLocation');
+  String get expressedAt => _getString('expressedAt');
+  String get pumpedFrom => _getString('pumpedFrom');
+  String get mixed => _getString('mixed');
+  String get unspecified => _getString('unspecified');
+  String get freshFor => _getString('freshFor');
+  String get useWithin => _getString('useWithin');
+  String get expired => _getString('expired');
+  String get bestBefore => _getString('bestBefore');
+  String get hoursShort => _getString('hoursShort');
+  String get useMilk => _getString('useMilk');
+  String get confirm => _getString('confirm');
+  String get moveToFreezer => _getString('moveToFreezer');
+  String get moveToRefrigerator => _getString('moveToRefrigerator');
+  String get deleteMilkTitle => _getString('deleteMilkTitle');
+  String get deleteMilkContent => _getString('deleteMilkContent');
+  String get milkStorageSafetyNote => _getString('milkStorageSafetyNote');
+  String get invalidMilkEntry => _getString('invalidMilkEntry');
+  String get duplicateMilkLabel => _getString('duplicateMilkLabel');
+  String get discardMilk => _getString('discardMilk');
+  String get editMilkRecord => _getString('editMilkRecord');
+  String get deleteIncorrectRecord => _getString('deleteIncorrectRecord');
+  String get saveChanges => _getString('saveChanges');
+  String get milkHistory => _getString('milkHistory');
+  String get usedAndRemainingMilk => _getString('usedAndRemainingMilk');
+  String get remainingMilk => _getString('remainingMilk');
+  String get usedMilk => _getString('usedMilk');
+  String get discardedMilk => _getString('discardedMilk');
+  String get activity => _getString('activity');
+  String get insights => _getString('insights');
+  String get noMilkHistory => _getString('noMilkHistory');
+  String get dailyMilkMovement => _getString('dailyMilkMovement');
+  String get last14Days => _getString('last14Days');
+  String get stockOverTime => _getString('stockOverTime');
+  String get addedMilk => _getString('addedMilk');
+  String get milkAdded => _getString('milkAdded');
+  String get remaining => _getString('remaining');
+  String get movedToFreezer => _getString('movedToFreezer');
+  String get recordCorrected => _getString('recordCorrected');
   String get premiumTitle => _getString('premiumTitle');
   String get unlockPremium => _getString('unlockPremium');
   String get premiumDescription => _getString('premiumDescription');

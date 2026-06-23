@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:leyumi/core/premium/premium_access.dart';
+import 'package:leyumi/core/premium/premium_feature.dart';
 import 'package:leyumi/features/feeding/feeding_screen.dart';
 import 'package:leyumi/features/history/history_hub_screen.dart';
+import 'package:leyumi/features/milk_inventory/milk_inventory_screen.dart';
 import 'package:leyumi/models/baby_profile.dart';
 import 'package:leyumi/services/baby_storage.dart';
 import 'package:leyumi/widgets/baby_card.dart';
@@ -258,6 +261,19 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                           ),
                         );
                         await _todaySummaryKey.currentState?.loadStats();
+                      },
+                    ),
+                    HomeActionCard(
+                      icon: Icons.inventory_2_rounded,
+                      title: t.milkInventory,
+                      subtitle: t.premiumMilkInventory,
+                      isPremium: true,
+                      onTap: () {
+                        PremiumAccess.open(
+                          context,
+                          feature: PremiumFeature.milkInventory,
+                          builder: (_) => const MilkInventoryScreen(),
+                        );
                       },
                     ),
                     HomeActionCard(
@@ -604,6 +620,7 @@ class HomeActionCard extends StatefulWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final bool isPremium;
 
   const HomeActionCard({
     super.key,
@@ -611,6 +628,7 @@ class HomeActionCard extends StatefulWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.isPremium = false,
   });
 
   @override
@@ -650,7 +668,46 @@ class _HomeActionCardState extends State<HomeActionCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(widget.icon, color: Theme.of(context).cardColor, size: 28),
+              Row(
+                children: [
+                  Icon(
+                    widget.icon,
+                    color: Theme.of(context).cardColor,
+                    size: 28,
+                  ),
+                  const Spacer(),
+                  if (widget.isPremium)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 7,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(35),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.workspace_premium_rounded,
+                            color: Colors.white,
+                            size: 11,
+                          ),
+                          SizedBox(width: 3),
+                          Text(
+                            'PRO',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 8,
+                              fontWeight: FontWeight.w900,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
               const Spacer(),
               Text(
                 widget.title,

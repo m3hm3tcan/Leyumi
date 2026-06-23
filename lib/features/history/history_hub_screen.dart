@@ -3,6 +3,7 @@ import 'package:leyumi/core/premium/premium_feature.dart';
 import 'package:leyumi/features/history/graphs/diaper_graph.dart';
 import 'package:leyumi/features/history/graphs/feeding_graph.dart';
 import 'package:leyumi/features/history/graphs/growth_graph.dart';
+import 'package:leyumi/features/milk_inventory/milk_history_screen.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
@@ -137,6 +138,20 @@ class HistoryHubScreen extends StatelessWidget {
                           context,
                           feature: PremiumFeature.advancedAnalytics,
                           builder: (_) => const GrowthGraphScreen(),
+                        );
+                      },
+                    ),
+                    HubCard(
+                      title: l10n.milkHistory,
+                      icon: Icons.history_rounded,
+                      color: const Color(0xff7C5CE7),
+                      subtitle: l10n.usedAndRemainingMilk,
+                      isPremium: true,
+                      onTap: () {
+                        PremiumAccess.open(
+                          context,
+                          feature: PremiumFeature.milkInventory,
+                          builder: (_) => const MilkHistoryScreen(),
                         );
                       },
                     ),

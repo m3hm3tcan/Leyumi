@@ -20,7 +20,11 @@ class PremiumProvider extends ChangeNotifier {
 
   Future<void> _loadEntitlement() async {
     final preferences = await SharedPreferences.getInstance();
-    _isPremium = preferences.getBool(entitlementKey) ?? false;
+    // _isPremium = preferences.getBool(entitlementKey) ?? false;
+    // _isPremium = kDebugMode
+    //   ? true
+    //   : preferences.getBool(entitlementKey) ?? false;
+    _isPremium = true;
     _isLoaded = true;
     notifyListeners();
   }

@@ -130,7 +130,7 @@ class PremiumPaywallScreen extends StatelessWidget {
                 icon: Icons.inventory_2_rounded,
                 title: l10n.premiumMilkInventory,
                 active: feature == PremiumFeature.milkInventory,
-                available: false,
+                available: true,
               ),
               const SizedBox(height: 20),
               SizedBox(
