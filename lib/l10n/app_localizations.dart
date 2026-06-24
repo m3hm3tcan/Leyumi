@@ -1,1077 +1,1586 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/intl.dart' as intl;
 
-class AppLocalizations {
-  final Locale locale;
+import 'app_localizations_en.dart';
+import 'app_localizations_hu.dart';
+import 'app_localizations_tr.dart';
 
-  AppLocalizations(this.locale);
+// ignore_for_file: type=lint
+
+/// Callers can lookup localized strings with an instance of AppLocalizations
+/// returned by `AppLocalizations.of(context)`.
+///
+/// Applications need to include `AppLocalizations.delegate()` in their app's
+/// `localizationDelegates` list, and the locales they support in the app's
+/// `supportedLocales` list. For example:
+///
+/// ```dart
+/// import 'l10n/app_localizations.dart';
+///
+/// return MaterialApp(
+///   localizationsDelegates: AppLocalizations.localizationsDelegates,
+///   supportedLocales: AppLocalizations.supportedLocales,
+///   home: MyApplicationHome(),
+/// );
+/// ```
+///
+/// ## Update pubspec.yaml
+///
+/// Please make sure to update your pubspec.yaml to include the following
+/// packages:
+///
+/// ```yaml
+/// dependencies:
+///   # Internationalization support.
+///   flutter_localizations:
+///     sdk: flutter
+///   intl: any # Use the pinned version from flutter_localizations
+///
+///   # Rest of dependencies
+/// ```
+///
+/// ## iOS Applications
+///
+/// iOS applications define key application metadata, including supported
+/// locales, in an Info.plist file that is built into the application bundle.
+/// To configure the locales supported by your app, you’ll need to edit this
+/// file.
+///
+/// First, open your project’s ios/Runner.xcworkspace Xcode workspace file.
+/// Then, in the Project Navigator, open the Info.plist file under the Runner
+/// project’s Runner folder.
+///
+/// Next, select the Information Property List item, select Add Item from the
+/// Editor menu, then select Localizations from the pop-up menu.
+///
+/// Select and expand the newly-created Localizations item then, for each
+/// locale your application supports, add a new item and select the locale
+/// you wish to add from the pop-up menu in the Value field. This list should
+/// be consistent with the languages listed in the AppLocalizations.supportedLocales
+/// property.
+abstract class AppLocalizations {
+  AppLocalizations(String locale)
+    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+
+  final String localeName;
 
   static AppLocalizations of(BuildContext context) {
-    final localizations = Localizations.of<AppLocalizations>(
-      context,
-      AppLocalizations,
-    );
-    if (localizations == null) {
-      throw Exception('AppLocalizations not found in context');
-    }
-    return localizations;
+    return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
       _AppLocalizationsDelegate();
 
-  static const Map<String, Map<String, String>> _localizedStrings = {
-    'en': {
-      'milkInventory': 'Milk Inventory',
-      'addMilk': 'Add Milk',
-      'saveMilk': 'Save Milk',
-      'totalMilkStock': 'Total milk stock',
-      'refrigerator': 'Refrigerator',
-      'freezer': 'Freezer',
-      'bottles': 'Bottles',
-      'all': 'All',
-      'noStoredMilk': 'No stored milk yet',
-      'noStoredMilkHint':
-          'Add your first expressed milk bottle and Leyumi will track its freshness.',
-      'labelNumber': 'Label number',
-      'amountMl': 'Amount (ml)',
-      'storageLocation': 'Storage location',
-      'expressedAt': 'Expressed date and time',
-      'pumpedFrom': 'Pumped from',
-      'mixed': 'Mixed',
-      'unspecified': 'Not specified',
-      'freshFor': 'Fresh for',
-      'useWithin': 'Use within',
-      'expired': 'Expired',
-      'bestBefore': 'Best before',
-      'hoursShort': 'h',
-      'useMilk': 'Use milk',
-      'confirm': 'Confirm',
-      'moveToFreezer': 'Move to freezer',
-      'moveToRefrigerator': 'Move to refrigerator',
-      'deleteMilkTitle': 'Delete milk bottle?',
-      'deleteMilkContent':
-          'Are you sure you want to remove this milk bottle from inventory?',
-      'milkStorageSafetyNote':
-          'Fresh milk: up to 4 days refrigerated; best used within 6 months frozen. Smaller portions can help reduce waste.',
-      'invalidMilkEntry':
-          'Enter a label and a milk amount between 1 and 500 ml.',
-      'duplicateMilkLabel': 'This label number is already in use.',
-      'discardMilk': 'Discard milk',
-      'editMilkRecord': 'Edit record',
-      'deleteIncorrectRecord': 'Delete incorrect record',
-      'saveChanges': 'Save changes',
-      'milkHistory': 'Milk History',
-      'usedAndRemainingMilk': 'Used and remaining milk',
-      'remainingMilk': 'Remaining',
-      'usedMilk': 'Used milk',
-      'discardedMilk': 'Discarded',
-      'activity': 'Activity',
-      'insights': 'Insights',
-      'noMilkHistory': 'No milk activity yet',
-      'dailyMilkMovement': 'Added and used milk',
-      'last14Days': 'Last 14 days',
-      'stockOverTime': 'Milk stock over time',
-      'addedMilk': 'Added milk',
-      'milkAdded': 'Milk added',
-      'remaining': 'Remaining',
-      'movedToFreezer': 'Moved to freezer',
-      'recordCorrected': 'Record corrected',
-      'premiumTitle': 'Leyumi Premium',
-      'unlockPremium': 'Unlock more with Premium',
-      'premiumDescription':
-          'Turn your baby care records into clear insights and keep everything safely connected.',
-      'premiumIncludes': 'Premium features',
-      'premiumAnalytics': 'Advanced feeding, diaper and growth analytics',
-      'premiumPdfReports': 'PDF doctor reports',
-      'doctorReport': 'Doctor Report',
-      'doctorReportDescription':
-          'Create a clear summary of feeding, diaper and growth records for your doctor.',
-      'createShareableReport': 'Create and share a health summary',
-      'selectReportPeriod': 'Select report period',
-      'last7Days': 'Last 7 days',
-      'last30Days': 'Last 30 days',
-      'last90Days': 'Last 90 days',
-      'reportPeriod': 'Report period',
-      'reportSummary': 'Summary',
-      'minutesShort': 'min',
-      'diaperSummary': 'Diaper summary',
-      'growthSummary': 'Growth summary',
-      'dailyActivitySummary': 'Daily activity summary',
-      'growthMeasurements': 'Growth measurements',
-      'generatedOn': 'Generated on {date}',
-      'generatedByLeyumi': 'Generated by Leyumi',
-      'noBabyProfile': 'Baby profile information is not available.',
-      'birthDate': 'Birth date',
-      'latestMeasurement': 'Latest measurement',
-      'weightChange': 'Weight change',
-      'heightChange': 'Height change',
-      'noDataForPeriod': 'No records were found for this period.',
-      'duration': 'Duration',
-      'reportMedicalDisclaimer':
-          'This report summarizes records entered by the caregiver. It is not medical advice or a diagnosis. Please review the information with a qualified healthcare professional.',
-      'createAndSharePdf': 'Create and Share PDF',
-      'preparingReport': 'Preparing report...',
-      'reportGenerationFailed':
-          'The PDF report could not be created. Please try again.',
-      'reportPrivacyNote':
-          'The report is created on this device. You choose where and with whom it is shared.',
-      'reportIncludes': 'The report includes',
-      'babyInformation': 'Baby information',
-      'premiumMultipleChildren': 'Multiple child profiles',
-      'premiumCloudBackup': 'Cloud backup and device sync',
-      'premiumSmartReminders': 'Smart reminders',
-      'premiumMilkInventory': 'Milk inventory management',
-      'upgradeToPremium': 'Upgrade to Premium',
-      'premiumPurchaseComingSoon': 'Premium purchasing will be available soon.',
-      'confirmDeleteTitle': 'Delete record?',
-      'confirmDeleteContent':
-          'Are you sure you want to delete this record? This action can be undone for a short time.',
-      'confirmSaveTitle': 'Save feeding record?',
-      'confirmSaveContent':
-          'Are you sure you want to save this feeding record?',
-      'dontSave': "Don't save",
-      'appTitle': 'Leyumi',
-      'appSubtitle': 'Growing with your little light. 🌙✨',
-      'homeTitle': 'Home',
-      'feeding': 'Feeding',
-      'history': 'History',
-      'diaper': 'Diaper',
-      'growth': 'Growth',
-      'startSession': 'Start feeding session',
-      'pastFeedings': 'Past feedings',
-      'trackChanges': 'Track changes',
-      'updateWeight': 'Update weight',
-      'dangerZone': 'Danger Zone',
-      'resetApp': 'Reset App (Clear All Data)',
-      'confirmResetTitle': 'Reset App',
-      'confirmResetContent': 'Are you sure you want to clear all app data?',
-      'cancel': 'Cancel',
-      'delete': 'Delete',
-      'today': 'Today',
-      'older': 'Older',
-      'entryDeleted': 'Entry deleted',
-      'swipeToDelete': 'Swipe left to delete',
-      'swipeHintInfo': 'This hint shows during the first 3 opens.',
-      'noDiaperRecordsYet': 'No diaper records yet',
-      'addDiaperChangesHint':
-          'Add diaper changes from the home screen to track history.',
-      'pee': 'Pee',
-      'poop': 'Poop',
-      'peeAndPoop': 'Pee & Poop',
-      'amount': 'Amount',
-      'color': 'Color',
-      'note': 'Note',
-      'diaperScreenTitle': 'Add Diaper Entry',
-      'diaperType': 'Diaper Type',
-      'peeAmountTitle': 'Pee Amount',
-      'poopAmountTitle': 'Poop Amount',
-      'poopColor': 'Poop Color',
-      'optionalNote': 'Optional note',
-      'saveDiaperRecord': 'Save Diaper Record',
-      'diaperRecordSaved': 'Diaper record saved',
-      'small': 'Small',
-      'medium': 'Medium',
-      'large': 'Large',
-      'yellow': 'Yellow',
-      'brown': 'Brown',
-      'green': 'Green',
-      'black': 'Black',
-      'mustardYellow': 'Mustard Yellow',
-      'yellowGreen': 'Yellow Green',
-      'darkGreen': 'Dark Green',
-      'whiteGray': 'Gray White',
-      'noFeedingSessionsYet': 'No feeding sessions yet',
-      'startFeedingSessionHint':
-          'Start a feeding session to track your baby\'s feeding history in a clean timeline.',
-      'totalFeedingDuration': 'Total feeding duration',
-      'milk': 'Milk',
-      'average': 'Average',
-      'sessions': 'Sessions',
-      'totalFeedingTime': 'Total feeding time',
-      'comingSoon': 'Coming soon',
-      'sleepTitle': 'Sleep',
-      'babyInfoTitle': 'Baby Information',
-      'babyNameLabel': 'Baby Name',
-      'genderLabel': 'Gender',
-      'genderMale': 'Male',
-      'genderFemale': 'Female',
-      'birthDateNotSelected': 'Birth date not selected',
-      'selectDate': 'Select date',
-      'saveContinue': 'Save and Continue',
-      'requiredField': 'This field is required',
-      'weightGr': 'Weight (g)',
-      'heightCm': 'Height (cm)',
-      'headCircumferenceOptional': 'Head Circumference (optional)',
-      'waistCircumferenceOptional': 'Waist Circumference (optional)',
-      'feedingSessionTitle': 'Feeding Session',
-      'babyWeightGr': 'Baby Weight (g)',
-      'exampleWeight': 'e.g. 2500',
-      'liveSession': 'Live Session',
-      'backLiveSession':
-          'Ongoing breastfeeding was recorded in the background.',
-      'ready': 'Ready',
-      'tapLeftOrRightToStart': 'Tap left or right to start',
-      'leftSide': 'Left Side',
-      'rightSide': 'Right Side',
-      'live': 'Live',
-      'stop': 'Stop',
-      'feedingSummary': 'Feeding Summary',
-      'leftLabel': 'Left',
-      'rightLabel': 'Right',
-      'totalLabel': 'Total',
-      'feedingAfterWeight': 'Feeding After Weight',
-      'save': 'Save',
-      'currentLabel': 'Current',
-      'enterNewValueHint': 'Enter new value',
-      'currentGrowthSnapshot': 'Current Growth Snapshot',
-      'saveGrowthRecord': 'Save Growth Record',
-      'growthUpdateTitle': 'Growth Update',
-      'historyHubTitle': 'History Hub',
-      'historyHubSubtitle': 'Track everything about your baby',
-      'milkTracking': 'Milk tracking',
-      'weightAndHeight': 'Weight & height',
-      'diaperChanges': 'Diaper changes',
-      'sessionDeleted': 'Session deleted',
-      'undo': 'UNDO',
-      'yesterday': 'Yesterday',
-      'thisWeek': 'This Week',
-      'swipeHistoryTip': 'Tip: Swipe left on a feeding session to delete it.',
-      'noGrowthDataYet': 'No growth data yet',
-      'leftBreast': 'Left breast',
-      'rightBreast': 'Right breast',
-      'initialWeight': 'Initial weight',
-      'finalWeight': 'Final weight',
-      'milkIntake': 'Milk intake',
-      'weight': 'Weight',
-      'height': 'Height',
-      'headCircumference': 'Head Circumference',
-      'waistCircumference': 'Waist Circumference',
-      'unitGr': 'g',
-      'unitCm': 'cm',
-      'weightHeightRequired': 'Weight and Height are required',
-      'growthRecordSaved': 'Growth record saved',
-      "growthHistoryTitle": 'Growth History',
-      "yearsShort": "y",
-      "monthsShort": "m",
-      "daysShort": "d",
-      "dateAndTime": "Date & Time",
-      "feedingGraph": "Feeding Graph",
-      "growthGraph": "Growth Graph",
-      "diaperGraph": "Diaper Graph",
-      "viewCharts": "View charts",
-      "growthCharts": "Growth Charts",
-      "manualFeedingEntry": "Manual Feeding Entry",
-      "startTime": "Start Time",
-      "endTime": "End Time",
-      "select": "Select",
-      "leftRightRatio": "Left/Right Ratio",
-      "noData": "No data",
-      "noGrowthData": "No growth data",
-      "filter7d": "7d",
-      "filter30d": "30d",
-      "filter90d": "90d",
-      "filterAll": "All",
-      "dateFormat": "{day}.{month}",
-      "quickActions": "Actions",
-      "todayActivities": "Today's Activity",
-      "last": "Last",
-      "minutesAgo": "{count} min ago",
-      "hoursAgo": "{count} h ago",
-      "daysAgo": "{count} d ago",
-      "liveFeedingContinues": "Live feeding is in progress",
-      "unsavedFeedingDraft": "An unsaved feeding draft is ready",
-      "feedingSideProgress": "{side} side - {duration}",
-      "open": "Open",
-    },
-    'tr': {
-      'milkInventory': 'Süt Stoğu',
-      'addMilk': 'Süt Ekle',
-      'saveMilk': 'Sütü Kaydet',
-      'totalMilkStock': 'Toplam süt stoğu',
-      'refrigerator': 'Buzdolabı',
-      'freezer': 'Dondurucu',
-      'bottles': 'Şişe',
-      'all': 'Tümü',
-      'noStoredMilk': 'Henüz kayıtlı süt yok',
-      'noStoredMilkHint':
-          'İlk sağılmış süt şişenizi ekleyin; Leyumi tazelik süresini takip etsin.',
-      'labelNumber': 'Etiket numarası',
-      'amountMl': 'Miktar (ml)',
-      'storageLocation': 'Saklama yeri',
-      'expressedAt': 'Sağım tarihi ve saati',
-      'pumpedFrom': 'Sağılan taraf',
-      'mixed': 'Karışık',
-      'unspecified': 'Belirtilmedi',
-      'freshFor': 'Tazelik süresi',
-      'useWithin': 'Şu süre içinde kullanın:',
-      'expired': 'Süresi doldu',
-      'bestBefore': 'Son kullanım',
-      'hoursShort': 'sa',
-      'useMilk': 'Sütü Kullan',
-      'confirm': 'Onayla',
-      'moveToFreezer': 'Dondurucuya taşı',
-      'moveToRefrigerator': 'Buzdolabına taşı',
-      'deleteMilkTitle': 'Süt şişesi silinsin mi?',
-      'deleteMilkContent':
-          'Bu süt şişesini stoktan kaldırmak istediğinizden emin misiniz?',
-      'milkStorageSafetyNote':
-          'Taze süt buzdolabında 4 güne kadar; dondurucuda en iyi 6 ay içinde kullanılır. Küçük porsiyonlar israfı azaltabilir.',
-      'invalidMilkEntry':
-          'Etiket ve 1–500 ml arasında geçerli bir süt miktarı girin.',
-      'duplicateMilkLabel': 'Bu etiket numarası zaten kullanılıyor.',
-      'discardMilk': 'Sütü At',
-      'editMilkRecord': 'Kaydı Düzenle',
-      'deleteIncorrectRecord': 'Yanlış Kaydı Sil',
-      'saveChanges': 'Değişiklikleri Kaydet',
-      'milkHistory': 'Süt Geçmişi',
-      'usedAndRemainingMilk': 'Kullanılan ve kalan süt',
-      'remainingMilk': 'Kalan',
-      'usedMilk': 'Kullanılan süt',
-      'discardedMilk': 'Atılan süt',
-      'activity': 'Hareketler',
-      'insights': 'Analizler',
-      'noMilkHistory': 'Henüz süt hareketi yok',
-      'dailyMilkMovement': 'Eklenen ve kullanılan süt',
-      'last14Days': 'Son 14 gün',
-      'stockOverTime': 'Zaman içinde süt stoğu',
-      'addedMilk': 'Eklenen süt',
-      'milkAdded': 'Süt eklendi',
-      'remaining': 'Kalan',
-      'movedToFreezer': 'Dondurucuya taşındı',
-      'recordCorrected': 'Kayıt düzeltildi',
-      'premiumTitle': 'Leyumi Premium',
-      'unlockPremium': 'Premium ile daha fazlasını keşfedin',
-      'premiumDescription':
-          'Bebek bakım kayıtlarınızı anlaşılır analizlere dönüştürün ve verilerinizi güvenle bağlantılı tutun.',
-      'premiumIncludes': 'Premium özellikler',
-      'premiumAnalytics': 'Gelişmiş beslenme, bez ve büyüme analizleri',
-      'premiumPdfReports': 'PDF doktor raporları',
-      'doctorReport': 'Doktor Raporu',
-      'doctorReportDescription':
-          'Beslenme, bez ve büyüme kayıtlarını doktorunuz için anlaşılır bir özette birleştirin.',
-      'createShareableReport': 'Paylaşılabilir sağlık özeti oluştur',
-      'selectReportPeriod': 'Rapor dönemini seçin',
-      'last7Days': 'Son 7 gün',
-      'last30Days': 'Son 30 gün',
-      'last90Days': 'Son 90 gün',
-      'reportPeriod': 'Rapor dönemi',
-      'reportSummary': 'Özet',
-      'minutesShort': 'dk',
-      'diaperSummary': 'Bez özeti',
-      'growthSummary': 'Büyüme özeti',
-      'dailyActivitySummary': 'Günlük aktivite özeti',
-      'growthMeasurements': 'Büyüme ölçümleri',
-      'generatedOn': '{date} tarihinde oluşturuldu',
-      'generatedByLeyumi': 'Leyumi tarafından oluşturuldu',
-      'noBabyProfile': 'Bebek profil bilgisi bulunamadı.',
-      'birthDate': 'Doğum tarihi',
-      'latestMeasurement': 'Son ölçüm',
-      'weightChange': 'Kilo değişimi',
-      'heightChange': 'Boy değişimi',
-      'noDataForPeriod': 'Bu dönem için kayıt bulunamadı.',
-      'duration': 'Süre',
-      'reportMedicalDisclaimer':
-          'Bu rapor, bakım veren tarafından girilen kayıtları özetler. Tıbbi tavsiye veya teşhis değildir. Bilgileri yetkili bir sağlık uzmanıyla değerlendiriniz.',
-      'createAndSharePdf': 'PDF Oluştur ve Paylaş',
-      'preparingReport': 'Rapor hazırlanıyor...',
-      'reportGenerationFailed':
-          'PDF raporu oluşturulamadı. Lütfen tekrar deneyin.',
-      'reportPrivacyNote':
-          'Rapor bu cihazda oluşturulur. Nerede ve kiminle paylaşılacağını siz seçersiniz.',
-      'reportIncludes': 'Raporun içeriği',
-      'babyInformation': 'Bebek bilgileri',
-      'premiumMultipleChildren': 'Çoklu çocuk profili',
-      'premiumCloudBackup': 'Bulut yedekleme ve cihaz senkronizasyonu',
-      'premiumSmartReminders': 'Akıllı hatırlatmalar',
-      'premiumMilkInventory': 'Süt stoğu yönetimi',
-      'upgradeToPremium': 'Premium’a Geç',
-      'premiumPurchaseComingSoon':
-          'Premium satın alma çok yakında kullanıma açılacak.',
-      'confirmDeleteTitle': 'Kayıt silinsin mi?',
-      'confirmDeleteContent':
-          'Bu kaydı silmek istediğinizden emin misiniz? İşlemi kısa bir süre içinde geri alabilirsiniz.',
-      'confirmSaveTitle': 'Beslenme kaydı kaydedilsin mi?',
-      'confirmSaveContent':
-          'Bu beslenme kaydını kaydetmek istediğinizden emin misiniz?',
-      'dontSave': 'Kaydetme',
-      'appTitle': 'Leyumi',
-      'appSubtitle': 'Küçük ışığınızla birlikte büyüyoruz. 🌙✨',
-      'homeTitle': 'Ana Sayfa',
-      'feeding': 'Beslenme',
-      'history': 'Geçmiş',
-      'diaper': 'Bez',
-      'growth': 'Büyüme',
-      'startSession': 'Emizrme Başlat',
-      'pastFeedings': 'Kayitli Veriler',
-      'trackChanges': 'Değişiklikleri takip et',
-      'updateWeight': 'Kilosu Güncelle',
-      'dangerZone': 'Tehlike Bölgesi',
-      'resetApp': 'Uygulamayı Sıfırla (Tüm Verileri Sil)',
-      'confirmResetTitle': 'Uygulamayı Sıfırla',
-      'confirmResetContent': 'Tüm verileri silmek istediğinizden emin misiniz?',
-      'cancel': 'İptal',
-      'delete': 'Sil',
-      'today': 'Bugün',
-      'older': 'Daha eski',
-      'entryDeleted': 'Kayıt silindi',
-      'swipeToDelete': 'Silmek için sola kaydır',
-      'swipeHintInfo': 'Bu ipucu ilk 3 açılışta gösterilir.',
-      'noDiaperRecordsYet': 'Henüz bez kaydı yok',
-      'addDiaperChangesHint':
-          'Geçmişi takip etmek için ana ekrandan bez değişiklikleri ekleyin.',
-      'pee': 'İdrar',
-      'poop': 'Dışkı',
-      'peeAndPoop': 'İdrar & Dışkı',
-      'amount': 'Miktar',
-      'color': 'Renk',
-      'note': 'Not',
-      'diaperScreenTitle': 'Bez Kaydı Ekle',
-      'diaperType': 'Bez Tipi',
-      'peeAmountTitle': 'İdrar Miktarı',
-      'poopAmountTitle': 'Dışkı Miktarı',
-      'poopColor': 'Dışkı Rengi',
-      'optionalNote': 'Opsiyonel not',
-      'saveDiaperRecord': 'Bez Kaydını Kaydet',
-      'diaperRecordSaved': 'Bez kaydı kaydedildi',
-      'small': 'Küçük',
-      'medium': 'Orta',
-      'large': 'Büyük',
-      'yellow': 'Sarı',
-      'brown': 'Kahverengi',
-      'green': 'Yeşil',
-      'black': 'Siyah',
-      'mustardYellow': 'Hardal Sarısı',
-      'yellowGreen': 'Sarı-Yeşil',
-      'darkGreen': 'Koyu Yeşil',
-      'whiteGray': 'Gri-Beyaz',
-      'noFeedingSessionsYet': 'Henüz beslenme kaydı yok',
-      'startFeedingSessionHint':
-          'Temiz bir zaman çizelgesinde bebeğinizin beslenme geçmişini takip etmek için bir beslenme seansı başlatın.',
-      'totalFeedingDuration': 'Toplam beslenme süresi',
-      'milk': 'Süt',
-      'average': 'Ortalama',
-      'sessions': 'Oturumlar',
-      'totalFeedingTime': 'Toplam beslenme süresi',
-      'comingSoon': 'Yakında',
-      'sleepTitle': 'Uyku',
-      'babyInfoTitle': 'Bebek Bilgileri',
-      'babyNameLabel': 'Bebek Adı',
-      'genderLabel': 'Cinsiyet',
-      'genderMale': 'Erkek',
-      'genderFemale': 'Kız',
-      'birthDateNotSelected': 'Doğum tarihi seçilmedi',
-      'selectDate': 'Tarih Seç',
-      'saveContinue': 'Kaydet ve Devam Et',
-      'requiredField': 'Bu alan zorunludur',
-      'weightGr': 'Kilo (gr)',
-      'heightCm': 'Boy (cm)',
-      'headCircumferenceOptional': 'Kafa Çevresi (opsiyonel)',
-      'waistCircumferenceOptional': 'Bel Çevresi (opsiyonel)',
-      'feedingSessionTitle': 'Beslenme Seansı',
-      'babyWeightGr': 'Bebeğin Kilosu (gr)',
-      'exampleWeight': 'Örn: 2500',
-      'liveSession': 'Canlı Seans',
-      'backLiveSession': 'Devam eden emizrme arka planda kaydedildi.',
-      'ready': 'Hazır',
-      'tapLeftOrRightToStart': 'Başlamak için sola veya sağa dokun',
-      'leftSide': 'Sol Meme',
-      'rightSide': 'Sağ Meme',
-      'live': 'CANLI',
-      'stop': 'Durdur',
-      'feedingSummary': 'Beslenme Özeti',
-      'leftLabel': 'Sol',
-      'rightLabel': 'Sağ',
-      'totalLabel': 'Toplam',
-      'feedingAfterWeight': 'Beslenme Sonrası Kilo',
-      'save': 'Kaydet',
-      'currentLabel': 'Mevcut',
-      'enterNewValueHint': 'Yeni değer girin',
-      'currentGrowthSnapshot': 'Mevcut Büyüme Anlık Görünümü',
-      'saveGrowthRecord': 'Büyüme Kaydını Kaydet',
-      'historyHubTitle': 'Geçmiş Merkezi',
-      'historyHubSubtitle': 'Bebeğinizle ilgili her şeyi takip edin',
-      'milkTracking': 'Süt takibi',
-      'weightAndHeight': 'Kilo ve boy',
-      'diaperChanges': 'Bez değişiklikleri',
-      'sessionDeleted': 'Oturum silindi',
-      'undo': 'GERİ AL',
-      'yesterday': 'Dün',
-      'thisWeek': 'Bu Hafta',
-      'swipeHistoryTip':
-          'İpucu: Silmek için bir beslenme oturumunu sola kaydırın.',
-      'noGrowthDataYet': 'Henüz büyüme verisi yok',
-      'leftBreast': 'Sol meme',
-      'rightBreast': 'Sağ meme',
-      'initialWeight': 'İlk kilo',
-      'finalWeight': 'Son kilo',
-      'milkIntake': 'İçilen süt',
-      'weight': 'Kilo',
-      'height': 'Boy',
-      'headCircumference': 'Kafa Çevresi',
-      'waistCircumference': 'Bel Çevresi',
-      'unitGr': 'g',
-      'unitCm': 'cm',
-      'growthHistoryTitle': 'Büyüme Geçmişi',
-      'weightHeightRequired': 'Kilo ve Boy zorunludur',
-      'growthRecordSaved': 'Büyüme kaydı kaydedildi',
-      "yearsShort": "y",
-      "monthsShort": "a",
-      "daysShort": "g",
-      "dateAndTime": "Tarih ve Saat",
-      "feedingGraph": "Beslenme Grafiği",
-      "growthGraph": "Büyüme Grafiği",
-      "diaperGraph": "Pelenka Grafiği",
-      "viewCharts": "Grafikleri Görüntüle",
-      "growthCharts": "Büyüme Grafikleri",
-      "manualFeedingEntry": "Manuel Beslenme Kaydı",
-      "startTime": "Başlangıç Zamanı",
-      "endTime": "Bitiş Zamanı",
-      "select": "Seç",
-      "leftRightRatio": "Sol/Sağ Oranı",
-      "noData": "Veri yok",
-      "noGrowthData": "Büyüme verisi yok",
-      "filter7d": "7g",
-      "filter30d": "30g",
-      "filter90d": "90g",
-      "filterAll": "Tümü",
-      "dateFormat": "{day}.{month}",
-      "quickActions": "Gorevler",
-      "todayActivities": "Bugünkü Aktiviteler",
-      "last": "Son",
-      "minutesAgo": "{count} dk önce",
-      "hoursAgo": "{count} sa önce",
-      "daysAgo": "{count} gün önce",
-      "liveFeedingContinues": "Canlı beslenme devam ediyor",
-      "unsavedFeedingDraft": "Kaydedilmemiş beslenme taslağı hazır",
-      "feedingSideProgress": "{side} tarafı - {duration}",
-      "open": "Aç",
-    },
-    'hu': {
-      'milkInventory': 'Tejkészlet',
-      'addMilk': 'Tej hozzáadása',
-      'saveMilk': 'Tej mentése',
-      'totalMilkStock': 'Teljes tejkészlet',
-      'refrigerator': 'Hűtőszekrény',
-      'freezer': 'Fagyasztó',
-      'bottles': 'Palackok',
-      'all': 'Összes',
-      'noStoredMilk': 'Még nincs tárolt tej',
-      'noStoredMilkHint':
-          'Add hozzá az első lefejt tejet, és a Leyumi követi a frissességét.',
-      'labelNumber': 'Címkeszám',
-      'amountMl': 'Mennyiség (ml)',
-      'storageLocation': 'Tárolás helye',
-      'expressedAt': 'Fejés dátuma és ideje',
-      'pumpedFrom': 'Fejés oldala',
-      'mixed': 'Vegyes',
-      'unspecified': 'Nincs megadva',
-      'freshFor': 'Friss még',
-      'useWithin': 'Használd fel',
-      'expired': 'Lejárt',
-      'bestBefore': 'Minőségét megőrzi',
-      'hoursShort': 'ó',
-      'useMilk': 'Tej felhasználása',
-      'confirm': 'Megerősítés',
-      'moveToFreezer': 'Áthelyezés a fagyasztóba',
-      'moveToRefrigerator': 'Áthelyezés a hűtőbe',
-      'deleteMilkTitle': 'Törlöd a tejes palackot?',
-      'deleteMilkContent':
-          'Biztosan eltávolítod ezt a tejes palackot a készletből?',
-      'milkStorageSafetyNote':
-          'A friss tej hűtőben legfeljebb 4 napig, fagyasztva lehetőleg 6 hónapon belül használható fel. A kisebb adagok csökkenthetik a pazarlást.',
-      'invalidMilkEntry':
-          'Adj meg egy címkét és 1–500 ml közötti tejmennyiséget.',
-      'duplicateMilkLabel': 'Ez a címkeszám már használatban van.',
-      'discardMilk': 'Tej kiöntése',
-      'editMilkRecord': 'Bejegyzés szerkesztése',
-      'deleteIncorrectRecord': 'Hibás bejegyzés törlése',
-      'saveChanges': 'Módosítások mentése',
-      'milkHistory': 'Tejelőzmények',
-      'usedAndRemainingMilk': 'Felhasznált és megmaradt tej',
-      'remainingMilk': 'Megmaradt',
-      'usedMilk': 'Felhasznált tej',
-      'discardedMilk': 'Kiöntött tej',
-      'activity': 'Tevékenység',
-      'insights': 'Elemzések',
-      'noMilkHistory': 'Még nincs tejjel kapcsolatos esemény',
-      'dailyMilkMovement': 'Hozzáadott és felhasznált tej',
-      'last14Days': 'Utolsó 14 nap',
-      'stockOverTime': 'Tejkészlet időbeli változása',
-      'addedMilk': 'Hozzáadott tej',
-      'milkAdded': 'Tej hozzáadva',
-      'remaining': 'Megmaradt',
-      'movedToFreezer': 'Fagyasztóba helyezve',
-      'recordCorrected': 'Bejegyzés javítva',
-      'premiumTitle': 'Leyumi Premium',
-      'unlockPremium': 'Fedezz fel többet a Premiummal',
-      'premiumDescription':
-          'Alakítsd a babaápolási adatokat áttekinthető elemzésekké, és tarts mindent biztonságosan összekapcsolva.',
-      'premiumIncludes': 'Premium funkciók',
-      'premiumAnalytics': 'Fejlett etetési, pelenka- és növekedési elemzések',
-      'premiumPdfReports': 'PDF orvosi jelentések',
-      'doctorReport': 'Orvosi jelentés',
-      'doctorReportDescription':
-          'Készíts áttekinthető összefoglalót az etetési, pelenka- és növekedési adatokról az orvos számára.',
-      'createShareableReport': 'Megosztható egészségügyi összefoglaló',
-      'selectReportPeriod': 'Jelentési időszak kiválasztása',
-      'last7Days': 'Utolsó 7 nap',
-      'last30Days': 'Utolsó 30 nap',
-      'last90Days': 'Utolsó 90 nap',
-      'reportPeriod': 'Jelentési időszak',
-      'reportSummary': 'Összefoglaló',
-      'minutesShort': 'perc',
-      'diaperSummary': 'Pelenka összefoglaló',
-      'growthSummary': 'Növekedési összefoglaló',
-      'dailyActivitySummary': 'Napi tevékenységek',
-      'growthMeasurements': 'Növekedési mérések',
-      'generatedOn': 'Létrehozva: {date}',
-      'generatedByLeyumi': 'Készítette a Leyumi',
-      'noBabyProfile': 'A baba profiladatai nem érhetők el.',
-      'birthDate': 'Születési dátum',
-      'latestMeasurement': 'Legutóbbi mérés',
-      'weightChange': 'Súlyváltozás',
-      'heightChange': 'Magasságváltozás',
-      'noDataForPeriod': 'Ebben az időszakban nincs rögzített adat.',
-      'duration': 'Időtartam',
-      'reportMedicalDisclaimer':
-          'Ez a jelentés a gondozó által rögzített adatokat foglalja össze. Nem minősül orvosi tanácsnak vagy diagnózisnak. Az adatokat szakképzett egészségügyi szakemberrel értékelje.',
-      'createAndSharePdf': 'PDF létrehozása és megosztása',
-      'preparingReport': 'Jelentés készítése...',
-      'reportGenerationFailed':
-          'A PDF-jelentést nem sikerült létrehozni. Próbáld újra.',
-      'reportPrivacyNote':
-          'A jelentés ezen az eszközön készül. Te döntöd el, hol és kivel osztod meg.',
-      'reportIncludes': 'A jelentés tartalma',
-      'babyInformation': 'Baba adatai',
-      'premiumMultipleChildren': 'Több gyermekprofil',
-      'premiumCloudBackup': 'Felhőmentés és eszközszinkronizálás',
-      'premiumSmartReminders': 'Intelligens emlékeztetők',
-      'premiumMilkInventory': 'Tejkészlet kezelése',
-      'upgradeToPremium': 'Váltás Premiumra',
-      'premiumPurchaseComingSoon':
-          'A Premium vásárlás hamarosan elérhető lesz.',
-      'confirmDeleteTitle': 'Törlöd a bejegyzést?',
-      'confirmDeleteContent':
-          'Biztosan törölni szeretnéd ezt a bejegyzést? A művelet rövid ideig visszavonható.',
-      'confirmSaveTitle': 'Mented az etetési bejegyzést?',
-      'confirmSaveContent':
-          'Biztosan menteni szeretnéd ezt az etetési bejegyzést?',
-      'dontSave': 'Ne mentsd',
-      'appTitle': 'Leyumi',
-      'appSubtitle': 'Együtt növekszünk a kis fényeddel. 🌙✨',
-      'homeTitle': 'Főoldal',
-      'feeding': 'Etetés',
-      'history': 'Előzmények',
-      'diaper': 'Pelenka',
-      'growth': 'Növekedés',
-      'startSession': 'Etetés indítása',
-      'pastFeedings': 'Korábbi etetések',
-      'trackChanges': 'Változások követése',
-      'updateWeight': 'Súly frissítése',
-      'dangerZone': 'Veszélyzóna',
-      'resetApp': 'Alkalmazás visszaállítása (Összes adat törlése)',
-      'confirmResetTitle': 'Alkalmazás visszaállítása',
-      'confirmResetContent': 'Biztosan törölni szeretnéd az összes adatot?',
-      'cancel': 'Mégse',
-      'delete': 'Törlés',
-      'today': 'Ma',
-      'older': 'Korábbiak',
-      'entryDeleted': 'Bejegyzés törölve',
-      'swipeToDelete': 'Húzd balra a törléshez',
-      'swipeHintInfo': 'Ez a tipp az első 3 megnyitáskor jelenik meg.',
-      'noDiaperRecordsYet': 'Még nincs pelenka bejegyzés',
-      'addDiaperChangesHint':
-          'Adj hozzá pelenkacserét a főoldalról az előzmények követéséhez.',
-      'pee': 'Pisi',
-      'poop': 'Kaki',
-      'peeAndPoop': 'Pisi & Kaki',
-      'amount': 'Mennyiség',
-      'color': 'Szín',
-      'note': 'Megjegyzés',
-      'diaperScreenTitle': 'Pelenka bejegyzés hozzáadása',
-      'diaperType': 'Pelenka típusa',
-      'peeAmountTitle': 'Pisi mennyisége',
-      'poopAmountTitle': 'Kaki mennyisége',
-      'poopColor': 'Kaki színe',
-      'optionalNote': 'Opcionális megjegyzés',
-      'saveDiaperRecord': 'Pelenka bejegyzés mentése',
-      'diaperRecordSaved': 'Pelenka bejegyzés mentve',
-      'small': 'Kicsi',
-      'medium': 'Közepes',
-      'large': 'Nagy',
-      'yellow': 'Sárga',
-      'brown': 'Barna',
-      'green': 'Zöld',
-      'black': 'Fekete',
-      'mustardYellow': 'Mustársárga',
-      'yellowGreen': 'Sárga-zöld',
-      'darkGreen': 'Sötétzöld',
-      'whiteGray': 'Szürke-fehér',
-      'noFeedingSessionsYet': 'Még nincs etetési bejegyzés',
-      'startFeedingSessionHint':
-          'Indíts etetési folyamatot, hogy tiszta idővonalon követhesd a baba etetési előzményeit.',
-      'totalFeedingDuration': 'Összes etetési idő',
-      'milk': 'Tej',
-      'average': 'Átlag',
-      'sessions': 'Etetések',
-      'totalFeedingTime': 'Összes etetési idő',
-      'comingSoon': 'Hamarosan',
-      'sleepTitle': 'Alvás',
-      'babyInfoTitle': 'Baba adatai',
-      'babyNameLabel': 'Baba neve',
-      'genderLabel': 'Nem',
-      'genderMale': 'Fiú',
-      'genderFemale': 'Lány',
-      'birthDateNotSelected': 'Születési dátum nincs kiválasztva',
-      'selectDate': 'Dátum kiválasztása',
-      'saveContinue': 'Mentés és folytatás',
-      'requiredField': 'Ez a mező kötelező',
-      'weightGr': 'Súly (g)',
-      'heightCm': 'Magasság (cm)',
-      'headCircumferenceOptional': 'Fejkörfogat (opcionális)',
-      'waistCircumferenceOptional': 'Derékkörfogat (opcionális)',
-      'feedingSessionTitle': 'Etetési folyamat',
-      'babyWeightGr': 'Baba súlya (g)',
-      'exampleWeight': 'pl. 2500',
-      'liveSession': 'Élő folyamat',
-      'backLiveSession': 'A háttérben rögzítették a folyamatos szoptatást.',
-      'ready': 'Kész',
-      'tapLeftOrRightToStart': 'Kezdéshez érintsd meg a bal vagy jobb oldalt',
-      'leftSide': 'Bal oldal',
-      'rightSide': 'Jobb oldal',
-      'live': 'ÉLŐ',
-      'stop': 'Leállítás',
-      'feedingSummary': 'Etetési összegzés',
-      'leftLabel': 'Bal',
-      'rightLabel': 'Jobb',
-      'totalLabel': 'Összesen',
-      'feedingAfterWeight': 'Etetés utáni súly',
-      'save': 'Mentés',
-      'currentLabel': 'Jelenlegi',
-      'enterNewValueHint': 'Adj meg új értéket',
-      'currentGrowthSnapshot': 'Aktuális növekedési állapot',
-      'saveGrowthRecord': 'Növekedési adat mentése',
-      'historyHubTitle': 'Előzmények központ',
-      'historyHubSubtitle': 'Kövesd a babával kapcsolatos összes adatot',
-      'milkTracking': 'Tej követése',
-      'weightAndHeight': 'Súly és magasság',
-      'diaperChanges': 'Pelenkacserék',
-      'sessionDeleted': 'Etetés törölve',
-      'undo': 'VISSZAVONÁS',
-      'yesterday': 'Tegnap',
-      'thisWeek': 'Ezen a héten',
-      'swipeHistoryTip': 'Tipp: Húzd balra az etetési bejegyzést a törléshez.',
-      'noGrowthDataYet': 'Még nincs növekedési adat',
-      'leftBreast': 'Bal mell',
-      'rightBreast': 'Jobb mell',
-      'initialWeight': 'Kezdő súly',
-      'finalWeight': 'Végső súly',
-      'milkIntake': 'Elfogyasztott tej',
-      'weight': 'Súly',
-      'height': 'Magasság',
-      'headCircumference': 'Fejkörfogat',
-      'waistCircumference': 'Derékkörfogat',
-      'unitGr': 'g',
-      'unitCm': 'cm',
-      'growthHistoryTitle': 'Növekedési előzmények',
-      'weightHeightRequired': 'Súly és magasság kötelező',
-      'growthRecordSaved': 'Növekedési adat mentve',
-      "yearsShort": "év",
-      "monthsShort": "hó",
-      "daysShort": "nap",
-      "dateAndTime": "Datum és idő",
-      "feedingGraph": "Etetési grafikon",
-      "growthGraph": "Növekedési grafikon",
-      "diaperGraph": "Pelenka grafikon",
-      "viewCharts": "Grafikonok megtekintése",
-      "growthCharts": "Növekedési grafikonok",
-      "manualFeedingEntry": "Manuális etetési bejegyzés",
-      "startTime": "Kezdési idő",
-      "endTime": "Befejezési idő",
-      "select": "Kiválasztás",
-      "leftRightRatio": "Bal/Jobb arány",
-      "noData": "Nincs adat",
-      "noGrowthData": "Nincs növekedési adat",
-      "filter7d": "7n",
-      "filter30d": "30n",
-      "filter90d": "90n",
-      "filterAll": "Összes",
-      "dateFormat": "{day}.{month}",
-      "quickActions": "Akciók",
-      "todayActivities": "Mai Tevékenységek",
-      "last": "Utolsó",
-      "minutesAgo": "{count} perce",
-      "hoursAgo": "{count} órája",
-      "daysAgo": "{count} napja",
-      "liveFeedingContinues": "Az élő etetés folyamatban van",
-      "unsavedFeedingDraft": "Egy nem mentett etetési vázlat vár",
-      "feedingSideProgress": "{side} oldal - {duration}",
-      "open": "Megnyitás",
-    },
-  };
+  /// A list of this localizations delegate along with the default localizations
+  /// delegates.
+  ///
+  /// Returns a list of localizations delegates containing this delegate along with
+  /// GlobalMaterialLocalizations.delegate, GlobalCupertinoLocalizations.delegate,
+  /// and GlobalWidgetsLocalizations.delegate.
+  ///
+  /// Additional delegates can be added by appending to this list in
+  /// MaterialApp. This list does not have to be used at all if a custom list
+  /// of delegates is preferred or required.
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
+      <LocalizationsDelegate<dynamic>>[
+        delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ];
 
-  String _getString(String key) {
-    return _localizedStrings[locale.languageCode]?[key] ??
-        _localizedStrings['en']![key] ??
-        key;
-  }
+  /// A list of this localizations delegate's supported locales.
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('hu'),
+    Locale('tr'),
+  ];
 
-  String get milkInventory => _getString('milkInventory');
-  String get addMilk => _getString('addMilk');
-  String get saveMilk => _getString('saveMilk');
-  String get totalMilkStock => _getString('totalMilkStock');
-  String get refrigerator => _getString('refrigerator');
-  String get freezer => _getString('freezer');
-  String get bottles => _getString('bottles');
-  String get all => _getString('all');
-  String get noStoredMilk => _getString('noStoredMilk');
-  String get noStoredMilkHint => _getString('noStoredMilkHint');
-  String get labelNumber => _getString('labelNumber');
-  String get amountMl => _getString('amountMl');
-  String get storageLocation => _getString('storageLocation');
-  String get expressedAt => _getString('expressedAt');
-  String get pumpedFrom => _getString('pumpedFrom');
-  String get mixed => _getString('mixed');
-  String get unspecified => _getString('unspecified');
-  String get freshFor => _getString('freshFor');
-  String get useWithin => _getString('useWithin');
-  String get expired => _getString('expired');
-  String get bestBefore => _getString('bestBefore');
-  String get hoursShort => _getString('hoursShort');
-  String get useMilk => _getString('useMilk');
-  String get confirm => _getString('confirm');
-  String get moveToFreezer => _getString('moveToFreezer');
-  String get moveToRefrigerator => _getString('moveToRefrigerator');
-  String get deleteMilkTitle => _getString('deleteMilkTitle');
-  String get deleteMilkContent => _getString('deleteMilkContent');
-  String get milkStorageSafetyNote => _getString('milkStorageSafetyNote');
-  String get invalidMilkEntry => _getString('invalidMilkEntry');
-  String get duplicateMilkLabel => _getString('duplicateMilkLabel');
-  String get discardMilk => _getString('discardMilk');
-  String get editMilkRecord => _getString('editMilkRecord');
-  String get deleteIncorrectRecord => _getString('deleteIncorrectRecord');
-  String get saveChanges => _getString('saveChanges');
-  String get milkHistory => _getString('milkHistory');
-  String get usedAndRemainingMilk => _getString('usedAndRemainingMilk');
-  String get remainingMilk => _getString('remainingMilk');
-  String get usedMilk => _getString('usedMilk');
-  String get discardedMilk => _getString('discardedMilk');
-  String get activity => _getString('activity');
-  String get insights => _getString('insights');
-  String get noMilkHistory => _getString('noMilkHistory');
-  String get dailyMilkMovement => _getString('dailyMilkMovement');
-  String get last14Days => _getString('last14Days');
-  String get stockOverTime => _getString('stockOverTime');
-  String get addedMilk => _getString('addedMilk');
-  String get milkAdded => _getString('milkAdded');
-  String get remaining => _getString('remaining');
-  String get movedToFreezer => _getString('movedToFreezer');
-  String get recordCorrected => _getString('recordCorrected');
-  String get premiumTitle => _getString('premiumTitle');
-  String get unlockPremium => _getString('unlockPremium');
-  String get premiumDescription => _getString('premiumDescription');
-  String get premiumIncludes => _getString('premiumIncludes');
-  String get premiumAnalytics => _getString('premiumAnalytics');
-  String get premiumPdfReports => _getString('premiumPdfReports');
-  String get doctorReport => _getString('doctorReport');
-  String get doctorReportDescription => _getString('doctorReportDescription');
-  String get createShareableReport => _getString('createShareableReport');
-  String get selectReportPeriod => _getString('selectReportPeriod');
-  String get last7Days => _getString('last7Days');
-  String get last30Days => _getString('last30Days');
-  String get last90Days => _getString('last90Days');
-  String get reportPeriod => _getString('reportPeriod');
-  String get reportSummary => _getString('reportSummary');
-  String get minutesShort => _getString('minutesShort');
-  String get diaperSummary => _getString('diaperSummary');
-  String get growthSummary => _getString('growthSummary');
-  String get dailyActivitySummary => _getString('dailyActivitySummary');
-  String get growthMeasurements => _getString('growthMeasurements');
-  String generatedOn(String date) =>
-      _getString('generatedOn').replaceAll('{date}', date);
-  String get generatedByLeyumi => _getString('generatedByLeyumi');
-  String get noBabyProfile => _getString('noBabyProfile');
-  String get birthDate => _getString('birthDate');
-  String get latestMeasurement => _getString('latestMeasurement');
-  String get weightChange => _getString('weightChange');
-  String get heightChange => _getString('heightChange');
-  String get noDataForPeriod => _getString('noDataForPeriod');
-  String get duration => _getString('duration');
-  String get reportMedicalDisclaimer => _getString('reportMedicalDisclaimer');
-  String get createAndSharePdf => _getString('createAndSharePdf');
-  String get preparingReport => _getString('preparingReport');
-  String get reportGenerationFailed => _getString('reportGenerationFailed');
-  String get reportPrivacyNote => _getString('reportPrivacyNote');
-  String get reportIncludes => _getString('reportIncludes');
-  String get babyInformation => _getString('babyInformation');
-  String get premiumMultipleChildren => _getString('premiumMultipleChildren');
-  String get premiumCloudBackup => _getString('premiumCloudBackup');
-  String get premiumSmartReminders => _getString('premiumSmartReminders');
-  String get premiumMilkInventory => _getString('premiumMilkInventory');
-  String get upgradeToPremium => _getString('upgradeToPremium');
-  String get premiumPurchaseComingSoon =>
-      _getString('premiumPurchaseComingSoon');
-  String get appTitle => _getString('appTitle');
-  String get appSubtitle => _getString('appSubtitle');
-  String get homeTitle => _getString('homeTitle');
-  String get feeding => _getString('feeding');
-  String get history => _getString('history');
-  String get diaper => _getString('diaper');
-  String get growth => _getString('growth');
-  String get startSession => _getString('startSession');
-  String get pastFeedings => _getString('pastFeedings');
-  String get trackChanges => _getString('trackChanges');
-  String get updateWeight => _getString('updateWeight');
-  String get dangerZone => _getString('dangerZone');
-  String get resetApp => _getString('resetApp');
-  String get confirmResetTitle => _getString('confirmResetTitle');
-  String get confirmResetContent => _getString('confirmResetContent');
-  String get cancel => _getString('cancel');
-  String get delete => _getString('delete');
-  String get confirmDeleteTitle => _getString('confirmDeleteTitle');
-  String get confirmDeleteContent => _getString('confirmDeleteContent');
-  String get confirmSaveTitle => _getString('confirmSaveTitle');
-  String get confirmSaveContent => _getString('confirmSaveContent');
-  String get dontSave => _getString('dontSave');
-  String get today => _getString('today');
-  String get older => _getString('older');
-  String get noFeedingSessionsYet => _getString('noFeedingSessionsYet');
-  String get startFeedingSessionHint => _getString('startFeedingSessionHint');
-  String get totalFeedingDuration => _getString('totalFeedingDuration');
-  String get milk => _getString('milk');
-  String get average => _getString('average');
-  String get sessions => _getString('sessions');
-  String get totalFeedingTime => _getString('totalFeedingTime');
-  String get entryDeleted => _getString('entryDeleted');
-  String get swipeToDelete => _getString('swipeToDelete');
-  String get swipeHintInfo => _getString('swipeHintInfo');
-  String get noDiaperRecordsYet => _getString('noDiaperRecordsYet');
-  String get addDiaperChangesHint => _getString('addDiaperChangesHint');
-  String get pee => _getString('pee');
-  String get poop => _getString('poop');
-  String get peeAndPoop => _getString('peeAndPoop');
-  String get amount => _getString('amount');
-  String get color => _getString('color');
-  String get note => _getString('note');
-  String get diaperScreenTitle => _getString('diaperScreenTitle');
-  String get diaperType => _getString('diaperType');
-  String get peeAmountTitle => _getString('peeAmountTitle');
-  String get poopAmountTitle => _getString('poopAmountTitle');
-  String get poopColor => _getString('poopColor');
-  String get optionalNote => _getString('optionalNote');
-  String get saveDiaperRecord => _getString('saveDiaperRecord');
-  String get diaperRecordSaved => _getString('diaperRecordSaved');
-  String get small => _getString('small');
-  String get medium => _getString('medium');
-  String get large => _getString('large');
-  String get yellow => _getString('yellow');
-  String get brown => _getString('brown');
-  String get green => _getString('green');
-  String get black => _getString('black');
-  String get mustardYellow => _getString('mustardYellow');
-  String get yellowGreen => _getString('yellowGreen');
-  String get darkGreen => _getString('darkGreen');
-  String get whiteGray => _getString('whiteGray');
-  String get comingSoon => _getString('comingSoon');
-  String get sleepTitle => _getString('sleepTitle');
-  String get babyInfoTitle => _getString('babyInfoTitle');
-  String get babyNameLabel => _getString('babyNameLabel');
-  String get genderLabel => _getString('genderLabel');
-  String get genderMale => _getString('genderMale');
-  String get genderFemale => _getString('genderFemale');
-  String get birthDateNotSelected => _getString('birthDateNotSelected');
-  String get selectDate => _getString('selectDate');
-  String get saveContinue => _getString('saveContinue');
-  String get requiredField => _getString('requiredField');
-  String get weightGr => _getString('weightGr');
-  String get heightCm => _getString('heightCm');
-  String get headCircumferenceOptional =>
-      _getString('headCircumferenceOptional');
-  String get waistCircumferenceOptional =>
-      _getString('waistCircumferenceOptional');
-  String get feedingSessionTitle => _getString('feedingSessionTitle');
-  String get babyWeightGr => _getString('babyWeightGr');
-  String get exampleWeight => _getString('exampleWeight');
-  String get liveSession => _getString('liveSession');
-  String get ready => _getString('ready');
-  String get tapLeftOrRightToStart => _getString('tapLeftOrRightToStart');
-  String get leftSide => _getString('leftSide');
-  String get rightSide => _getString('rightSide');
-  String get live => _getString('live');
-  String get stop => _getString('stop');
-  String get feedingSummary => _getString('feedingSummary');
-  String get leftLabel => _getString('leftLabel');
-  String get rightLabel => _getString('rightLabel');
-  String get totalLabel => _getString('totalLabel');
-  String get feedingAfterWeight => _getString('feedingAfterWeight');
-  String get save => _getString('save');
-  String get currentLabel => _getString('currentLabel');
-  String get enterNewValueHint => _getString('enterNewValueHint');
-  String get currentGrowthSnapshot => _getString('currentGrowthSnapshot');
-  String get saveGrowthRecord => _getString('saveGrowthRecord');
-  String get growthUpdateTitle => _getString('growthUpdateTitle');
-  String get growthHistoryTitle => _getString('growthHistoryTitle');
-  String get historyHubTitle => _getString('historyHubTitle');
-  String get historyHubSubtitle => _getString('historyHubSubtitle');
-  String get milkTracking => _getString('milkTracking');
-  String get weightAndHeight => _getString('weightAndHeight');
-  String get diaperChanges => _getString('diaperChanges');
-  String get sessionDeleted => _getString('sessionDeleted');
-  String get undo => _getString('undo');
-  String get yesterday => _getString('yesterday');
-  String get thisWeek => _getString('thisWeek');
-  String get swipeHistoryTip => _getString('swipeHistoryTip');
-  String get noGrowthDataYet => _getString('noGrowthDataYet');
-  String get leftBreast => _getString('leftBreast');
-  String get rightBreast => _getString('rightBreast');
-  String get initialWeight => _getString('initialWeight');
-  String get finalWeight => _getString('finalWeight');
-  String get milkIntake => _getString('milkIntake');
-  String get weight => _getString('weight');
-  String get height => _getString('height');
-  String get headCircumference => _getString('headCircumference');
-  String get waistCircumference => _getString('waistCircumference');
-  String get unitGr => _getString('unitGr');
-  String get unitCm => _getString('unitCm');
-  String get weightHeightRequired => _getString('weightHeightRequired');
-  String get growthRecordSaved => _getString('growthRecordSaved');
-  String get yearsShort => _getString('yearsShort');
-  String get monthsShort => _getString('monthsShort');
-  String get daysShort => _getString('daysShort');
-  String get dateAndTime => _getString('dateAndTime');
-  String get feedingGraph => _getString('feedingGraph');
-  String get growthGraph => _getString('growthGraph');
-  String get diaperGraph => _getString('diaperGraph');
-  String get growthCharts => _getString('growthCharts');
-  String get viewCharts => _getString('viewCharts');
-  String get manualFeedingEntry => _getString('manualFeedingEntry');
-  String get startTime => _getString('startTime');
-  String get endTime => _getString('endTime');
-  String get select => _getString('select');
-  String get leftRightRatio => _getString('leftRightRatio');
-  String get noData => _getString('noData');
-  String get noGrowthData => _getString('noGrowthData');
-  String get filter7d => _getString('filter7d');
-  String get filter30d => _getString('filter30d');
-  String get filter90d => _getString('filter90d');
-  String get filterAll => _getString('filterAll');
-  String get dateFormat => _getString('dateFormat');
-  String get quickActions => _getString('quickActions');
-  String get todayActivities => _getString('todayActivities');
-  String get last => _getString('last');
-  String minutesAgo(int count) =>
-      _getString('minutesAgo').replaceAll('{count}', '$count');
-  String hoursAgo(int count) =>
-      _getString('hoursAgo').replaceAll('{count}', '$count');
-  String daysAgo(int count) =>
-      _getString('daysAgo').replaceAll('{count}', '$count');
-  String get liveFeedingContinues => _getString('liveFeedingContinues');
-  String get unsavedFeedingDraft => _getString('unsavedFeedingDraft');
-  String feedingSideProgress(String side, String duration) => _getString(
-    'feedingSideProgress',
-  ).replaceAll('{side}', side).replaceAll('{duration}', duration);
-  String get open => _getString('open');
-  String get backLiveSession => _getString('backLiveSession');
+  /// No description provided for @milkInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk Inventory'**
+  String get milkInventory;
+
+  /// No description provided for @addMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Milk'**
+  String get addMilk;
+
+  /// No description provided for @saveMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Milk'**
+  String get saveMilk;
+
+  /// No description provided for @totalMilkStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Total milk stock'**
+  String get totalMilkStock;
+
+  /// No description provided for @refrigerator.
+  ///
+  /// In en, this message translates to:
+  /// **'Refrigerator'**
+  String get refrigerator;
+
+  /// No description provided for @freezer.
+  ///
+  /// In en, this message translates to:
+  /// **'Freezer'**
+  String get freezer;
+
+  /// No description provided for @bottles.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottles'**
+  String get bottles;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @noStoredMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'No stored milk yet'**
+  String get noStoredMilk;
+
+  /// No description provided for @noStoredMilkHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first expressed milk bottle and Leyumi will track its freshness.'**
+  String get noStoredMilkHint;
+
+  /// No description provided for @labelNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Label number'**
+  String get labelNumber;
+
+  /// No description provided for @amountMl.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (ml)'**
+  String get amountMl;
+
+  /// No description provided for @storageLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage location'**
+  String get storageLocation;
+
+  /// No description provided for @expressedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressed date and time'**
+  String get expressedAt;
+
+  /// No description provided for @pumpedFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Pumped from'**
+  String get pumpedFrom;
+
+  /// No description provided for @mixed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mixed'**
+  String get mixed;
+
+  /// No description provided for @unspecified.
+  ///
+  /// In en, this message translates to:
+  /// **'Not specified'**
+  String get unspecified;
+
+  /// No description provided for @freshFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh for'**
+  String get freshFor;
+
+  /// No description provided for @useWithin.
+  ///
+  /// In en, this message translates to:
+  /// **'Use within'**
+  String get useWithin;
+
+  /// No description provided for @expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get expired;
+
+  /// No description provided for @bestBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Best before'**
+  String get bestBefore;
+
+  /// No description provided for @hoursShort.
+  ///
+  /// In en, this message translates to:
+  /// **'h'**
+  String get hoursShort;
+
+  /// No description provided for @useMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Use milk'**
+  String get useMilk;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @moveToFreezer.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to freezer'**
+  String get moveToFreezer;
+
+  /// No description provided for @moveToRefrigerator.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to refrigerator'**
+  String get moveToRefrigerator;
+
+  /// No description provided for @deleteMilkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete milk bottle?'**
+  String get deleteMilkTitle;
+
+  /// No description provided for @deleteMilkContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove this milk bottle from inventory?'**
+  String get deleteMilkContent;
+
+  /// No description provided for @milkStorageSafetyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Fresh milk: up to 4 days refrigerated; best used within 6 months frozen. Smaller portions can help reduce waste.'**
+  String get milkStorageSafetyNote;
+
+  /// No description provided for @invalidMilkEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a label and a milk amount between 1 and 500 ml.'**
+  String get invalidMilkEntry;
+
+  /// No description provided for @duplicateMilkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'This label number is already in use.'**
+  String get duplicateMilkLabel;
+
+  /// No description provided for @discardMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard milk'**
+  String get discardMilk;
+
+  /// No description provided for @editMilkRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit record'**
+  String get editMilkRecord;
+
+  /// No description provided for @deleteIncorrectRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete incorrect record'**
+  String get deleteIncorrectRecord;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
+  /// No description provided for @milkHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk History'**
+  String get milkHistory;
+
+  /// No description provided for @usedAndRemainingMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Used and remaining milk'**
+  String get usedAndRemainingMilk;
+
+  /// No description provided for @remainingMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get remainingMilk;
+
+  /// No description provided for @usedMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Used milk'**
+  String get usedMilk;
+
+  /// No description provided for @discardedMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Discarded'**
+  String get discardedMilk;
+
+  /// No description provided for @activity.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity'**
+  String get activity;
+
+  /// No description provided for @insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insights;
+
+  /// No description provided for @noMilkHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No milk activity yet'**
+  String get noMilkHistory;
+
+  /// No description provided for @dailyMilkMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Added and used milk'**
+  String get dailyMilkMovement;
+
+  /// No description provided for @last14Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 14 days'**
+  String get last14Days;
+
+  /// No description provided for @stockOverTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk stock over time'**
+  String get stockOverTime;
+
+  /// No description provided for @addedMilk.
+  ///
+  /// In en, this message translates to:
+  /// **'Added milk'**
+  String get addedMilk;
+
+  /// No description provided for @milkAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk added'**
+  String get milkAdded;
+
+  /// No description provided for @remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get remaining;
+
+  /// No description provided for @movedToFreezer.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved to freezer'**
+  String get movedToFreezer;
+
+  /// No description provided for @recordCorrected.
+  ///
+  /// In en, this message translates to:
+  /// **'Record corrected'**
+  String get recordCorrected;
+
+  /// No description provided for @premiumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi Premium'**
+  String get premiumTitle;
+
+  /// No description provided for @unlockPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock more with Premium'**
+  String get unlockPremium;
+
+  /// No description provided for @premiumDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn your baby care records into clear insights and keep everything safely connected.'**
+  String get premiumDescription;
+
+  /// No description provided for @premiumIncludes.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium features'**
+  String get premiumIncludes;
+
+  /// No description provided for @premiumAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced feeding, diaper and growth analytics'**
+  String get premiumAnalytics;
+
+  /// No description provided for @premiumPdfReports.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF doctor reports'**
+  String get premiumPdfReports;
+
+  /// No description provided for @doctorReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor Report'**
+  String get doctorReport;
+
+  /// No description provided for @doctorReportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a clear summary of feeding, diaper and growth records for your doctor.'**
+  String get doctorReportDescription;
+
+  /// No description provided for @createShareableReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and share a health summary'**
+  String get createShareableReport;
+
+  /// No description provided for @selectReportPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Select report period'**
+  String get selectReportPeriod;
+
+  /// No description provided for @last7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days'**
+  String get last7Days;
+
+  /// No description provided for @last30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 days'**
+  String get last30Days;
+
+  /// No description provided for @last90Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 90 days'**
+  String get last90Days;
+
+  /// No description provided for @reportPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'Report period'**
+  String get reportPeriod;
+
+  /// No description provided for @reportSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary'**
+  String get reportSummary;
+
+  /// No description provided for @minutesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'min'**
+  String get minutesShort;
+
+  /// No description provided for @diaperSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Diaper summary'**
+  String get diaperSummary;
+
+  /// No description provided for @growthSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth summary'**
+  String get growthSummary;
+
+  /// No description provided for @dailyActivitySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily activity summary'**
+  String get dailyActivitySummary;
+
+  /// No description provided for @growthMeasurements.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth measurements'**
+  String get growthMeasurements;
+
+  /// No description provided for @generatedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated on {date}'**
+  String generatedOn(String date);
+
+  /// No description provided for @generatedByLeyumi.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated by Leyumi'**
+  String get generatedByLeyumi;
+
+  /// No description provided for @noBabyProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby profile information is not available.'**
+  String get noBabyProfile;
+
+  /// No description provided for @birthDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth date'**
+  String get birthDate;
+
+  /// No description provided for @latestMeasurement.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest measurement'**
+  String get latestMeasurement;
+
+  /// No description provided for @weightChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight change'**
+  String get weightChange;
+
+  /// No description provided for @heightChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Height change'**
+  String get heightChange;
+
+  /// No description provided for @noDataForPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'No records were found for this period.'**
+  String get noDataForPeriod;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @reportMedicalDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'This report summarizes records entered by the caregiver. It is not medical advice or a diagnosis. Please review the information with a qualified healthcare professional.'**
+  String get reportMedicalDisclaimer;
+
+  /// No description provided for @createAndSharePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Create and Share PDF'**
+  String get createAndSharePdf;
+
+  /// No description provided for @preparingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing report...'**
+  String get preparingReport;
+
+  /// No description provided for @reportGenerationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The PDF report could not be created. Please try again.'**
+  String get reportGenerationFailed;
+
+  /// No description provided for @reportPrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The report is created on this device. You choose where and with whom it is shared.'**
+  String get reportPrivacyNote;
+
+  /// No description provided for @reportIncludes.
+  ///
+  /// In en, this message translates to:
+  /// **'The report includes'**
+  String get reportIncludes;
+
+  /// No description provided for @babyInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby information'**
+  String get babyInformation;
+
+  /// No description provided for @premiumMultipleChildren.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple child profiles'**
+  String get premiumMultipleChildren;
+
+  /// No description provided for @premiumCloudBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Cloud backup and device sync'**
+  String get premiumCloudBackup;
+
+  /// No description provided for @premiumSmartReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart reminders'**
+  String get premiumSmartReminders;
+
+  /// No description provided for @premiumMilkInventory.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk inventory management'**
+  String get premiumMilkInventory;
+
+  /// No description provided for @upgradeToPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to Premium'**
+  String get upgradeToPremium;
+
+  /// No description provided for @premiumPurchaseComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium purchasing will be available soon.'**
+  String get premiumPurchaseComingSoon;
+
+  /// No description provided for @confirmDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete record?'**
+  String get confirmDeleteTitle;
+
+  /// No description provided for @confirmDeleteContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this record? This action can be undone for a short time.'**
+  String get confirmDeleteContent;
+
+  /// No description provided for @confirmSaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save feeding record?'**
+  String get confirmSaveTitle;
+
+  /// No description provided for @confirmSaveContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to save this feeding record?'**
+  String get confirmSaveContent;
+
+  /// No description provided for @dontSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t save'**
+  String get dontSave;
+
+  /// No description provided for @appTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi'**
+  String get appTitle;
+
+  /// No description provided for @appSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Growing with your little light. 🌙✨'**
+  String get appSubtitle;
+
+  /// No description provided for @homeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get homeTitle;
+
+  /// No description provided for @feeding.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding'**
+  String get feeding;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @diaper.
+  ///
+  /// In en, this message translates to:
+  /// **'Diaper'**
+  String get diaper;
+
+  /// No description provided for @growth.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth'**
+  String get growth;
+
+  /// No description provided for @startSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Start feeding session'**
+  String get startSession;
+
+  /// No description provided for @pastFeedings.
+  ///
+  /// In en, this message translates to:
+  /// **'Past feedings'**
+  String get pastFeedings;
+
+  /// No description provided for @trackChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Track changes'**
+  String get trackChanges;
+
+  /// No description provided for @updateWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Update weight'**
+  String get updateWeight;
+
+  /// No description provided for @dangerZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Danger Zone'**
+  String get dangerZone;
+
+  /// No description provided for @resetApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset App (Clear All Data)'**
+  String get resetApp;
+
+  /// No description provided for @confirmResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset App'**
+  String get confirmResetTitle;
+
+  /// No description provided for @confirmResetContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to clear all app data?'**
+  String get confirmResetContent;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @older.
+  ///
+  /// In en, this message translates to:
+  /// **'Older'**
+  String get older;
+
+  /// No description provided for @entryDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry deleted'**
+  String get entryDeleted;
+
+  /// No description provided for @swipeToDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe left to delete'**
+  String get swipeToDelete;
+
+  /// No description provided for @swipeHintInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'This hint shows during the first 3 opens.'**
+  String get swipeHintInfo;
+
+  /// No description provided for @noDiaperRecordsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No diaper records yet'**
+  String get noDiaperRecordsYet;
+
+  /// No description provided for @addDiaperChangesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add diaper changes from the home screen to track history.'**
+  String get addDiaperChangesHint;
+
+  /// No description provided for @pee.
+  ///
+  /// In en, this message translates to:
+  /// **'Pee'**
+  String get pee;
+
+  /// No description provided for @poop.
+  ///
+  /// In en, this message translates to:
+  /// **'Poop'**
+  String get poop;
+
+  /// No description provided for @peeAndPoop.
+  ///
+  /// In en, this message translates to:
+  /// **'Pee & Poop'**
+  String get peeAndPoop;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @color.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get color;
+
+  /// No description provided for @note.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get note;
+
+  /// No description provided for @diaperScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Diaper Entry'**
+  String get diaperScreenTitle;
+
+  /// No description provided for @diaperType.
+  ///
+  /// In en, this message translates to:
+  /// **'Diaper Type'**
+  String get diaperType;
+
+  /// No description provided for @peeAmountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pee Amount'**
+  String get peeAmountTitle;
+
+  /// No description provided for @poopAmountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Poop Amount'**
+  String get poopAmountTitle;
+
+  /// No description provided for @poopColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Poop Color'**
+  String get poopColor;
+
+  /// No description provided for @optionalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional note'**
+  String get optionalNote;
+
+  /// No description provided for @saveDiaperRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Diaper Record'**
+  String get saveDiaperRecord;
+
+  /// No description provided for @diaperRecordSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Diaper record saved'**
+  String get diaperRecordSaved;
+
+  /// No description provided for @small.
+  ///
+  /// In en, this message translates to:
+  /// **'Small'**
+  String get small;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @large.
+  ///
+  /// In en, this message translates to:
+  /// **'Large'**
+  String get large;
+
+  /// No description provided for @yellow.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow'**
+  String get yellow;
+
+  /// No description provided for @brown.
+  ///
+  /// In en, this message translates to:
+  /// **'Brown'**
+  String get brown;
+
+  /// No description provided for @green.
+  ///
+  /// In en, this message translates to:
+  /// **'Green'**
+  String get green;
+
+  /// No description provided for @black.
+  ///
+  /// In en, this message translates to:
+  /// **'Black'**
+  String get black;
+
+  /// No description provided for @mustardYellow.
+  ///
+  /// In en, this message translates to:
+  /// **'Mustard Yellow'**
+  String get mustardYellow;
+
+  /// No description provided for @yellowGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Yellow Green'**
+  String get yellowGreen;
+
+  /// No description provided for @darkGreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Green'**
+  String get darkGreen;
+
+  /// No description provided for @whiteGray.
+  ///
+  /// In en, this message translates to:
+  /// **'Gray White'**
+  String get whiteGray;
+
+  /// No description provided for @noFeedingSessionsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No feeding sessions yet'**
+  String get noFeedingSessionsYet;
+
+  /// No description provided for @startFeedingSessionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a feeding session to track your baby\'s feeding history in a clean timeline.'**
+  String get startFeedingSessionHint;
+
+  /// No description provided for @totalFeedingDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Total feeding duration'**
+  String get totalFeedingDuration;
+
+  /// No description provided for @milk.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk'**
+  String get milk;
+
+  /// No description provided for @average.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get average;
+
+  /// No description provided for @sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Sessions'**
+  String get sessions;
+
+  /// No description provided for @totalFeedingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Total feeding time'**
+  String get totalFeedingTime;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @sleepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sleep'**
+  String get sleepTitle;
+
+  /// No description provided for @babyInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Information'**
+  String get babyInfoTitle;
+
+  /// No description provided for @babyNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Name'**
+  String get babyNameLabel;
+
+  /// No description provided for @genderLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get genderLabel;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get genderFemale;
+
+  /// No description provided for @birthDateNotSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth date not selected'**
+  String get birthDateNotSelected;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @saveContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Save and Continue'**
+  String get saveContinue;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get requiredField;
+
+  /// No description provided for @weightGr.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (g)'**
+  String get weightGr;
+
+  /// No description provided for @heightCm.
+  ///
+  /// In en, this message translates to:
+  /// **'Height (cm)'**
+  String get heightCm;
+
+  /// No description provided for @headCircumferenceOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Head Circumference (optional)'**
+  String get headCircumferenceOptional;
+
+  /// No description provided for @waistCircumferenceOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Waist Circumference (optional)'**
+  String get waistCircumferenceOptional;
+
+  /// No description provided for @feedingSessionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding Session'**
+  String get feedingSessionTitle;
+
+  /// No description provided for @babyWeightGr.
+  ///
+  /// In en, this message translates to:
+  /// **'Baby Weight (g)'**
+  String get babyWeightGr;
+
+  /// No description provided for @exampleWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 2500'**
+  String get exampleWeight;
+
+  /// No description provided for @liveSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Session'**
+  String get liveSession;
+
+  /// No description provided for @backLiveSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing breastfeeding was recorded in the background.'**
+  String get backLiveSession;
+
+  /// No description provided for @ready.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready'**
+  String get ready;
+
+  /// No description provided for @tapLeftOrRightToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap left or right to start'**
+  String get tapLeftOrRightToStart;
+
+  /// No description provided for @leftSide.
+  ///
+  /// In en, this message translates to:
+  /// **'Left Side'**
+  String get leftSide;
+
+  /// No description provided for @rightSide.
+  ///
+  /// In en, this message translates to:
+  /// **'Right Side'**
+  String get rightSide;
+
+  /// No description provided for @live.
+  ///
+  /// In en, this message translates to:
+  /// **'Live'**
+  String get live;
+
+  /// No description provided for @stop.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stop;
+
+  /// No description provided for @feedingSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding Summary'**
+  String get feedingSummary;
+
+  /// No description provided for @leftLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get leftLabel;
+
+  /// No description provided for @rightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get rightLabel;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// No description provided for @feedingAfterWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding After Weight'**
+  String get feedingAfterWeight;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @currentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get currentLabel;
+
+  /// No description provided for @enterNewValueHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new value'**
+  String get enterNewValueHint;
+
+  /// No description provided for @currentGrowthSnapshot.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Growth Snapshot'**
+  String get currentGrowthSnapshot;
+
+  /// No description provided for @saveGrowthRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Growth Record'**
+  String get saveGrowthRecord;
+
+  /// No description provided for @growthUpdateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth Update'**
+  String get growthUpdateTitle;
+
+  /// No description provided for @historyHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'History Hub'**
+  String get historyHubTitle;
+
+  /// No description provided for @historyHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track everything about your baby'**
+  String get historyHubSubtitle;
+
+  /// No description provided for @milkTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk tracking'**
+  String get milkTracking;
+
+  /// No description provided for @weightAndHeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight & height'**
+  String get weightAndHeight;
+
+  /// No description provided for @diaperChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Diaper changes'**
+  String get diaperChanges;
+
+  /// No description provided for @sessionDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Session deleted'**
+  String get sessionDeleted;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'UNDO'**
+  String get undo;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This Week'**
+  String get thisWeek;
+
+  /// No description provided for @swipeHistoryTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Swipe left on a feeding session to delete it.'**
+  String get swipeHistoryTip;
+
+  /// No description provided for @noGrowthDataYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No growth data yet'**
+  String get noGrowthDataYet;
+
+  /// No description provided for @leftBreast.
+  ///
+  /// In en, this message translates to:
+  /// **'Left breast'**
+  String get leftBreast;
+
+  /// No description provided for @rightBreast.
+  ///
+  /// In en, this message translates to:
+  /// **'Right breast'**
+  String get rightBreast;
+
+  /// No description provided for @initialWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial weight'**
+  String get initialWeight;
+
+  /// No description provided for @finalWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Final weight'**
+  String get finalWeight;
+
+  /// No description provided for @milkIntake.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk intake'**
+  String get milkIntake;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// No description provided for @height.
+  ///
+  /// In en, this message translates to:
+  /// **'Height'**
+  String get height;
+
+  /// No description provided for @headCircumference.
+  ///
+  /// In en, this message translates to:
+  /// **'Head Circumference'**
+  String get headCircumference;
+
+  /// No description provided for @waistCircumference.
+  ///
+  /// In en, this message translates to:
+  /// **'Waist Circumference'**
+  String get waistCircumference;
+
+  /// No description provided for @unitGr.
+  ///
+  /// In en, this message translates to:
+  /// **'g'**
+  String get unitGr;
+
+  /// No description provided for @unitCm.
+  ///
+  /// In en, this message translates to:
+  /// **'cm'**
+  String get unitCm;
+
+  /// No description provided for @weightHeightRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight and Height are required'**
+  String get weightHeightRequired;
+
+  /// No description provided for @growthRecordSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth record saved'**
+  String get growthRecordSaved;
+
+  /// No description provided for @growthHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth History'**
+  String get growthHistoryTitle;
+
+  /// No description provided for @yearsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'y'**
+  String get yearsShort;
+
+  /// No description provided for @monthsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'m'**
+  String get monthsShort;
+
+  /// No description provided for @daysShort.
+  ///
+  /// In en, this message translates to:
+  /// **'d'**
+  String get daysShort;
+
+  /// No description provided for @dateAndTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Date & Time'**
+  String get dateAndTime;
+
+  /// No description provided for @feedingGraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding Graph'**
+  String get feedingGraph;
+
+  /// No description provided for @growthGraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth Graph'**
+  String get growthGraph;
+
+  /// No description provided for @diaperGraph.
+  ///
+  /// In en, this message translates to:
+  /// **'Diaper Graph'**
+  String get diaperGraph;
+
+  /// No description provided for @viewCharts.
+  ///
+  /// In en, this message translates to:
+  /// **'View charts'**
+  String get viewCharts;
+
+  /// No description provided for @growthCharts.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth Charts'**
+  String get growthCharts;
+
+  /// No description provided for @manualFeedingEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Feeding Entry'**
+  String get manualFeedingEntry;
+
+  /// No description provided for @startTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Time'**
+  String get startTime;
+
+  /// No description provided for @endTime.
+  ///
+  /// In en, this message translates to:
+  /// **'End Time'**
+  String get endTime;
+
+  /// No description provided for @select.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get select;
+
+  /// No description provided for @leftRightRatio.
+  ///
+  /// In en, this message translates to:
+  /// **'Left/Right Ratio'**
+  String get leftRightRatio;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get noData;
+
+  /// No description provided for @noGrowthData.
+  ///
+  /// In en, this message translates to:
+  /// **'No growth data'**
+  String get noGrowthData;
+
+  /// No description provided for @filter7d.
+  ///
+  /// In en, this message translates to:
+  /// **'7d'**
+  String get filter7d;
+
+  /// No description provided for @filter30d.
+  ///
+  /// In en, this message translates to:
+  /// **'30d'**
+  String get filter30d;
+
+  /// No description provided for @filter90d.
+  ///
+  /// In en, this message translates to:
+  /// **'90d'**
+  String get filter90d;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @dateFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{day}.{month}'**
+  String dateFormat(int day, int month);
+
+  /// No description provided for @quickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get quickActions;
+
+  /// No description provided for @todayActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Activity'**
+  String get todayActivities;
+
+  /// No description provided for @last.
+  ///
+  /// In en, this message translates to:
+  /// **'Last'**
+  String get last;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min ago'**
+  String minutesAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} h ago'**
+  String hoursAgo(int count);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} d ago'**
+  String daysAgo(int count);
+
+  /// No description provided for @liveFeedingContinues.
+  ///
+  /// In en, this message translates to:
+  /// **'Live feeding is in progress'**
+  String get liveFeedingContinues;
+
+  /// No description provided for @unsavedFeedingDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'An unsaved feeding draft is ready'**
+  String get unsavedFeedingDraft;
+
+  /// No description provided for @feedingSideProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'{side} side - {duration}'**
+  String feedingSideProgress(String side, String duration);
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
 }
 
 class _AppLocalizationsDelegate
@@ -1079,15 +1588,33 @@ class _AppLocalizationsDelegate
   const _AppLocalizationsDelegate();
 
   @override
-  bool isSupported(Locale locale) {
-    return ['en', 'tr', 'hu'].contains(locale.languageCode);
+  Future<AppLocalizations> load(Locale locale) {
+    return SynchronousFuture<AppLocalizations>(lookupAppLocalizations(locale));
   }
 
   @override
-  Future<AppLocalizations> load(Locale locale) async {
-    return AppLocalizations(locale);
-  }
+  bool isSupported(Locale locale) =>
+      <String>['en', 'hu', 'tr'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
+}
+
+AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when only language code is specified.
+  switch (locale.languageCode) {
+    case 'en':
+      return AppLocalizationsEn();
+    case 'hu':
+      return AppLocalizationsHu();
+    case 'tr':
+      return AppLocalizationsTr();
+  }
+
+  throw FlutterError(
+    'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
+    'an issue with the localizations generation tool. Please file an issue '
+    'on GitHub with a reproducible sample app and the gen-l10n configuration '
+    'that was used.',
+  );
 }

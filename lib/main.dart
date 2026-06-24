@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 import 'features/onboarding/onboarding_screen.dart';
@@ -37,13 +36,8 @@ class LeyumiApp extends StatelessWidget {
           title: "Leyumi - Growing with your little light. 🌙✨",
 
           /// 🌍 LOCALIZATION
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('en'), Locale('tr'), Locale('hu')],
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
 
           localeResolutionCallback: (locale, supportedLocales) {
             if (locale == null) return supportedLocales.first;

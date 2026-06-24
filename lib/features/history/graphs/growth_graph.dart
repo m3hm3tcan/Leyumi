@@ -194,9 +194,7 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
                         }
 
                         final date = filtered[index].date;
-                        final label = l10n.dateFormat
-                            .replaceFirst("{day}", date.day.toString())
-                            .replaceFirst("{month}", date.month.toString());
+                        final label = l10n.dateFormat(date.day, date.month);
 
                         return Padding(
                           padding: const EdgeInsets.only(top: 6),
