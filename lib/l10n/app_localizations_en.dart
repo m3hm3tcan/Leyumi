@@ -9,6 +9,116 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get welcomeToLeyumi => 'Welcome to Leyumi';
+
+  @override
+  String get onboardingWelcomeDescription =>
+      'A calm, private place to follow your baby\'s everyday care and growth.';
+
+  @override
+  String get onboardingTrackTitle => 'Everything in one place';
+
+  @override
+  String get onboardingTrackDescription =>
+      'Record feeding, diaper changes, growth and expressed milk without losing the little details.';
+
+  @override
+  String get onboardingFreePremiumTitle =>
+      'Start free, unlock more when you need it';
+
+  @override
+  String get freePlan => 'Free';
+
+  @override
+  String get premiumPlan => 'Premium';
+
+  @override
+  String get freePlanFeatures =>
+      'Feeding, diaper and growth records\nComplete history\nDark mode and 3 languages';
+
+  @override
+  String get premiumPlanFeatures =>
+      'Advanced charts\nMilk inventory\nPDF doctor reports\nMultiple child profiles';
+
+  @override
+  String get onboardingPrivacyTitle => 'Your family data stays yours';
+
+  @override
+  String get onboardingPrivacyDescription =>
+      'Your records are stored locally on this device. You decide when to create or share a report.';
+
+  @override
+  String get createFirstChildProfile => 'Create your child\'s profile';
+
+  @override
+  String get onboardingChildDescription =>
+      'These details personalize records and reports. You can update them later.';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get childProfiles => 'Child Profiles';
+
+  @override
+  String get addChildProfile => 'Add Child';
+
+  @override
+  String get editChildProfile => 'Edit Child';
+
+  @override
+  String get switchChild => 'Switch child';
+
+  @override
+  String get activeChild => 'Active child';
+
+  @override
+  String get multipleChildrenPremiumHint =>
+      'Additional child profiles are included with Premium.';
+
+  @override
+  String get nameLengthError =>
+      'Name must contain between 2 and 30 characters.';
+
+  @override
+  String get weightRangeError => 'Weight must be between 500 and 30,000 g.';
+
+  @override
+  String get heightRangeError => 'Height must be between 20 and 100 cm.';
+
+  @override
+  String get headCircumferenceRangeError =>
+      'Head circumference must be between 20 and 70 cm.';
+
+  @override
+  String get waistCircumferenceRangeError =>
+      'Waist circumference must be between 20 and 100 cm.';
+
+  @override
+  String get milkLabelLengthError =>
+      'The label can contain up to 30 characters.';
+
+  @override
+  String get milkAmountRangeError =>
+      'Milk amount must be between 1 and 500 ml.';
+
+  @override
+  String get futureDateTimeError => 'Date and time cannot be in the future.';
+
+  @override
+  String get selectFeedingTimesError => 'Select both the start and end time.';
+
+  @override
+  String get feedingTimeOrderError => 'End time must be later than start time.';
+
+  @override
+  String get feedingDurationRangeError =>
+      'A manual feeding session cannot exceed 12 hours.';
+
+  @override
   String get milkInventory => 'Milk Inventory';
 
   @override

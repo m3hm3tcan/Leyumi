@@ -9,6 +9,119 @@ class AppLocalizationsHu extends AppLocalizations {
   AppLocalizationsHu([String locale = 'hu']) : super(locale);
 
   @override
+  String get welcomeToLeyumi => 'Üdvözöl a Leyumi';
+
+  @override
+  String get onboardingWelcomeDescription =>
+      'Nyugodt és privát hely a baba mindennapi gondozásának és fejlődésének követéséhez.';
+
+  @override
+  String get onboardingTrackTitle => 'Minden egy helyen';
+
+  @override
+  String get onboardingTrackDescription =>
+      'Rögzítsd az etetést, pelenkacserét, növekedést és lefejt tejet az apró részletek elvesztése nélkül.';
+
+  @override
+  String get onboardingFreePremiumTitle =>
+      'Kezdd ingyen, és oldj fel többet, amikor szükséged van rá';
+
+  @override
+  String get freePlan => 'Ingyenes';
+
+  @override
+  String get premiumPlan => 'Premium';
+
+  @override
+  String get freePlanFeatures =>
+      'Etetési, pelenka- és növekedési adatok\nTeljes előzmény\nSötét mód és 3 nyelv';
+
+  @override
+  String get premiumPlanFeatures =>
+      'Fejlett grafikonok\nTejkészlet\nPDF orvosi jelentések\nTöbb gyermekprofil';
+
+  @override
+  String get onboardingPrivacyTitle => 'A családi adataid a tieid maradnak';
+
+  @override
+  String get onboardingPrivacyDescription =>
+      'A bejegyzések helyben, ezen az eszközön tárolódnak. Te döntöd el, mikor készítesz vagy osztasz meg jelentést.';
+
+  @override
+  String get createFirstChildProfile => 'Hozd létre gyermeked profilját';
+
+  @override
+  String get onboardingChildDescription =>
+      'Ezek az adatok személyre szabják a bejegyzéseket és jelentéseket. Később módosíthatók.';
+
+  @override
+  String get continueLabel => 'Tovább';
+
+  @override
+  String get getStarted => 'Kezdés';
+
+  @override
+  String get childProfiles => 'Gyermekprofilok';
+
+  @override
+  String get addChildProfile => 'Gyermek hozzáadása';
+
+  @override
+  String get editChildProfile => 'Gyermek szerkesztése';
+
+  @override
+  String get switchChild => 'Gyermekváltás';
+
+  @override
+  String get activeChild => 'Aktív gyermek';
+
+  @override
+  String get multipleChildrenPremiumHint =>
+      'További gyermekprofilok a Premium részei.';
+
+  @override
+  String get nameLengthError => 'A névnek 2–30 karakter hosszúnak kell lennie.';
+
+  @override
+  String get weightRangeError =>
+      'A súlynak 500 és 30 000 g között kell lennie.';
+
+  @override
+  String get heightRangeError =>
+      'A magasságnak 20 és 100 cm között kell lennie.';
+
+  @override
+  String get headCircumferenceRangeError =>
+      'A fejkörfogatnak 20 és 70 cm között kell lennie.';
+
+  @override
+  String get waistCircumferenceRangeError =>
+      'A derékbőségnek 20 és 100 cm között kell lennie.';
+
+  @override
+  String get milkLabelLengthError =>
+      'A címke legfeljebb 30 karakter hosszú lehet.';
+
+  @override
+  String get milkAmountRangeError =>
+      'A tejmennyiségnek 1 és 500 ml között kell lennie.';
+
+  @override
+  String get futureDateTimeError => 'A dátum és az idő nem lehet a jövőben.';
+
+  @override
+  String get selectFeedingTimesError =>
+      'Válaszd ki a kezdési és befejezési időt.';
+
+  @override
+  String get feedingTimeOrderError =>
+      'A befejezési időnek későbbinek kell lennie a kezdési időnél.';
+
+  @override
+  String get feedingDurationRangeError =>
+      'A kézi etetési bejegyzés nem lehet hosszabb 12 óránál.';
+
+  @override
   String get milkInventory => 'Tejkészlet';
 
   @override

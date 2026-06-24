@@ -29,9 +29,13 @@ class _FeedingScreenState extends State<FeedingScreen>
   final FeedingDraftService _draftService = FeedingDraftService();
   final TextEditingController _startWeightController = TextEditingController();
   final TextEditingController _endWeightController = TextEditingController();
+  final FocusNode _startWeightFocus = FocusNode();
+  final FocusNode _endWeightFocus = FocusNode();
 
   Duration _currentTimer = Duration.zero;
   FeedingSide? _activeSide;
+  String? _startWeightError;
+  String? _endWeightError;
 
   @override
   void initState() {
@@ -51,6 +55,8 @@ class _FeedingScreenState extends State<FeedingScreen>
     _controller.dispose();
     _startWeightController.dispose();
     _endWeightController.dispose();
+    _startWeightFocus.dispose();
+    _endWeightFocus.dispose();
     super.dispose();
   }
 
@@ -108,11 +114,14 @@ class _FeedingScreenState extends State<FeedingScreen>
   }
 
   Future<void> _startFeeding(FeedingSide side) async {
+    final startWeight = _validatedWeight(_startWeightController, isStart: true);
+    if (_startWeightController.text.trim().isNotEmpty && startWeight == null) {
+      _startWeightFocus.requestFocus();
+      return;
+    }
     if (_controller.currentSession == null) {
       _controller.setChildId((await BabyStorage().loadProfile())?.id);
-      _controller.setStartWeight(
-        int.tryParse(_startWeightController.text.trim()),
-      );
+      _controller.setStartWeight(startWeight);
     }
 
     setState(() {
@@ -134,6 +143,12 @@ class _FeedingScreenState extends State<FeedingScreen>
   }
 
   Future<void> _finishSession() async {
+    final endWeight = _validatedWeight(_endWeightController, isStart: false);
+    if (_endWeightController.text.trim().isNotEmpty && endWeight == null) {
+      _endWeightFocus.requestFocus();
+      return;
+    }
+
     final decision = await showFeedingSaveDialog(context);
     if (!mounted || decision == null) return;
 
@@ -143,11 +158,42 @@ class _FeedingScreenState extends State<FeedingScreen>
       return;
     }
 
-    _controller.setEndWeight(int.tryParse(_endWeightController.text.trim()));
+    _controller.setEndWeight(endWeight);
     final session = _controller.finishSession();
     await _storage.saveSession(session);
     await _draftService.clear();
     if (mounted) Navigator.pop(context);
+  }
+
+  int? _validatedWeight(
+    TextEditingController textController, {
+    required bool isStart,
+  }) {
+    final raw = textController.text.trim();
+    if (raw.isEmpty) {
+      setState(() {
+        if (isStart) {
+          _startWeightError = null;
+        } else {
+          _endWeightError = null;
+        }
+      });
+      return null;
+    }
+
+    final value = int.tryParse(raw);
+    final valid = value != null && value >= 500 && value <= 30000;
+    setState(() {
+      final error = valid
+          ? null
+          : AppLocalizations.of(context).weightRangeError;
+      if (isStart) {
+        _startWeightError = error;
+      } else {
+        _endWeightError = error;
+      }
+    });
+    return valid ? value : null;
   }
 
   @override
@@ -184,6 +230,13 @@ class _FeedingScreenState extends State<FeedingScreen>
                 FeedingWeightField(
                   controller: _startWeightController,
                   label: l10n.babyWeightGr,
+                  focusNode: _startWeightFocus,
+                  errorText: _startWeightError,
+                  onChanged: (_) {
+                    if (_startWeightError != null) {
+                      setState(() => _startWeightError = null);
+                    }
+                  },
                 ),
                 const SizedBox(height: 20),
               ],
@@ -231,6 +284,13 @@ class _FeedingScreenState extends State<FeedingScreen>
         FeedingWeightField(
           controller: _endWeightController,
           label: l10n.feedingAfterWeight,
+          focusNode: _endWeightFocus,
+          errorText: _endWeightError,
+          onChanged: (_) {
+            if (_endWeightError != null) {
+              setState(() => _endWeightError = null);
+            }
+          },
         ),
         const SizedBox(height: 20),
         ElevatedButton(

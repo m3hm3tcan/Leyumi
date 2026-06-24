@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import '../../models/baby_profile.dart';
 import '../../models/growth_entry.dart';
@@ -20,6 +21,15 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   final heightCtrl = TextEditingController();
   final headCtrl = TextEditingController();
   final waistCtrl = TextEditingController();
+  final _weightFocus = FocusNode();
+  final _heightFocus = FocusNode();
+  final _headFocus = FocusNode();
+  final _waistFocus = FocusNode();
+
+  String? _weightError;
+  String? _heightError;
+  String? _headError;
+  String? _waistError;
 
   @override
   void initState() {
@@ -46,25 +56,50 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     if (profile == null) return;
 
     final l10n = AppLocalizations.of(context);
+    final weight = int.tryParse(weightCtrl.text);
+    final height = int.tryParse(heightCtrl.text);
+    final head = headCtrl.text.isEmpty ? null : int.tryParse(headCtrl.text);
+    final waist = waistCtrl.text.isEmpty ? null : int.tryParse(waistCtrl.text);
 
-    if (weightCtrl.text.isEmpty || heightCtrl.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.weightHeightRequired)));
+    setState(() {
+      _weightError = weight == null || weight < 500 || weight > 30000
+          ? l10n.weightRangeError
+          : null;
+      _heightError = height == null || height < 20 || height > 100
+          ? l10n.heightRangeError
+          : null;
+      _headError =
+          headCtrl.text.isNotEmpty && (head == null || head < 20 || head > 70)
+          ? l10n.headCircumferenceRangeError
+          : null;
+      _waistError =
+          waistCtrl.text.isNotEmpty &&
+              (waist == null || waist < 20 || waist > 100)
+          ? l10n.waistCircumferenceRangeError
+          : null;
+    });
+
+    final firstInvalidFocus = _weightError != null
+        ? _weightFocus
+        : _heightError != null
+        ? _heightFocus
+        : _headError != null
+        ? _headFocus
+        : _waistError != null
+        ? _waistFocus
+        : null;
+    if (firstInvalidFocus != null) {
+      firstInvalidFocus.requestFocus();
       return;
     }
 
     final entry = GrowthEntry(
       childId: profile!.id,
       date: DateTime.now(),
-      weight: int.parse(weightCtrl.text),
-      height: int.parse(heightCtrl.text),
-      headCircumference: headCtrl.text.isEmpty
-          ? null
-          : int.parse(headCtrl.text),
-      waistCircumference: waistCtrl.text.isEmpty
-          ? null
-          : int.parse(waistCtrl.text),
+      weight: weight!,
+      height: height!,
+      headCircumference: head,
+      waistCircumference: waist,
     );
 
     await GrowthStorage().addEntry(entry);
@@ -95,6 +130,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     heightCtrl.dispose();
     headCtrl.dispose();
     waistCtrl.dispose();
+    _weightFocus.dispose();
+    _heightFocus.dispose();
+    _headFocus.dispose();
+    _waistFocus.dispose();
     super.dispose();
   }
 
@@ -230,6 +269,14 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               subtleSurface: subtleSurface,
               secondaryTextColor: secondaryTextColor,
               accentColor: primaryColor,
+              focusNode: _weightFocus,
+              maxDigits: 5,
+              errorText: _weightError,
+              onChanged: (_) {
+                if (_weightError != null) {
+                  setState(() => _weightError = null);
+                }
+              },
             ),
 
             _growthField(
@@ -244,6 +291,14 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               subtleSurface: subtleSurface,
               secondaryTextColor: secondaryTextColor,
               accentColor: primaryColor,
+              focusNode: _heightFocus,
+              maxDigits: 3,
+              errorText: _heightError,
+              onChanged: (_) {
+                if (_heightError != null) {
+                  setState(() => _heightError = null);
+                }
+              },
             ),
 
             _growthField(
@@ -258,6 +313,12 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               subtleSurface: subtleSurface,
               secondaryTextColor: secondaryTextColor,
               accentColor: primaryColor,
+              focusNode: _headFocus,
+              maxDigits: 2,
+              errorText: _headError,
+              onChanged: (_) {
+                if (_headError != null) setState(() => _headError = null);
+              },
             ),
 
             _growthField(
@@ -272,6 +333,12 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               subtleSurface: subtleSurface,
               secondaryTextColor: secondaryTextColor,
               accentColor: primaryColor,
+              focusNode: _waistFocus,
+              maxDigits: 3,
+              errorText: _waistError,
+              onChanged: (_) {
+                if (_waistError != null) setState(() => _waistError = null);
+              },
             ),
 
             const SizedBox(height: 24),
@@ -347,6 +414,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     required Color subtleSurface,
     required Color secondaryTextColor,
     required Color accentColor,
+    required FocusNode focusNode,
+    required int maxDigits,
+    required String? errorText,
+    required ValueChanged<String> onChanged,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -380,25 +451,58 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
           TextField(
             controller: controller,
+            focusNode: focusNode,
             keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(maxDigits),
+            ],
+            onChanged: onChanged,
             decoration: InputDecoration(
               filled: true,
               fillColor: subtleSurface,
               hintText: hintText,
-              prefixIcon: Icon(icon, color: accentColor),
+              errorText: errorText,
+              prefixIcon: Icon(
+                icon,
+                color: errorText == null
+                    ? accentColor
+                    : Theme.of(context).colorScheme.error,
+              ),
+              suffixIcon: errorText == null
+                  ? null
+                  : Icon(
+                      Icons.error_rounded,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
+                borderSide: BorderSide(
+                  color: Theme.of(context).dividerColor.withAlpha(90),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
                   color: accentColor.withAlpha(140),
                   width: 1.5,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.error,
+                  width: 2,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.error,
+                  width: 2.5,
                 ),
               ),
             ),

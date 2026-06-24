@@ -9,6 +9,7 @@ import 'l10n/app_localizations.dart';
 import 'core/premium/premium_provider.dart';
 import 'core/theme_provider.dart';
 import 'core/theme/app_design_tokens.dart';
+import 'core/child/active_child_provider.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,6 +19,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => PremiumProvider()),
+        ChangeNotifierProvider(create: (_) => ActiveChildProvider()),
       ],
       child: const LeyumiApp(),
     ),

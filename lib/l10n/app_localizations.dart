@@ -100,6 +100,198 @@ abstract class AppLocalizations {
     Locale('tr'),
   ];
 
+  /// No description provided for @welcomeToLeyumi.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Leyumi'**
+  String get welcomeToLeyumi;
+
+  /// No description provided for @onboardingWelcomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'A calm, private place to follow your baby\'s everyday care and growth.'**
+  String get onboardingWelcomeDescription;
+
+  /// No description provided for @onboardingTrackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything in one place'**
+  String get onboardingTrackTitle;
+
+  /// No description provided for @onboardingTrackDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Record feeding, diaper changes, growth and expressed milk without losing the little details.'**
+  String get onboardingTrackDescription;
+
+  /// No description provided for @onboardingFreePremiumTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start free, unlock more when you need it'**
+  String get onboardingFreePremiumTitle;
+
+  /// No description provided for @freePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get freePlan;
+
+  /// No description provided for @premiumPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get premiumPlan;
+
+  /// No description provided for @freePlanFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding, diaper and growth records\nComplete history\nDark mode and 3 languages'**
+  String get freePlanFeatures;
+
+  /// No description provided for @premiumPlanFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced charts\nMilk inventory\nPDF doctor reports\nMultiple child profiles'**
+  String get premiumPlanFeatures;
+
+  /// No description provided for @onboardingPrivacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your family data stays yours'**
+  String get onboardingPrivacyTitle;
+
+  /// No description provided for @onboardingPrivacyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your records are stored locally on this device. You decide when to create or share a report.'**
+  String get onboardingPrivacyDescription;
+
+  /// No description provided for @createFirstChildProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your child\'s profile'**
+  String get createFirstChildProfile;
+
+  /// No description provided for @onboardingChildDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'These details personalize records and reports. You can update them later.'**
+  String get onboardingChildDescription;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @getStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get getStarted;
+
+  /// No description provided for @childProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Child Profiles'**
+  String get childProfiles;
+
+  /// No description provided for @addChildProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Child'**
+  String get addChildProfile;
+
+  /// No description provided for @editChildProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Child'**
+  String get editChildProfile;
+
+  /// No description provided for @switchChild.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch child'**
+  String get switchChild;
+
+  /// No description provided for @activeChild.
+  ///
+  /// In en, this message translates to:
+  /// **'Active child'**
+  String get activeChild;
+
+  /// No description provided for @multipleChildrenPremiumHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional child profiles are included with Premium.'**
+  String get multipleChildrenPremiumHint;
+
+  /// No description provided for @nameLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must contain between 2 and 30 characters.'**
+  String get nameLengthError;
+
+  /// No description provided for @weightRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight must be between 500 and 30,000 g.'**
+  String get weightRangeError;
+
+  /// No description provided for @heightRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Height must be between 20 and 100 cm.'**
+  String get heightRangeError;
+
+  /// No description provided for @headCircumferenceRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Head circumference must be between 20 and 70 cm.'**
+  String get headCircumferenceRangeError;
+
+  /// No description provided for @waistCircumferenceRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Waist circumference must be between 20 and 100 cm.'**
+  String get waistCircumferenceRangeError;
+
+  /// No description provided for @milkLabelLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'The label can contain up to 30 characters.'**
+  String get milkLabelLengthError;
+
+  /// No description provided for @milkAmountRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk amount must be between 1 and 500 ml.'**
+  String get milkAmountRangeError;
+
+  /// No description provided for @futureDateTimeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Date and time cannot be in the future.'**
+  String get futureDateTimeError;
+
+  /// No description provided for @selectFeedingTimesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Select both the start and end time.'**
+  String get selectFeedingTimesError;
+
+  /// No description provided for @feedingTimeOrderError.
+  ///
+  /// In en, this message translates to:
+  /// **'End time must be later than start time.'**
+  String get feedingTimeOrderError;
+
+  /// No description provided for @feedingDurationRangeError.
+  ///
+  /// In en, this message translates to:
+  /// **'A manual feeding session cannot exceed 12 hours.'**
+  String get feedingDurationRangeError;
+
   /// No description provided for @milkInventory.
   ///
   /// In en, this message translates to:

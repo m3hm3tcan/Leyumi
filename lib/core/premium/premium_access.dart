@@ -18,7 +18,7 @@ class PremiumAccess {
     required WidgetBuilder builder,
   }) {
     final premium = context.read<PremiumProvider>();
-    final destination = !premium.isLoaded || premium.hasAccess(feature)
+    final destination = premium.isLoaded && premium.hasAccess(feature)
         ? builder(context)
         : PremiumPaywallScreen(feature: feature);
 

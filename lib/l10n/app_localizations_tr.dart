@@ -9,6 +9,114 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get welcomeToLeyumi => 'Leyumi\'ye Hoş Geldiniz';
+
+  @override
+  String get onboardingWelcomeDescription =>
+      'Bebeğinizin günlük bakımını ve gelişimini sakin, düzenli ve özel bir alanda takip edin.';
+
+  @override
+  String get onboardingTrackTitle => 'Her şey tek yerde';
+
+  @override
+  String get onboardingTrackDescription =>
+      'Beslenme, bez değişimi, büyüme ve sağılan süt kayıtlarını küçük ayrıntıları kaybetmeden tutun.';
+
+  @override
+  String get onboardingFreePremiumTitle =>
+      'Ücretsiz başlayın, ihtiyaç duyduğunuzda daha fazlasını açın';
+
+  @override
+  String get freePlan => 'Ücretsiz';
+
+  @override
+  String get premiumPlan => 'Premium';
+
+  @override
+  String get freePlanFeatures =>
+      'Beslenme, bez ve büyüme kayıtları\nEksiksiz geçmiş\nKaranlık mod ve 3 dil';
+
+  @override
+  String get premiumPlanFeatures =>
+      'Gelişmiş grafikler\nSüt stoğu\nPDF doktor raporları\nÇoklu çocuk profili';
+
+  @override
+  String get onboardingPrivacyTitle => 'Aile verileriniz size aittir';
+
+  @override
+  String get onboardingPrivacyDescription =>
+      'Kayıtlarınız bu cihazda yerel olarak saklanır. Raporu ne zaman oluşturup paylaşacağınıza siz karar verirsiniz.';
+
+  @override
+  String get createFirstChildProfile => 'Çocuğunuzun profilini oluşturun';
+
+  @override
+  String get onboardingChildDescription =>
+      'Bu bilgiler kayıtları ve raporları kişiselleştirir. Daha sonra güncelleyebilirsiniz.';
+
+  @override
+  String get continueLabel => 'Devam Et';
+
+  @override
+  String get getStarted => 'Kullanmaya Başla';
+
+  @override
+  String get childProfiles => 'Çocuk Profilleri';
+
+  @override
+  String get addChildProfile => 'Çocuk Ekle';
+
+  @override
+  String get editChildProfile => 'Çocuğu Düzenle';
+
+  @override
+  String get switchChild => 'Çocuk değiştir';
+
+  @override
+  String get activeChild => 'Aktif çocuk';
+
+  @override
+  String get multipleChildrenPremiumHint =>
+      'Ek çocuk profilleri Premium\'a dahildir.';
+
+  @override
+  String get nameLengthError => 'İsim 2–30 karakter arasında olmalıdır.';
+
+  @override
+  String get weightRangeError => 'Kilo 500–30.000 g arasında olmalıdır.';
+
+  @override
+  String get heightRangeError => 'Boy 20–100 cm arasında olmalıdır.';
+
+  @override
+  String get headCircumferenceRangeError =>
+      'Baş çevresi 20–70 cm arasında olmalıdır.';
+
+  @override
+  String get waistCircumferenceRangeError =>
+      'Bel çevresi 20–100 cm arasında olmalıdır.';
+
+  @override
+  String get milkLabelLengthError => 'Etiket en fazla 30 karakter olabilir.';
+
+  @override
+  String get milkAmountRangeError => 'Süt miktarı 1–500 ml arasında olmalıdır.';
+
+  @override
+  String get futureDateTimeError => 'Tarih ve saat gelecekte olamaz.';
+
+  @override
+  String get selectFeedingTimesError => 'Başlangıç ve bitiş saatlerini seçin.';
+
+  @override
+  String get feedingTimeOrderError =>
+      'Bitiş saati başlangıç saatinden sonra olmalıdır.';
+
+  @override
+  String get feedingDurationRangeError =>
+      'Manuel beslenme kaydı 12 saatten uzun olamaz.';
+
+  @override
   String get milkInventory => 'Süt Stoğu';
 
   @override

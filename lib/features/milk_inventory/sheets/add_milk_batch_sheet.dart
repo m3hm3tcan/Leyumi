@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/data/record_identity.dart';
 import '../../../l10n/app_localizations.dart';
@@ -31,6 +32,11 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
   MilkStorageLocation _location = MilkStorageLocation.refrigerator;
   MilkSourceSide _source = MilkSourceSide.unspecified;
   double _amount = 120;
+  final _labelFocus = FocusNode();
+  final _amountFocus = FocusNode();
+  String? _labelError;
+  String? _amountError;
+  String? _dateTimeError;
 
   @override
   void initState() {
@@ -50,6 +56,8 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
   void dispose() {
     _labelController.dispose();
     _amountController.dispose();
+    _labelFocus.dispose();
+    _amountFocus.dispose();
     super.dispose();
   }
 
@@ -68,14 +76,18 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
     );
     if (time == null) return;
 
+    final selected = DateTime(
+      date.year,
+      date.month,
+      date.day,
+      time.hour,
+      time.minute,
+    );
     setState(() {
-      _expressedAt = DateTime(
-        date.year,
-        date.month,
-        date.day,
-        time.hour,
-        time.minute,
-      );
+      _expressedAt = selected;
+      _dateTimeError = selected.isAfter(DateTime.now())
+          ? AppLocalizations.of(context).futureDateTimeError
+          : null;
     });
   }
 
@@ -84,18 +96,38 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
     final label = _labelController.text.trim();
     final amount = int.tryParse(_amountController.text);
 
-    if (label.isEmpty || amount == null || amount <= 0 || amount > 500) {
-      _showMessage(l10n.invalidMilkEntry);
+    final duplicateLabel = widget.existingLabels.any(
+      (existing) => existing.toLowerCase() == label.toLowerCase(),
+    );
+    setState(() {
+      _labelError = label.isEmpty
+          ? l10n.requiredField
+          : label.length > 30
+          ? l10n.milkLabelLengthError
+          : duplicateLabel
+          ? l10n.duplicateMilkLabel
+          : null;
+      _amountError = amount == null || amount <= 0 || amount > 500
+          ? l10n.milkAmountRangeError
+          : null;
+      _dateTimeError = _expressedAt.isAfter(DateTime.now())
+          ? l10n.futureDateTimeError
+          : null;
+    });
+
+    if (_labelError != null) {
+      _labelFocus.requestFocus();
       return;
     }
-    if (widget.existingLabels.any(
-      (existing) => existing.toLowerCase() == label.toLowerCase(),
-    )) {
-      _showMessage(l10n.duplicateMilkLabel);
+    if (_amountError != null) {
+      _amountFocus.requestFocus();
+      return;
+    }
+    if (_dateTimeError != null) {
       return;
     }
 
-    Navigator.pop(context, _buildBatch(label, amount));
+    Navigator.pop(context, _buildBatch(label, amount!));
   }
 
   MilkBatch _buildBatch(String label, int amount) {
@@ -127,12 +159,6 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
           : null,
       clearFrozenAt: _location == MilkStorageLocation.refrigerator,
     );
-  }
-
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -172,8 +198,13 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
             _label(l10n.labelNumber),
             TextField(
               controller: _labelController,
+              focusNode: _labelFocus,
               textCapitalization: TextCapitalization.characters,
-              decoration: _decoration(l10n.labelNumber),
+              inputFormatters: [LengthLimitingTextInputFormatter(30)],
+              onChanged: (_) {
+                if (_labelError != null) setState(() => _labelError = null);
+              },
+              decoration: _decoration(l10n.labelNumber, errorText: _labelError),
             ),
             const SizedBox(height: 16),
             _label(l10n.amountMl),
@@ -228,37 +259,62 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
   }
 
   Widget _amountSelector() {
-    return Row(
+    final errorColor = Theme.of(context).colorScheme.error;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Slider(
-            value: _amount,
-            min: 10,
-            max: 500,
-            divisions: 49,
-            onChanged: (value) {
-              setState(() {
-                _amount = value;
-                _amountController.text = value.round().toString();
-              });
-            },
-          ),
+        Row(
+          children: [
+            Expanded(
+              child: Slider(
+                value: _amount,
+                min: 1,
+                max: 500,
+                divisions: 499,
+                onChanged: (value) {
+                  setState(() {
+                    _amount = value;
+                    _amountController.text = value.round().toString();
+                    _amountError = null;
+                  });
+                },
+              ),
+            ),
+            SizedBox(
+              width: 88,
+              child: TextField(
+                controller: _amountController,
+                focusNode: _amountFocus,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3),
+                ],
+                decoration: _decoration('ml', hasError: _amountError != null),
+                onChanged: (value) {
+                  final amount = double.tryParse(value);
+                  setState(() {
+                    _amountError = null;
+                    if (amount != null && amount >= 1 && amount <= 500) {
+                      _amount = amount;
+                    }
+                  });
+                },
+              ),
+            ),
+          ],
         ),
-        SizedBox(
-          width: 78,
-          child: TextField(
-            controller: _amountController,
-            keyboardType: TextInputType.number,
-            textAlign: TextAlign.center,
-            decoration: _decoration('ml'),
-            onChanged: (value) {
-              final amount = double.tryParse(value);
-              if (amount != null && amount >= 10 && amount <= 500) {
-                setState(() => _amount = amount);
-              }
-            },
+        if (_amountError != null)
+          Padding(
+            padding: const EdgeInsets.only(left: 12, top: 6),
+            child: Text(
+              _amountError!,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: errorColor),
+            ),
           ),
-        ),
       ],
     );
   }
@@ -291,21 +347,49 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
 
   Widget _dateTimeTile() {
     final localizations = MaterialLocalizations.of(context);
-    return ListTile(
-      onTap: _pickDateTime,
-      tileColor: Theme.of(context).cardColor,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Theme.of(context).dividerColor.withAlpha(75)),
-      ),
-      leading: const Icon(
-        Icons.calendar_month_rounded,
-        color: Color(0xff6D63E8),
-      ),
-      title: Text(localizations.formatMediumDate(_expressedAt)),
-      subtitle: Text(
-        localizations.formatTimeOfDay(TimeOfDay.fromDateTime(_expressedAt)),
-      ),
+    final errorColor = Theme.of(context).colorScheme.error;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ListTile(
+          onTap: _pickDateTime,
+          tileColor: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: _dateTimeError == null
+                  ? Theme.of(context).dividerColor.withAlpha(75)
+                  : errorColor,
+              width: _dateTimeError == null ? 1 : 2,
+            ),
+          ),
+          leading: Icon(
+            Icons.calendar_month_rounded,
+            color: _dateTimeError == null
+                ? const Color(0xff6D63E8)
+                : errorColor,
+          ),
+          title: Text(localizations.formatMediumDate(_expressedAt)),
+          subtitle: Text(
+            localizations.formatTimeOfDay(TimeOfDay.fromDateTime(_expressedAt)),
+          ),
+          trailing: _dateTimeError == null
+              ? null
+              : Icon(Icons.error_rounded, color: errorColor),
+        ),
+        if (_dateTimeError != null) ...[
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Text(
+              _dateTimeError!,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: errorColor),
+            ),
+          ),
+        ],
+      ],
     );
   }
 
@@ -344,9 +428,19 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
     );
   }
 
-  InputDecoration _decoration(String hint) {
+  InputDecoration _decoration(
+    String hint, {
+    String? errorText,
+    bool hasError = false,
+  }) {
+    final errorColor = Theme.of(context).colorScheme.error;
+    final showErrorState = hasError || errorText != null;
     return InputDecoration(
       hintText: hint,
+      errorText: errorText,
+      suffixIcon: !showErrorState
+          ? null
+          : Icon(Icons.error_rounded, color: errorColor),
       filled: true,
       fillColor: Theme.of(context).cardColor,
       border: OutlineInputBorder(
@@ -356,8 +450,28 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(16),
         borderSide: BorderSide(
-          color: Theme.of(context).dividerColor.withAlpha(75),
+          color: showErrorState
+              ? errorColor
+              : Theme.of(context).dividerColor.withAlpha(75),
+          width: showErrorState ? 2 : 1,
         ),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(
+          color: showErrorState
+              ? errorColor
+              : Theme.of(context).colorScheme.primary,
+          width: 2,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: errorColor, width: 2),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: errorColor, width: 2.5),
       ),
     );
   }

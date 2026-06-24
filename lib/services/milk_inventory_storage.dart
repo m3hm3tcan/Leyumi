@@ -6,6 +6,7 @@ import '../features/milk_inventory/milk_batch.dart';
 import '../features/milk_inventory/milk_inventory_event.dart';
 import '../domain/repositories/milk_inventory_repository.dart';
 import '../core/data/json_record_decoder.dart';
+import 'active_child_scope.dart';
 
 class MilkInventoryStorage implements MilkInventoryRepository {
   static const key = 'milk_inventory_batches';
@@ -13,6 +14,11 @@ class MilkInventoryStorage implements MilkInventoryRepository {
   static const migrationKey = 'milk_inventory_events_migrated_v1';
 
   Future<List<MilkBatch>> loadBatches() async {
+    final batches = await _loadAllBatches();
+    return ActiveChildScope.filter(batches, (batch) => batch.childId);
+  }
+
+  Future<List<MilkBatch>> _loadAllBatches() async {
     final preferences = await SharedPreferences.getInstance();
     final raw = preferences.getString(key);
     if (raw == null || raw.isEmpty) return [];
@@ -26,6 +32,11 @@ class MilkInventoryStorage implements MilkInventoryRepository {
 
   Future<List<MilkInventoryEvent>> loadEvents() async {
     await _migrateExistingBatchesToEvents();
+    final events = await _loadAllEvents();
+    return ActiveChildScope.filter(events, (event) => event.childId);
+  }
+
+  Future<List<MilkInventoryEvent>> _loadAllEvents() async {
     final preferences = await SharedPreferences.getInstance();
     final raw = preferences.getString(eventKey);
     if (raw == null || raw.isEmpty) return [];
@@ -38,24 +49,37 @@ class MilkInventoryStorage implements MilkInventoryRepository {
   }
 
   Future<void> saveAll(List<MilkBatch> batches) async {
+    final activeId = await ActiveChildScope.id();
+    final allBatches = await _loadAllBatches();
+    final merged = activeId == null
+        ? batches
+        : [
+            ...allBatches.where((batch) => batch.childId != activeId),
+            ...batches,
+          ];
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(
       key,
-      jsonEncode(batches.map((batch) => batch.toJson()).toList()),
+      jsonEncode(merged.map((batch) => batch.toJson()).toList()),
     );
   }
 
   Future<void> saveEvents(List<MilkInventoryEvent> events) async {
+    final activeId = await ActiveChildScope.id();
+    final allEvents = await _loadAllEvents();
+    final merged = activeId == null
+        ? events
+        : [...allEvents.where((event) => event.childId != activeId), ...events];
     final preferences = await SharedPreferences.getInstance();
     await preferences.setString(
       eventKey,
-      jsonEncode(events.map((event) => event.toJson()).toList()),
+      jsonEncode(merged.map((event) => event.toJson()).toList()),
     );
   }
 
   Future<void> addBatch(MilkBatch batch) async {
-    final batches = await loadBatches();
-    final events = await loadEvents();
+    final batches = await _loadAllBatches();
+    final events = await _loadAllEvents();
 
     batches.add(batch);
     events.add(
@@ -80,8 +104,8 @@ class MilkInventoryStorage implements MilkInventoryRepository {
     required int amountMl,
     DateTime? usedAt,
   }) async {
-    final batches = await loadBatches();
-    final events = await loadEvents();
+    final batches = await _loadAllBatches();
+    final events = await _loadAllEvents();
     final index = batches.indexWhere((item) => item.id == batch.id);
     if (index < 0) return;
 
@@ -117,8 +141,8 @@ class MilkInventoryStorage implements MilkInventoryRepository {
     required int amountMl,
     String? note,
   }) async {
-    final batches = await loadBatches();
-    final events = await loadEvents();
+    final batches = await _loadAllBatches();
+    final events = await _loadAllEvents();
     final index = batches.indexWhere((item) => item.id == batch.id);
     if (index < 0) return;
 
@@ -149,8 +173,8 @@ class MilkInventoryStorage implements MilkInventoryRepository {
   }
 
   Future<void> moveToFreezer(MilkBatch batch) async {
-    final batches = await loadBatches();
-    final events = await loadEvents();
+    final batches = await _loadAllBatches();
+    final events = await _loadAllEvents();
     final index = batches.indexWhere((item) => item.id == batch.id);
     if (index < 0) return;
 
@@ -180,8 +204,8 @@ class MilkInventoryStorage implements MilkInventoryRepository {
     required MilkBatch previous,
     required MilkBatch updated,
   }) async {
-    final batches = await loadBatches();
-    final events = await loadEvents();
+    final batches = await _loadAllBatches();
+    final events = await _loadAllEvents();
     final index = batches.indexWhere((item) => item.id == previous.id);
     if (index < 0) return;
 
@@ -213,8 +237,8 @@ class MilkInventoryStorage implements MilkInventoryRepository {
 
   /// Removes an incorrectly entered batch and all events linked to it.
   Future<void> deleteIncorrectBatch(String batchId) async {
-    final batches = await loadBatches();
-    final events = await loadEvents();
+    final batches = await _loadAllBatches();
+    final events = await _loadAllEvents();
     batches.removeWhere((batch) => batch.id == batchId);
     events.removeWhere((event) => event.batchId == batchId);
     await _saveState(batches: batches, events: events);
@@ -239,7 +263,7 @@ class MilkInventoryStorage implements MilkInventoryRepository {
     final preferences = await SharedPreferences.getInstance();
     if (preferences.getBool(migrationKey) ?? false) return;
 
-    final batches = await loadBatches();
+    final batches = await _loadAllBatches();
     final rawEvents = preferences.getString(eventKey);
     final hasEvents = rawEvents != null && rawEvents.isNotEmpty;
 
@@ -261,8 +285,12 @@ class MilkInventoryStorage implements MilkInventoryRepository {
       await saveEvents(events);
     }
 
-    // Re-save old batches in schema v2 only after they have been read safely.
-    if (batches.isNotEmpty) await saveAll(batches);
+    if (batches.isNotEmpty) {
+      await preferences.setString(
+        key,
+        jsonEncode(batches.map((batch) => batch.toJson()).toList()),
+      );
+    }
     await preferences.setBool(migrationKey, true);
   }
 

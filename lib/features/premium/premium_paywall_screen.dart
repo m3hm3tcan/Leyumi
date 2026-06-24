@@ -3,10 +3,7 @@ import 'package:leyumi/core/premium/premium_feature.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 
 class PremiumPaywallScreen extends StatelessWidget {
-  const PremiumPaywallScreen({
-    super.key,
-    required this.feature,
-  });
+  const PremiumPaywallScreen({super.key, required this.feature});
 
   final PremiumFeature feature;
 
@@ -109,7 +106,7 @@ class PremiumPaywallScreen extends StatelessWidget {
                 icon: Icons.child_care_rounded,
                 title: l10n.premiumMultipleChildren,
                 active: feature == PremiumFeature.multipleChildren,
-                available: false,
+                available: true,
               ),
               _featureTile(
                 context,
@@ -210,10 +207,7 @@ class PremiumPaywallScreen extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-              ),
+              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
             ),
           ),
           if (available)

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import '../../services/diaper_storage.dart';
 import '../../services/baby_storage.dart';
@@ -44,7 +45,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
       poopColor: type == DiaperType.poop || type == DiaperType.both
           ? poopColor
           : null,
-      note: noteCtrl.text.isEmpty ? null : noteCtrl.text,
+      note: noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim(),
     );
 
     await DiaperStorage().addEntry(entry);
@@ -369,6 +370,8 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
             TextField(
               controller: noteCtrl,
               maxLines: 3,
+              maxLength: 250,
+              inputFormatters: [LengthLimitingTextInputFormatter(250)],
               decoration: InputDecoration(
                 hintText: l10n.optionalNote,
                 filled: true,

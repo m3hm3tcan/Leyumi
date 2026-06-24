@@ -3,15 +3,16 @@ import 'package:provider/provider.dart';
 
 import '../../core/premium/premium_access.dart';
 import '../../core/premium/premium_feature.dart';
+import '../../core/child/active_child_provider.dart';
 import '../../core/theme_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/baby_profile.dart';
-import '../../services/baby_storage.dart';
 import '../../services/reset_service.dart';
 import '../../widgets/baby_card.dart';
 import '../feeding/feeding_screen.dart';
 import '../history/history_hub_screen.dart';
 import '../milk_inventory/milk_inventory_screen.dart';
+import '../children/child_management_screen.dart';
 import 'widgets/home_action_card.dart';
 import 'widgets/live_feeding_home_card.dart';
 import 'widgets/today_summary_card.dart';
@@ -52,7 +53,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _loadProfile() async {
-    final profile = await BabyStorage().loadProfile();
+    final children = context.read<ActiveChildProvider>();
+    await children.ensureLoaded();
+    final profile = children.activeChild;
     if (!mounted) return;
 
     if (profile == null) {
@@ -167,6 +170,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       centerTitle: true,
       actions: [
         IconButton(
+          tooltip: l10n.switchChild,
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ChildManagementScreen()),
+            );
+            await _loadProfile();
+            _refreshDashboard();
+          },
+          icon: const Icon(Icons.switch_account_rounded),
+        ),
+        IconButton(
           icon: Icon(
             Theme.of(context).brightness == Brightness.dark
                 ? Icons.light_mode
@@ -265,6 +280,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 colors: const [Color(0xffED8A52), Color(0xffF6BD60)],
                 onTap: () async {
                   await Navigator.pushNamed(context, '/growth_update');
+                  await context.read<ActiveChildProvider>().reload();
                   await _loadProfile();
                 },
               ),

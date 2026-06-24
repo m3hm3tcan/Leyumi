@@ -23,6 +23,7 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
   Duration _totalDuration = Duration.zero;
   Duration _leftDuration = Duration.zero;
   Duration _rightDuration = Duration.zero;
+  String? _timeError;
 
   Future<void> _pickStart() async {
     final picked = await showTimePicker(
@@ -32,6 +33,7 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
     if (picked == null) return;
     setState(() {
       _startTime = picked;
+      _timeError = null;
       _recalculate();
     });
   }
@@ -44,6 +46,7 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
     if (picked == null) return;
     setState(() {
       _endTime = picked;
+      _timeError = null;
       _recalculate();
     });
   }
@@ -81,7 +84,24 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
 
   Future<void> _save() async {
     final range = _dateRange;
-    if (range == null || _totalDuration == Duration.zero) return;
+    if (range == null) {
+      setState(() {
+        _timeError = AppLocalizations.of(context).selectFeedingTimesError;
+      });
+      return;
+    }
+    if (!range.$2.isAfter(range.$1) || _totalDuration == Duration.zero) {
+      setState(() {
+        _timeError = AppLocalizations.of(context).feedingTimeOrderError;
+      });
+      return;
+    }
+    if (_totalDuration > const Duration(hours: 12)) {
+      setState(() {
+        _timeError = AppLocalizations.of(context).feedingDurationRangeError;
+      });
+      return;
+    }
 
     final decision = await showFeedingSaveDialog(context);
     if (!mounted || decision == null) return;
@@ -141,8 +161,32 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
             ),
           ),
           const SizedBox(height: 20),
-          _timeRow(l10n.startTime, _startTime, _pickStart),
-          _timeRow(l10n.endTime, _endTime, _pickEnd),
+          _timeRow(
+            l10n.startTime,
+            _startTime,
+            _pickStart,
+            hasError: _timeError != null,
+          ),
+          const SizedBox(height: 8),
+          _timeRow(
+            l10n.endTime,
+            _endTime,
+            _pickEnd,
+            hasError: _timeError != null,
+          ),
+          if (_timeError != null) ...[
+            const SizedBox(height: 6),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                _timeError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: 20),
           Text(l10n.leftRightRatio),
           Slider(
@@ -198,21 +242,46 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
     );
   }
 
-  Widget _timeRow(String label, TimeOfDay? value, VoidCallback onPressed) {
+  Widget _timeRow(
+    String label,
+    TimeOfDay? value,
+    VoidCallback onPressed, {
+    required bool hasError,
+  }) {
     final l10n = AppLocalizations.of(context);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label),
-        TextButton(
-          onPressed: onPressed,
-          child: Text(
-            value == null
-                ? l10n.select
-                : MaterialLocalizations.of(context).formatTimeOfDay(value),
-          ),
+    final errorColor = Theme.of(context).colorScheme.error;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      decoration: BoxDecoration(
+        color: hasError ? errorColor.withAlpha(12) : null,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: hasError ? errorColor : Theme.of(context).dividerColor,
+          width: hasError ? 2 : 1,
         ),
-      ],
+      ),
+      child: ListTile(
+        onTap: onPressed,
+        leading: Icon(
+          Icons.schedule_rounded,
+          color: hasError ? errorColor : null,
+        ),
+        title: Text(label),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              value == null
+                  ? l10n.select
+                  : MaterialLocalizations.of(context).formatTimeOfDay(value),
+            ),
+            if (hasError) ...[
+              const SizedBox(width: 8),
+              Icon(Icons.error_rounded, color: errorColor),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }
