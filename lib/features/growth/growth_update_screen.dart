@@ -48,45 +48,43 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     final l10n = AppLocalizations.of(context);
 
     if (weightCtrl.text.isEmpty || heightCtrl.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.weightHeightRequired),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.weightHeightRequired)));
       return;
     }
 
     final entry = GrowthEntry(
+      childId: profile!.id,
       date: DateTime.now(),
       weight: int.parse(weightCtrl.text),
       height: int.parse(heightCtrl.text),
-      headCircumference:
-          headCtrl.text.isEmpty ? null : int.parse(headCtrl.text),
-      waistCircumference:
-          waistCtrl.text.isEmpty ? null : int.parse(waistCtrl.text),
+      headCircumference: headCtrl.text.isEmpty
+          ? null
+          : int.parse(headCtrl.text),
+      waistCircumference: waistCtrl.text.isEmpty
+          ? null
+          : int.parse(waistCtrl.text),
     );
 
     await GrowthStorage().addEntry(entry);
 
-    final updated = BabyProfile(
-      name: profile!.name,
-      gender: profile!.gender,
-      birthDate: profile!.birthDate,
+    final updated = profile!.copyWith(
       weight: entry.weight,
       height: entry.height,
       headCircumference: entry.headCircumference,
       waistCircumference: entry.waistCircumference,
+      clearHeadCircumference: entry.headCircumference == null,
+      clearWaistCircumference: entry.waistCircumference == null,
     );
 
     await BabyStorage().saveProfile(updated);
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.growthRecordSaved),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l10n.growthRecordSaved)));
 
     Navigator.pop(context);
   }
@@ -108,27 +106,23 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     if (profile == null) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final isBoy = profile!.gender.toLowerCase() == "male";
-    final primaryColor =
-        isBoy ? const Color(0xff4DA3FF) : const Color(0xffFF6B9D);
+    final primaryColor = isBoy
+        ? const Color(0xff4DA3FF)
+        : const Color(0xffFF6B9D);
     final surfaceColor = theme.cardColor;
-    final subtleSurface = isDark ? const Color(0xff262626) : const Color(0xffF4F6FA);
+    final subtleSurface = isDark
+        ? const Color(0xff262626)
+        : const Color(0xffF4F6FA);
     final secondaryTextColor =
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
     final shadowColor = Colors.black.withAlpha(isDark ? 40 : 10);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.growthUpdateTitle),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(l10n.growthUpdateTitle), elevation: 0),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -308,11 +302,11 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   Widget _statCard(
     String title,
     String value,
-    IconData icon,
-    {required Color surfaceColor,
+    IconData icon, {
+    required Color surfaceColor,
     required Color secondaryTextColor,
-    required Color iconColor,}
-  ) {
+    required Color iconColor,
+  }) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -327,20 +321,14 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
           Text(
             value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
           ),
 
           const SizedBox(height: 4),
 
           Text(
             title,
-            style: TextStyle(
-              color: secondaryTextColor,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: secondaryTextColor, fontSize: 12),
           ),
         ],
       ),
@@ -377,12 +365,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
               const SizedBox(width: 8),
 
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
             ],
           ),
 
@@ -390,9 +373,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
           Text(
             "$currentLabel: $currentValue $unit",
-            style: TextStyle(
-              color: secondaryTextColor,
-            ),
+            style: TextStyle(color: secondaryTextColor),
           ),
 
           const SizedBox(height: 10),

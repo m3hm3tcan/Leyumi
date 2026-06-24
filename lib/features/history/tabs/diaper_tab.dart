@@ -5,6 +5,8 @@ import 'package:leyumi/services/diaper_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/utils/app_date_utils.dart';
+
 class DiaperTab extends StatefulWidget {
   const DiaperTab({super.key});
 
@@ -105,15 +107,11 @@ class _DiaperTabState extends State<DiaperTab> {
     final map = <String, List<DiaperEntry>>{};
 
     for (final entry in entries) {
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      final day = DateTime(
-        entry.timestamp.year,
-        entry.timestamp.month,
-        entry.timestamp.day,
-      );
+      final day = AppDateUtils.dateOnly(entry.timestamp);
 
-      final key = day == today ? l10n.today : _formatSectionDate(day);
+      final key = AppDateUtils.isToday(day)
+          ? l10n.today
+          : AppDateFormatter.sectionDate(context, day);
       map.putIfAbsent(key, () => []);
       map[key]!.add(entry);
     }
@@ -228,11 +226,12 @@ class _DiaperTabState extends State<DiaperTab> {
     final isDark = theme.brightness == Brightness.dark;
     final secondaryTextColor =
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
-    final mutedChipColor =
-        isDark ? const Color(0xff2B2B2B) : Colors.grey.shade100;
+    final mutedChipColor = isDark
+        ? const Color(0xff2B2B2B)
+        : Colors.grey.shade100;
 
     return Dismissible(
-      key: ValueKey(entry.timestamp.toIso8601String()),
+      key: ValueKey(entry.id),
       direction: DismissDirection.endToStart,
       background: Container(
         margin: const EdgeInsets.only(top: 4, bottom: 4),
@@ -438,26 +437,6 @@ class _DiaperTabState extends State<DiaperTab> {
       case PoopColor.whiteGray:
         return l10n.whiteGray;
     }
-  }
-
-  String _formatSectionDate(DateTime date) {
-    const months = [
-      '',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    return "${months[date.month]} ${date.day}, ${date.year}";
   }
 
   Widget _emptyState(AppLocalizations l10n) {

@@ -1,22 +1,10 @@
-import 'package:flutter/material.dart';
+import '../../core/data/record_identity.dart';
 
-enum DiaperType {
-  pee,
-  poop,
-  both,
-}
+enum DiaperType { pee, poop, both }
 
-enum PeeAmount {
-  small,
-  medium,
-  large,
-}
+enum PeeAmount { small, medium, large }
 
-enum PoopAmount {
-  small,
-  medium,
-  large,
-}
+enum PoopAmount { small, medium, large }
 
 enum PoopColor {
   mustardYellow,
@@ -28,6 +16,8 @@ enum PoopColor {
 }
 
 class DiaperEntry {
+  final String id;
+  final String childId;
   final DateTime timestamp;
 
   final DiaperType type;
@@ -39,15 +29,23 @@ class DiaperEntry {
   final PoopColor? poopColor;
 
   final String? note;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
   DiaperEntry({
+    String? id,
+    this.childId = RecordIdentity.legacyChildId,
     required this.timestamp,
     required this.type,
     this.peeAmount,
     this.poopAmount,
     this.poopColor,
     this.note,
-  });
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) : id = id ?? RecordIdentity.newId('diaper'),
+       createdAt = createdAt ?? DateTime.now(),
+       updatedAt = updatedAt ?? DateTime.now();
 
   // ---------------------------------------------------------
   // MIGRATION: Eski poopColor değerlerini yeni enum'a çevirir
@@ -84,8 +82,11 @@ class DiaperEntry {
   // JSON → MODEL
   // ---------------------------------------------------------
   factory DiaperEntry.fromJson(Map<String, dynamic> json) {
+    final timestamp = DateTime.parse(json["timestamp"]);
     return DiaperEntry(
-      timestamp: DateTime.parse(json["timestamp"]),
+      id: json['id'] as String? ?? RecordIdentity.legacyId('diaper', timestamp),
+      childId: json['childId'] as String? ?? RecordIdentity.legacyChildId,
+      timestamp: timestamp,
 
       type: DiaperType.values.firstWhere(
         (e) => e.name == json["type"],
@@ -113,6 +114,10 @@ class DiaperEntry {
           : null,
 
       note: json["note"],
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ?? timestamp,
+      updatedAt:
+          DateTime.tryParse(json['updatedAt'] as String? ?? '') ?? timestamp,
     );
   }
 
@@ -120,11 +125,16 @@ class DiaperEntry {
   // MODEL → JSON
   // ---------------------------------------------------------
   Map<String, dynamic> toJson() => {
-        "timestamp": timestamp.toIso8601String(),
-        "type": type.name,
-        "peeAmount": peeAmount?.name,
-        "poopAmount": poopAmount?.name,
-        "poopColor": poopColor?.name,
-        "note": note,
-      };
+    "schemaVersion": 2,
+    "id": id,
+    "childId": childId,
+    "timestamp": timestamp.toIso8601String(),
+    "type": type.name,
+    "peeAmount": peeAmount?.name,
+    "poopAmount": poopAmount?.name,
+    "poopColor": poopColor?.name,
+    "note": note,
+    "createdAt": createdAt.toIso8601String(),
+    "updatedAt": updatedAt.toIso8601String(),
+  };
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../shared/widgets/premium_badge.dart';
+
 class HubCard extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -56,55 +58,18 @@ class HubCard extends StatelessWidget {
                 ),
                 const Spacer(),
                 if (isPremium)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Color(0xff6558E8), Color(0xffA45DE7)],
-                      ),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.workspace_premium_rounded,
-                          color: Colors.white,
-                          size: 12,
-                        ),
-                        SizedBox(width: 3),
-                        Text(
-                          'PRO',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: .5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const PremiumBadge(backgroundColor: Color(0xff6558E8)),
               ],
             ),
             const Spacer(),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 12,
-                color: secondaryTextColor,
-              ),
+              style: TextStyle(fontSize: 12, color: secondaryTextColor),
             ),
           ],
         ),

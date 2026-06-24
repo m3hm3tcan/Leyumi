@@ -6,4 +6,3 @@ enum PremiumFeature {
   smartReminders,
   milkInventory,
 }
-

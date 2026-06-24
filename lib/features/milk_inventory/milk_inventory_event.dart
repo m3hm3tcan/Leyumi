@@ -1,4 +1,5 @@
 import 'milk_batch.dart';
+import '../../core/data/record_identity.dart';
 
 enum MilkInventoryEventType {
   created,
@@ -11,6 +12,7 @@ enum MilkInventoryEventType {
 class MilkInventoryEvent {
   const MilkInventoryEvent({
     required this.id,
+    this.childId = RecordIdentity.legacyChildId,
     required this.batchId,
     required this.labelNumber,
     required this.type,
@@ -22,6 +24,7 @@ class MilkInventoryEvent {
   });
 
   final String id;
+  final String childId;
   final String batchId;
   final String labelNumber;
   final MilkInventoryEventType type;
@@ -31,12 +34,10 @@ class MilkInventoryEvent {
   final MilkStorageLocation storageLocation;
   final String? note;
 
-  MilkInventoryEvent copyWith({
-    String? labelNumber,
-    String? note,
-  }) {
+  MilkInventoryEvent copyWith({String? labelNumber, String? note}) {
     return MilkInventoryEvent(
       id: id,
+      childId: childId,
       batchId: batchId,
       labelNumber: labelNumber ?? this.labelNumber,
       type: type,
@@ -49,20 +50,22 @@ class MilkInventoryEvent {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'batchId': batchId,
-        'labelNumber': labelNumber,
-        'type': type.name,
-        'amountMl': amountMl,
-        'remainingAfterMl': remainingAfterMl,
-        'eventAt': eventAt.toIso8601String(),
-        'storageLocation': storageLocation.name,
-        'note': note,
-      };
+    'id': id,
+    'childId': childId,
+    'batchId': batchId,
+    'labelNumber': labelNumber,
+    'type': type.name,
+    'amountMl': amountMl,
+    'remainingAfterMl': remainingAfterMl,
+    'eventAt': eventAt.toIso8601String(),
+    'storageLocation': storageLocation.name,
+    'note': note,
+  };
 
   factory MilkInventoryEvent.fromJson(Map<String, dynamic> json) {
     return MilkInventoryEvent(
       id: json['id'] as String,
+      childId: json['childId'] as String? ?? RecordIdentity.legacyChildId,
       batchId: json['batchId'] as String,
       labelNumber: json['labelNumber'] as String,
       type: MilkInventoryEventType.values.firstWhere(

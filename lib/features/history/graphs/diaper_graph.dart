@@ -9,6 +9,7 @@ import 'package:leyumi/features/history/graphs/graph_style.dart';
 import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/services/diaper_storage.dart';
 import 'package:provider/provider.dart';
+import '../../../core/utils/app_date_utils.dart';
 
 class DiaperGraphScreen extends StatefulWidget {
   const DiaperGraphScreen({super.key});
@@ -45,12 +46,11 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
 
   List<DiaperEntry> get filtered {
     if (filter == 'all') return entries;
-    final cutoff = DateTime.now().subtract(Duration(days: int.parse(filter)));
+    final cutoff = AppDateUtils.startOfRange(int.parse(filter));
     return entries.where((entry) => entry.timestamp.isAfter(cutoff)).toList();
   }
 
-  DateTime _dateOnly(DateTime date) =>
-      DateTime(date.year, date.month, date.day);
+  DateTime _dateOnly(DateTime date) => AppDateUtils.dateOnly(date);
 
   List<DateTime> get sortedDays {
     final days = filtered

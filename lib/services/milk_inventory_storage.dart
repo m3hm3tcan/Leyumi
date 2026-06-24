@@ -4,8 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/milk_inventory/milk_batch.dart';
 import '../features/milk_inventory/milk_inventory_event.dart';
+import '../domain/repositories/milk_inventory_repository.dart';
+import '../core/data/json_record_decoder.dart';
 
-class MilkInventoryStorage {
+class MilkInventoryStorage implements MilkInventoryRepository {
   static const key = 'milk_inventory_batches';
   static const eventKey = 'milk_inventory_events';
   static const migrationKey = 'milk_inventory_events_migrated_v1';
@@ -15,15 +17,11 @@ class MilkInventoryStorage {
     final raw = preferences.getString(key);
     if (raw == null || raw.isEmpty) return [];
 
-    try {
-      final decoded = jsonDecode(raw) as List<dynamic>;
-      return decoded
-          .whereType<Map<String, dynamic>>()
-          .map(MilkBatch.fromJson)
-          .toList();
-    } catch (_) {
-      return [];
-    }
+    return JsonRecordDecoder.decodeArray(
+      value: raw,
+      fromJson: MilkBatch.fromJson,
+      source: 'milk inventory',
+    );
   }
 
   Future<List<MilkInventoryEvent>> loadEvents() async {
@@ -32,15 +30,11 @@ class MilkInventoryStorage {
     final raw = preferences.getString(eventKey);
     if (raw == null || raw.isEmpty) return [];
 
-    try {
-      final decoded = jsonDecode(raw) as List<dynamic>;
-      return decoded
-          .whereType<Map<String, dynamic>>()
-          .map(MilkInventoryEvent.fromJson)
-          .toList();
-    } catch (_) {
-      return [];
-    }
+    return JsonRecordDecoder.decodeArray(
+      value: raw,
+      fromJson: MilkInventoryEvent.fromJson,
+      source: 'milk inventory event',
+    );
   }
 
   Future<void> saveAll(List<MilkBatch> batches) async {
@@ -67,6 +61,7 @@ class MilkInventoryStorage {
     events.add(
       MilkInventoryEvent(
         id: _newId(),
+        childId: batch.childId,
         batchId: batch.id,
         labelNumber: batch.labelNumber,
         type: MilkInventoryEventType.created,
@@ -90,8 +85,7 @@ class MilkInventoryStorage {
     final index = batches.indexWhere((item) => item.id == batch.id);
     if (index < 0) return;
 
-    final safeAmount =
-        amountMl.clamp(1, batch.remainingAmountMl).toInt();
+    final safeAmount = amountMl.clamp(1, batch.remainingAmountMl).toInt();
     final remaining = batch.remainingAmountMl - safeAmount;
     final updated = batch.copyWith(
       remainingAmountMl: remaining,
@@ -104,6 +98,7 @@ class MilkInventoryStorage {
     events.add(
       MilkInventoryEvent(
         id: _newId(),
+        childId: batch.childId,
         batchId: batch.id,
         labelNumber: batch.labelNumber,
         type: MilkInventoryEventType.used,
@@ -127,8 +122,7 @@ class MilkInventoryStorage {
     final index = batches.indexWhere((item) => item.id == batch.id);
     if (index < 0) return;
 
-    final safeAmount =
-        amountMl.clamp(1, batch.remainingAmountMl).toInt();
+    final safeAmount = amountMl.clamp(1, batch.remainingAmountMl).toInt();
     final remaining = batch.remainingAmountMl - safeAmount;
     batches[index] = batch.copyWith(
       remainingAmountMl: remaining,
@@ -139,6 +133,7 @@ class MilkInventoryStorage {
     events.add(
       MilkInventoryEvent(
         id: _newId(),
+        childId: batch.childId,
         batchId: batch.id,
         labelNumber: batch.labelNumber,
         type: MilkInventoryEventType.discarded,
@@ -167,6 +162,7 @@ class MilkInventoryStorage {
     events.add(
       MilkInventoryEvent(
         id: _newId(),
+        childId: batch.childId,
         batchId: batch.id,
         labelNumber: batch.labelNumber,
         type: MilkInventoryEventType.movedToFreezer,
@@ -194,15 +190,14 @@ class MilkInventoryStorage {
       for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
         final event = events[eventIndex];
         if (event.batchId == updated.id) {
-          events[eventIndex] = event.copyWith(
-            labelNumber: updated.labelNumber,
-          );
+          events[eventIndex] = event.copyWith(labelNumber: updated.labelNumber);
         }
       }
     }
     events.add(
       MilkInventoryEvent(
         id: _newId(),
+        childId: updated.childId,
         batchId: updated.id,
         labelNumber: updated.labelNumber,
         type: MilkInventoryEventType.corrected,
@@ -252,6 +247,7 @@ class MilkInventoryStorage {
       final events = batches.map((batch) {
         return MilkInventoryEvent(
           id: 'migrated-${batch.id}',
+          childId: batch.childId,
           batchId: batch.id,
           labelNumber: batch.labelNumber,
           type: MilkInventoryEventType.created,
@@ -270,6 +266,5 @@ class MilkInventoryStorage {
     await preferences.setBool(migrationKey, true);
   }
 
-  static String _newId() =>
-      DateTime.now().microsecondsSinceEpoch.toString();
+  static String _newId() => DateTime.now().microsecondsSinceEpoch.toString();
 }

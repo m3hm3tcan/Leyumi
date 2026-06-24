@@ -9,6 +9,7 @@ import 'package:leyumi/features/history/graphs/graph_style.dart';
 import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/services/feeding_storage.dart';
 import 'package:provider/provider.dart';
+import '../../../core/utils/app_date_utils.dart';
 
 class FeedingGraphScreen extends StatefulWidget {
   const FeedingGraphScreen({super.key});
@@ -40,14 +41,13 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
 
   List<FeedingSession> get filtered {
     if (filter == 'all') return sessions;
-    final cutoff = DateTime.now().subtract(Duration(days: int.parse(filter)));
+    final cutoff = AppDateUtils.startOfRange(int.parse(filter));
     return sessions
         .where((session) => session.startTime.isAfter(cutoff))
         .toList();
   }
 
-  DateTime _dateOnly(DateTime date) =>
-      DateTime(date.year, date.month, date.day);
+  DateTime _dateOnly(DateTime date) => AppDateUtils.dateOnly(date);
 
   List<DateTime> get sortedDays {
     final days = filtered

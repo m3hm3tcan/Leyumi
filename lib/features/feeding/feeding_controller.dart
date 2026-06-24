@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'feeding_entry.dart';
 import 'feeding_session.dart';
+import '../../core/data/record_identity.dart';
 
 class FeedingController {
   FeedingSession? currentSession;
@@ -14,6 +15,7 @@ class FeedingController {
 
   int? startWeightGr;
   int? endWeightGr;
+  String childId = RecordIdentity.legacyChildId;
 
   FeedingController({required this.onTick});
 
@@ -25,11 +27,16 @@ class FeedingController {
     endWeightGr = weightGr;
   }
 
+  void setChildId(String? value) {
+    if (value != null && value.isNotEmpty) childId = value;
+  }
+
   void startSide(FeedingSide side, {DateTime? startedAt}) {
     final now = startedAt ?? DateTime.now();
 
     if (currentSession == null) {
       currentSession = FeedingSession(
+        childId: childId,
         startTime: now,
         endTime: now,
         entries: [],
@@ -56,10 +63,7 @@ class FeedingController {
         ? _elapsed
         : DateTime.now().difference(activeSideStartedAt!);
 
-    final entry = FeedingEntry(
-      side: side,
-      duration: elapsed,
-    );
+    final entry = FeedingEntry(side: side, duration: elapsed);
 
     currentSession!.entries.add(entry);
     activeSide = null;
@@ -75,15 +79,19 @@ class FeedingController {
     final now = DateTime.now();
 
     final session = FeedingSession(
+      id: currentSession!.id,
+      childId: currentSession!.childId,
       startTime: currentSession!.startTime,
       endTime: now,
       entries: currentSession!.entries,
       startWeightGr: currentSession!.startWeightGr,
       endWeightGr: endWeightGr,
-      milkIntakeGr: (currentSession!.startWeightGr != null &&
-              endWeightGr != null)
+      milkIntakeGr:
+          (currentSession!.startWeightGr != null && endWeightGr != null)
           ? (endWeightGr! - currentSession!.startWeightGr!)
           : null,
+      createdAt: currentSession!.createdAt,
+      updatedAt: now,
     );
 
     currentSession = null;
@@ -103,6 +111,7 @@ class FeedingController {
   }) {
     _timer?.cancel();
     currentSession = session;
+    childId = session.childId;
     startWeightGr = draftStartWeightGr;
     endWeightGr = draftEndWeightGr;
     activeSide = draftActiveSide;

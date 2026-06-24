@@ -4,10 +4,12 @@ import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:leyumi/services/feeding_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/data/record_identity.dart';
+import '../../services/baby_storage.dart';
 
 import 'feeding_controller.dart';
-
-enum _SaveDecision { save, discard }
+import 'widgets/feeding_save_dialog.dart';
+import 'widgets/feeding_summary_card.dart';
 
 class FeedingScreen extends StatefulWidget {
   const FeedingScreen({super.key});
@@ -70,8 +72,8 @@ class _FeedingScreenState extends State<FeedingScreen>
     final restoredSide = sideName == "left"
         ? FeedingSide.left
         : sideName == "right"
-            ? FeedingSide.right
-            : null;
+        ? FeedingSide.right
+        : null;
     final activeStartedAtRaw = draft["activeSideStartedAt"] as String?;
     final activeStartedAt = activeStartedAtRaw == null
         ? null
@@ -117,10 +119,11 @@ class _FeedingScreenState extends State<FeedingScreen>
     if (!mounted) return true;
 
     if (controller.currentSession != null) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Live feeding arka planda kaydedildi."),
-          duration: Duration(seconds: 2),
+        SnackBar(
+          content: Text(l10n.backLiveSession),
+          duration: const Duration(seconds: 2),
         ),
       );
     }
@@ -152,6 +155,9 @@ class _FeedingScreenState extends State<FeedingScreen>
   }
 
   Future<void> startFeeding(FeedingSide side) async {
+    if (controller.currentSession == null) {
+      controller.setChildId((await BabyStorage().loadProfile())?.id);
+    }
     if (controller.currentSession == null && startWeightCtrl.text.isNotEmpty) {
       controller.setStartWeight(int.parse(startWeightCtrl.text));
     }
@@ -178,43 +184,11 @@ class _FeedingScreenState extends State<FeedingScreen>
     await _persistDraft();
   }
 
-  Future<_SaveDecision?> _confirmSave() {
-    final l10n = AppLocalizations.of(context);
-    return showDialog<_SaveDecision>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          icon: const Icon(
-            Icons.save_outlined,
-            color: Colors.green,
-            size: 32,
-          ),
-          title: Text(l10n.confirmSaveTitle),
-          content: Text(l10n.confirmSaveContent),
-          actions: [
-            TextButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext, _SaveDecision.discard),
-              child: Text(l10n.dontSave),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, _SaveDecision.save),
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.green.shade600,
-              ),
-              child: Text(l10n.save),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<void> finishSession() async {
-    final decision = await _confirmSave();
+    final decision = await showFeedingSaveDialog(context);
     if (!mounted || decision == null) return;
 
-    if (decision == _SaveDecision.discard) {
+    if (decision == FeedingSaveDecision.discard) {
       await _storage.clearActiveDraft();
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -301,10 +275,7 @@ class _FeedingScreenState extends State<FeedingScreen>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
                   gradient: const LinearGradient(
-                    colors: [
-                      Color(0xff4DA3FF),
-                      Color(0xff7CC5FF),
-                    ],
+                    colors: [Color(0xff4DA3FF), Color(0xff7CC5FF)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -313,7 +284,7 @@ class _FeedingScreenState extends State<FeedingScreen>
                       color: Color(0xff4DA3FF),
                       blurRadius: 30,
                       offset: Offset(0, 10),
-                    )
+                    ),
                   ],
                 ),
                 child: Column(
@@ -357,8 +328,8 @@ class _FeedingScreenState extends State<FeedingScreen>
                       activeSide == null
                           ? l10n.tapLeftOrRightToStart
                           : activeSide == FeedingSide.left
-                              ? l10n.leftSide
-                              : l10n.rightSide,
+                          ? l10n.leftSide
+                          : l10n.rightSide,
                       style: GoogleFonts.poppins(
                         color: Colors.white.withAlpha(230),
                         fontSize: 15,
@@ -395,7 +366,7 @@ class _FeedingScreenState extends State<FeedingScreen>
                               color: Colors.black.withAlpha(13),
                               blurRadius: 14,
                               offset: const Offset(0, 6),
-                            )
+                            ),
                           ],
                         ),
                         child: Column(
@@ -462,10 +433,9 @@ class _FeedingScreenState extends State<FeedingScreen>
                         height: 145,
                         decoration: BoxDecoration(
                           color: activeSide == FeedingSide.right
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .primary
-                                  .withAlpha(38)
+                              ? Theme.of(
+                                  context,
+                                ).colorScheme.primary.withAlpha(38)
                               : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(28),
                           border: Border.all(
@@ -479,7 +449,7 @@ class _FeedingScreenState extends State<FeedingScreen>
                               color: Colors.black.withAlpha(13),
                               blurRadius: 14,
                               offset: const Offset(0, 6),
-                            )
+                            ),
                           ],
                         ),
                         child: Column(
@@ -604,132 +574,10 @@ class _FeedingScreenState extends State<FeedingScreen>
                 ),
               ],
               const SizedBox(height: 30),
-              if (entries.isNotEmpty) buildSimpleSummary(entries),
+              if (entries.isNotEmpty) FeedingSummaryCard(entries: entries),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget buildSimpleSummary(List<FeedingEntry> entries) {
-    final l10n = AppLocalizations.of(context);
-    Duration left = Duration.zero;
-    Duration right = Duration.zero;
-
-    for (final entry in entries) {
-      if (entry.side == FeedingSide.left) {
-        left += entry.duration;
-      } else {
-        right += entry.duration;
-      }
-    }
-
-    final total = left + right;
-    final leftPct =
-        total.inSeconds == 0 ? 0.5 : left.inSeconds / total.inSeconds;
-    final rightPct =
-        total.inSeconds == 0 ? 0.5 : right.inSeconds / total.inSeconds;
-
-    String fmt(Duration duration) =>
-        "${duration.inMinutes.toString().padLeft(2, '0')}:"
-        "${(duration.inSeconds % 60).toString().padLeft(2, '0')}";
-
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(15),
-            blurRadius: 18,
-            offset: const Offset(0, 6),
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            l10n.feedingSummary,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 14),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: (leftPct * 1000).toInt(),
-                  child: Container(height: 12, color: Colors.pink),
-                ),
-                Expanded(
-                  flex: (rightPct * 1000).toInt(),
-                  child: Container(height: 12, color: Colors.blue),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.leftLabel,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.pink,
-                    ),
-                  ),
-                  Text(
-                    "${(leftPct * 100).toStringAsFixed(0)}%",
-                    style: GoogleFonts.poppins(fontSize: 13),
-                  ),
-                  Text(
-                    fmt(left),
-                    style: GoogleFonts.poppins(fontSize: 12),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    l10n.rightLabel,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  Text(
-                    "${(rightPct * 100).toStringAsFixed(0)}%",
-                    style: GoogleFonts.poppins(fontSize: 13),
-                  ),
-                  Text(
-                    fmt(right),
-                    style: GoogleFonts.poppins(fontSize: 12),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Center(
-            child: Text(
-              "${l10n.totalLabel}: ${fmt(total)}",
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -811,36 +659,11 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
     if (startTime == null || endTime == null) return;
 
     final l10n = AppLocalizations.of(context);
-    final decision = await showDialog<_SaveDecision>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          icon: const Icon(
-            Icons.save_outlined,
-            color: Colors.green,
-            size: 32,
-          ),
-          title: Text(l10n.confirmSaveTitle),
-          content: Text(l10n.confirmSaveContent),
-          actions: [
-            TextButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext, _SaveDecision.discard),
-              child: Text(l10n.dontSave),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(dialogContext, _SaveDecision.save),
-              style: FilledButton.styleFrom(backgroundColor: Colors.green),
-              child: Text(l10n.save),
-            ),
-          ],
-        );
-      },
-    );
+    final decision = await showFeedingSaveDialog(context);
 
     if (!mounted || decision == null) return;
 
-    if (decision == _SaveDecision.discard) {
+    if (decision == FeedingSaveDecision.discard) {
       await FeedingStorage().clearActiveDraft();
       if (!mounted) return;
       Navigator.of(context).popUntil((route) => route.isFirst);
@@ -848,6 +671,8 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
     }
 
     final now = DateTime.now();
+    final childId =
+        (await BabyStorage().loadProfile())?.id ?? RecordIdentity.legacyChildId;
     final start = DateTime(
       now.year,
       now.month,
@@ -864,6 +689,7 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
     );
 
     final session = FeedingSession(
+      childId: childId,
       startTime: start,
       endTime: end,
       entries: [
@@ -919,7 +745,7 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
                   startTime == null
                       ? l10n.select
                       : "${startTime!.hour.toString().padLeft(2, '0')}:"
-                          "${startTime!.minute.toString().padLeft(2, '0')}",
+                            "${startTime!.minute.toString().padLeft(2, '0')}",
                 ),
               ),
             ],
@@ -934,7 +760,7 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
                   endTime == null
                       ? l10n.select
                       : "${endTime!.hour.toString().padLeft(2, '0')}:"
-                          "${endTime!.minute.toString().padLeft(2, '0')}",
+                            "${endTime!.minute.toString().padLeft(2, '0')}",
                 ),
               ),
             ],
@@ -951,14 +777,23 @@ class _ManualFeedingModalState extends State<ManualFeedingModal> {
             },
           ),
           Text(
-            "${(leftRatio * 100).toStringAsFixed(0)}% Left - "
-            "${(100 - leftRatio * 100).toStringAsFixed(0)}% Right",
+            '${(leftRatio * 100).toStringAsFixed(0)}% ${l10n.leftLabel} - '
+            '${(100 - leftRatio * 100).toStringAsFixed(0)}% ${l10n.rightLabel}',
           ),
           const SizedBox(height: 20),
           if (totalDuration.inSeconds > 0) ...[
-            Text("Total: ${totalDuration.inMinutes} min"),
-            Text("Left: ${leftDuration.inMinutes} min"),
-            Text("Right: ${rightDuration.inMinutes} min"),
+            Text(
+              '${l10n.totalLabel}: ${totalDuration.inMinutes} '
+              '${l10n.minutesShort}',
+            ),
+            Text(
+              '${l10n.leftLabel}: ${leftDuration.inMinutes} '
+              '${l10n.minutesShort}',
+            ),
+            Text(
+              '${l10n.rightLabel}: ${rightDuration.inMinutes} '
+              '${l10n.minutesShort}',
+            ),
           ],
           const SizedBox(height: 20),
           ElevatedButton(

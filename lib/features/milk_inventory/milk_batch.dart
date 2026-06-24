@@ -1,3 +1,5 @@
+import '../../core/data/record_identity.dart';
+
 enum MilkStorageLocation { refrigerator, freezer }
 
 enum MilkSourceSide { left, right, mixed, unspecified }
@@ -7,6 +9,7 @@ enum MilkBatchStatus { active, depleted, discarded }
 class MilkBatch {
   const MilkBatch({
     required this.id,
+    this.childId = RecordIdentity.legacyChildId,
     required this.labelNumber,
     required this.initialAmountMl,
     required this.remainingAmountMl,
@@ -19,6 +22,7 @@ class MilkBatch {
   });
 
   final String id;
+  final String childId;
   final String labelNumber;
   final int initialAmountMl;
   final int remainingAmountMl;
@@ -44,11 +48,11 @@ class MilkBatch {
   bool get isActive =>
       status == MilkBatchStatus.active && remainingAmountMl > 0;
 
-  double get fillRatio =>
-      (remainingAmountMl / 500).clamp(0, 1).toDouble();
+  double get fillRatio => (remainingAmountMl / 500).clamp(0, 1).toDouble();
 
   MilkBatch copyWith({
     String? id,
+    String? childId,
     String? labelNumber,
     int? initialAmountMl,
     int? remainingAmountMl,
@@ -62,6 +66,7 @@ class MilkBatch {
   }) {
     return MilkBatch(
       id: id ?? this.id,
+      childId: childId ?? this.childId,
       labelNumber: labelNumber ?? this.labelNumber,
       initialAmountMl: initialAmountMl ?? this.initialAmountMl,
       remainingAmountMl: remainingAmountMl ?? this.remainingAmountMl,
@@ -75,20 +80,21 @@ class MilkBatch {
   }
 
   Map<String, dynamic> toJson() => {
-        'schemaVersion': 2,
-        'id': id,
-        'labelNumber': labelNumber,
-        'initialAmountMl': initialAmountMl,
-        'remainingAmountMl': remainingAmountMl,
-        // Keep the legacy property for older installed app versions.
-        'amountMl': remainingAmountMl,
-        'expressedAt': expressedAt.toIso8601String(),
-        'storageLocation': storageLocation.name,
-        'sourceSide': sourceSide.name,
-        'createdAt': createdAt.toIso8601String(),
-        'status': status.name,
-        'frozenAt': frozenAt?.toIso8601String(),
-      };
+    'schemaVersion': 2,
+    'id': id,
+    'childId': childId,
+    'labelNumber': labelNumber,
+    'initialAmountMl': initialAmountMl,
+    'remainingAmountMl': remainingAmountMl,
+    // Keep the legacy property for older installed app versions.
+    'amountMl': remainingAmountMl,
+    'expressedAt': expressedAt.toIso8601String(),
+    'storageLocation': storageLocation.name,
+    'sourceSide': sourceSide.name,
+    'createdAt': createdAt.toIso8601String(),
+    'status': status.name,
+    'frozenAt': frozenAt?.toIso8601String(),
+  };
 
   factory MilkBatch.fromJson(Map<String, dynamic> json) {
     final legacyAmount = _readInt(json['amountMl']);
@@ -105,6 +111,7 @@ class MilkBatch {
 
     return MilkBatch(
       id: json['id'] as String,
+      childId: json['childId'] as String? ?? RecordIdentity.legacyChildId,
       labelNumber: json['labelNumber'] as String,
       initialAmountMl: initialAmount,
       remainingAmountMl: remainingAmount,
@@ -117,7 +124,8 @@ class MilkBatch {
         (value) => value.name == json['sourceSide'],
         orElse: () => MilkSourceSide.unspecified,
       ),
-      createdAt: DateTime.tryParse(json['createdAt'] as String? ?? '') ??
+      createdAt:
+          DateTime.tryParse(json['createdAt'] as String? ?? '') ??
           DateTime.parse(json['expressedAt'] as String),
       status: status,
       frozenAt: DateTime.tryParse(json['frozenAt'] as String? ?? ''),
@@ -130,4 +138,3 @@ class MilkBatch {
     return int.tryParse(value?.toString() ?? '');
   }
 }
-

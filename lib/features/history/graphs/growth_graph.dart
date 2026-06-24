@@ -7,6 +7,7 @@ import 'package:leyumi/services/growth_storage.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../core/utils/app_date_utils.dart';
 
 class GrowthGraphScreen extends StatefulWidget {
   const GrowthGraphScreen({super.key});
@@ -35,7 +36,7 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
   List<GrowthEntry> get filtered {
     if (filter == "all") return entries;
     final days = int.parse(filter);
-    final cutoff = DateTime.now().subtract(Duration(days: days));
+    final cutoff = AppDateUtils.startOfRange(days);
     return entries.where((e) => e.date.isAfter(cutoff)).toList();
   }
 
@@ -63,8 +64,9 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
   Widget _filterButton(BuildContext context, String label, String value) {
     final theme = Theme.of(context);
     final selected = filter == value;
-    final unselectedBorder =
-        theme.dividerColor.withAlpha(theme.brightness == Brightness.dark ? 90 : 160);
+    final unselectedBorder = theme.dividerColor.withAlpha(
+      theme.brightness == Brightness.dark ? 90 : 160,
+    );
 
     return GestureDetector(
       onTap: () => setState(() => filter = value),
@@ -72,12 +74,12 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: selected
-              ? Colors.blue.withAlpha(theme.brightness == Brightness.dark ? 35 : 20)
+              ? Colors.blue.withAlpha(
+                  theme.brightness == Brightness.dark ? 35 : 20,
+                )
               : theme.cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected ? Colors.blue : unselectedBorder,
-          ),
+          border: Border.all(color: selected ? Colors.blue : unselectedBorder),
         ),
         child: Text(
           label,
@@ -94,7 +96,8 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
 
   TextStyle _axisTextStyle(BuildContext context) {
     final color =
-        Theme.of(context).textTheme.bodySmall?.color?.withAlpha(170) ?? Colors.grey;
+        Theme.of(context).textTheme.bodySmall?.color?.withAlpha(170) ??
+        Colors.grey;
     return TextStyle(fontSize: 10, color: color);
   }
 
@@ -133,7 +136,7 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
             color: Colors.black.withAlpha(isDark ? 35 : 10),
             blurRadius: 12,
             offset: const Offset(0, 6),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -152,15 +155,17 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
             height: 180,
             child: LineChart(
               LineChartData(
-                minY: spots.map((e) => e.y).reduce((a, b) => a < b ? a : b) * 0.95,
-                maxY: spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) * 1.05,
+                minY:
+                    spots.map((e) => e.y).reduce((a, b) => a < b ? a : b) *
+                    0.95,
+                maxY:
+                    spots.map((e) => e.y).reduce((a, b) => a > b ? a : b) *
+                    1.05,
                 gridData: FlGridData(
                   show: true,
                   drawVerticalLine: false,
-                  getDrawingHorizontalLine: (_) => FlLine(
-                    color: axisColor.withAlpha(60),
-                    strokeWidth: 1,
-                  ),
+                  getDrawingHorizontalLine: (_) =>
+                      FlLine(color: axisColor.withAlpha(60), strokeWidth: 1),
                 ),
                 borderData: FlBorderData(show: false),
                 titlesData: FlTitlesData(
@@ -195,16 +200,17 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
 
                         return Padding(
                           padding: const EdgeInsets.only(top: 6),
-                          child: Text(
-                            label,
-                            style: _axisTextStyle(context),
-                          ),
+                          child: Text(label, style: _axisTextStyle(context)),
                         );
                       },
                     ),
                   ),
-                  rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                  topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
                 lineBarsData: [
                   LineChartBarData(
@@ -242,12 +248,14 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.growthCharts),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(l10n.growthCharts), elevation: 0),
       body: entries.isEmpty
-          ? Center(child: Text(l10n.noGrowthData, style: TextStyle(color: secondaryTextColor)))
+          ? Center(
+              child: Text(
+                l10n.noGrowthData,
+                style: TextStyle(color: secondaryTextColor),
+              ),
+            )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -263,9 +271,24 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  _chartCard(context, l10n.weight, _spotsWeight(), Colors.blueAccent),
-                  _chartCard(context, l10n.height, _spotsHeight(), Colors.green),
-                  _chartCard(context, l10n.headCircumference, _spotsHead(), Colors.purple),
+                  _chartCard(
+                    context,
+                    l10n.weight,
+                    _spotsWeight(),
+                    Colors.blueAccent,
+                  ),
+                  _chartCard(
+                    context,
+                    l10n.height,
+                    _spotsHeight(),
+                    Colors.green,
+                  ),
+                  _chartCard(
+                    context,
+                    l10n.headCircumference,
+                    _spotsHead(),
+                    Colors.purple,
+                  ),
                 ],
               ),
             ),

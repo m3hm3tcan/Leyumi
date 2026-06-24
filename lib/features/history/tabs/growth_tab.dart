@@ -103,7 +103,7 @@ class _GrowthTabState extends State<GrowthTab> {
           final isLast = index == entries.length - 1;
 
           return Dismissible(
-            key: ValueKey(entry.date.toIso8601String()),
+            key: ValueKey(entry.id),
             direction: DismissDirection.endToStart,
             background: Container(
               margin: const EdgeInsets.symmetric(vertical: 6),
@@ -214,8 +214,8 @@ class _GrowthTabState extends State<GrowthTab> {
                                     color: weightDiff > 0
                                         ? Colors.green
                                         : weightDiff < 0
-                                            ? Colors.red
-                                            : secondaryTextColor,
+                                        ? Colors.red
+                                        : secondaryTextColor,
                                     decoration: TextDecoration.none,
                                   ),
                                 ),
@@ -223,8 +223,12 @@ class _GrowthTabState extends State<GrowthTab> {
                           ],
                         ),
                         const SizedBox(height: 14),
-                        _infoRow(context, l10n.height,
-                            "${entry.height} ${l10n.unitCm}", heightDiff),
+                        _infoRow(
+                          context,
+                          l10n.height,
+                          "${entry.height} ${l10n.unitCm}",
+                          heightDiff,
+                        ),
                         if (entry.headCircumference != null)
                           _simpleRow(
                             context,
@@ -249,15 +253,10 @@ class _GrowthTabState extends State<GrowthTab> {
     );
   }
 
-  Widget _infoRow(
-    BuildContext context,
-    String label,
-    String value,
-    num? diff,
-  ) {
+  Widget _infoRow(BuildContext context, String label, String value, num? diff) {
     final secondaryTextColor =
         Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(170) ??
-            Colors.grey;
+        Colors.grey;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -281,8 +280,8 @@ class _GrowthTabState extends State<GrowthTab> {
                 color: diff > 0
                     ? Colors.green
                     : diff < 0
-                        ? Colors.red
-                        : secondaryTextColor,
+                    ? Colors.red
+                    : secondaryTextColor,
                 decoration: TextDecoration.none,
               ),
             ),
@@ -295,7 +294,7 @@ class _GrowthTabState extends State<GrowthTab> {
   Widget _simpleRow(BuildContext context, String label, String value) {
     final secondaryTextColor =
         Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(170) ??
-            Colors.grey;
+        Colors.grey;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -315,7 +314,7 @@ class _GrowthTabState extends State<GrowthTab> {
     final l10n = AppLocalizations.of(context);
     final secondaryTextColor =
         Theme.of(context).textTheme.bodyMedium?.color?.withAlpha(170) ??
-            Colors.grey;
+        Colors.grey;
 
     return Center(
       child: Padding(

@@ -6,8 +6,12 @@ import 'package:leyumi/core/premium/premium_provider.dart';
 import 'package:leyumi/features/milk_inventory/milk_batch.dart';
 import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
-import 'package:leyumi/services/milk_inventory_storage.dart';
 import 'package:provider/provider.dart';
+import '../../services/baby_storage.dart';
+import '../../core/data/record_identity.dart';
+
+import 'milk_inventory_controller.dart';
+import 'widgets/milk_bottle_painter.dart';
 
 class MilkInventoryScreen extends StatefulWidget {
   const MilkInventoryScreen({super.key});
@@ -17,64 +21,53 @@ class MilkInventoryScreen extends StatefulWidget {
 }
 
 class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
-  final _storage = MilkInventoryStorage();
-  List<MilkBatch> _batches = [];
-  MilkStorageLocation? _filter;
-  bool _loading = true;
+  late final MilkInventoryController _controller;
+  String _childId = RecordIdentity.legacyChildId;
+
+  List<MilkBatch> get _batches => _controller.batches;
+  MilkStorageLocation? get _filter => _controller.filter;
+  bool get _loading => _controller.loading;
 
   @override
   void initState() {
     super.initState();
+    _controller = MilkInventoryController()..addListener(_onChanged);
     _load();
   }
 
+  @override
+  void dispose() {
+    _controller
+      ..removeListener(_onChanged)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onChanged() {
+    if (mounted) setState(() {});
+  }
+
   Future<void> _load() async {
-    final batches = await _storage.loadBatches();
-    batches.sort((a, b) => a.bestBefore.compareTo(b.bestBefore));
-    if (!mounted) return;
-    setState(() {
-      _batches = batches;
-      _loading = false;
-    });
+    _childId =
+        (await BabyStorage().loadProfile())?.id ?? RecordIdentity.legacyChildId;
+    await _controller.load();
   }
 
   List<MilkBatch> get _visibleBatches {
-    if (_filter == null) {
-      return _batches.where((batch) => batch.isActive).toList();
-    }
-    return _batches
-        .where(
-          (batch) => batch.isActive && batch.storageLocation == _filter,
-        )
-        .toList();
+    return _controller.visibleBatches;
   }
 
-  int get _totalMl => _batches
-      .where((batch) => batch.isActive)
-      .fold(0, (total, batch) => total + batch.remainingAmountMl);
+  int get _totalMl => _controller.totalMl;
 
   int _locationTotal(MilkStorageLocation location) {
-    return _batches
-        .where(
-          (batch) =>
-              batch.isActive && batch.storageLocation == location,
-        )
-        .fold(0, (total, batch) => total + batch.remainingAmountMl);
+    return _controller.locationTotal(location);
   }
 
   int _sourceTotal(MilkSourceSide source) {
-    return _batches
-        .where(
-          (batch) => batch.isActive && batch.sourceSide == source,
-        )
-        .fold(0, (total, batch) => total + batch.remainingAmountMl);
+    return _controller.sourceTotal(source);
   }
 
-  bool get _hasSourceStats => _batches.any(
-        (batch) =>
-            batch.isActive &&
-            batch.sourceSide != MilkSourceSide.unspecified,
-      );
+  bool get _hasSourceStats => _controller.hasSourceStats;
 
   Future<void> _addMilk() async {
     final batch = await showModalBottomSheet<MilkBatch>(
@@ -83,25 +76,14 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
       useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (_) => AddMilkBatchSheet(
-        suggestedLabel: _nextLabel(),
+        suggestedLabel: _controller.nextLabel(),
+        childId: _childId,
         existingLabels: _batches.map((batch) => batch.labelNumber).toSet(),
       ),
     );
 
     if (batch == null) return;
-    await _storage.addBatch(batch);
-    await _load();
-  }
-
-  String _nextLabel() {
-    var highest = 0;
-    final pattern = RegExp(r'(\d+)$');
-    for (final batch in _batches) {
-      final match = pattern.firstMatch(batch.labelNumber);
-      final value = match == null ? null : int.tryParse(match.group(1)!);
-      if (value != null && value > highest) highest = value;
-    }
-    return 'MILK-${(highest + 1).toString().padLeft(3, '0')}';
+    await _controller.add(batch);
   }
 
   Future<void> _delete(MilkBatch batch) async {
@@ -126,8 +108,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
     );
     if (confirmed != true) return;
 
-    await _storage.deleteIncorrectBatch(batch.id);
-    await _load();
+    await _controller.deleteIncorrect(batch);
   }
 
   Future<void> _useMilk(MilkBatch batch) async {
@@ -136,8 +117,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
       title: AppLocalizations.of(context).useMilk,
     );
     if (used == null) return;
-    await _storage.useMilk(batch: batch, amountMl: used);
-    await _load();
+    await _controller.use(batch, used);
   }
 
   Future<void> _discardMilk(MilkBatch batch) async {
@@ -147,8 +127,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
       destructive: true,
     );
     if (discarded == null) return;
-    await _storage.discardMilk(batch: batch, amountMl: discarded);
-    await _load();
+    await _controller.discard(batch, discarded);
   }
 
   Future<int?> _selectAmount({
@@ -180,8 +159,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
                     min: 1,
                     max: batch.remainingAmountMl.toDouble(),
                     divisions: batch.remainingAmountMl - 1,
-                    onChanged: (value) =>
-                        setDialogState(() => amount = value),
+                    onChanged: (value) => setDialogState(() => amount = value),
                   ),
               ],
             ),
@@ -193,9 +171,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
               FilledButton(
                 onPressed: () => Navigator.pop(dialogContext, amount.round()),
                 style: destructive
-                    ? FilledButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                      )
+                    ? FilledButton.styleFrom(backgroundColor: Colors.redAccent)
                     : null,
                 child: Text(l10n.confirm),
               ),
@@ -222,14 +198,12 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
       ),
     );
     if (updated == null) return;
-    await _storage.updateBatch(previous: batch, updated: updated);
-    await _load();
+    await _controller.update(batch, updated);
   }
 
   Future<void> _moveStorage(MilkBatch batch) async {
     if (batch.storageLocation != MilkStorageLocation.refrigerator) return;
-    await _storage.moveToFreezer(batch);
-    await _load();
+    await _controller.moveToFreezer(batch);
   }
 
   @override
@@ -241,9 +215,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (!premium.hasAccess(PremiumFeature.milkInventory)) {
-      return const PremiumPaywallScreen(
-        feature: PremiumFeature.milkInventory,
-      );
+      return const PremiumPaywallScreen(feature: PremiumFeature.milkInventory);
     }
 
     return Scaffold(
@@ -286,8 +258,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 4, 16, 110),
                     sliver: SliverList.separated(
                       itemCount: _visibleBatches.length,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(height: 12),
+                      separatorBuilder: (_, __) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final batch = _visibleBatches[index];
                         return MilkBatchCard(
@@ -443,10 +414,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
             label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: Colors.white.withAlpha(175),
-              fontSize: 9,
-            ),
+            style: TextStyle(color: Colors.white.withAlpha(175), fontSize: 9),
           ),
         ],
       ),
@@ -493,9 +461,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
           ),
         ),
         const SizedBox(width: 8),
-        Expanded(
-          child: _filterChip(l10n.freezer, MilkStorageLocation.freezer),
-        ),
+        Expanded(child: _filterChip(l10n.freezer, MilkStorageLocation.freezer)),
       ],
     );
   }
@@ -503,7 +469,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
   Widget _filterChip(String label, MilkStorageLocation? value) {
     final selected = _filter == value;
     return GestureDetector(
-      onTap: () => setState(() => _filter = value),
+      onTap: () => _controller.setFilter(value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -556,18 +522,16 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
             const SizedBox(height: 18),
             Text(
               l10n.noStoredMilk,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 7),
             Text(
               l10n.noStoredMilkHint,
               textAlign: TextAlign.center,
               style: TextStyle(
-                color:
-                    Theme.of(context).textTheme.bodySmall?.color?.withAlpha(165),
+                color: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.color?.withAlpha(165),
                 height: 1.4,
               ),
             ),
@@ -695,19 +659,14 @@ class MilkBatchCard extends StatelessWidget {
                   runSpacing: 7,
                   children: [
                     _chip(
-                      batch.storageLocation ==
-                              MilkStorageLocation.refrigerator
+                      batch.storageLocation == MilkStorageLocation.refrigerator
                           ? Icons.kitchen_rounded
                           : Icons.ac_unit_rounded,
-                      batch.storageLocation ==
-                              MilkStorageLocation.refrigerator
+                      batch.storageLocation == MilkStorageLocation.refrigerator
                           ? l10n.refrigerator
                           : l10n.freezer,
                     ),
-                    _chip(
-                      Icons.favorite_outline_rounded,
-                      _sourceLabel(l10n),
-                    ),
+                    _chip(Icons.favorite_outline_rounded, _sourceLabel(l10n)),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -809,8 +768,7 @@ class MilkBatchCard extends StatelessWidget {
     final remaining = batch.bestBefore.difference(DateTime.now());
     if (remaining.isNegative) {
       return (
-        label:
-            '${l10n.expired} · ${_bestBeforeLabel(context)}',
+        label: '${l10n.expired} · ${_bestBeforeLabel(context)}',
         color: Colors.redAccent,
       );
     }
@@ -845,98 +803,18 @@ class MilkBatchCard extends StatelessWidget {
   }
 }
 
-class MilkBottlePainter extends CustomPainter {
-  MilkBottlePainter({required this.fillRatio});
-
-  final double fillRatio;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final outline = Paint()
-      ..color = const Color(0xffBBB7D8)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.2;
-    final cap = Paint()..color = const Color(0xff756CE8);
-    final milk = Paint()
-      ..shader = const LinearGradient(
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-        colors: [Color(0xffFFFEF2), Color(0xffF4EBCB)],
-      ).createShader(Offset.zero & size);
-
-    final body = RRect.fromRectAndRadius(
-      Rect.fromLTWH(8, 23, size.width - 16, size.height - 29),
-      const Radius.circular(15),
-    );
-    final neck = RRect.fromRectAndRadius(
-      Rect.fromLTWH(20, 11, size.width - 40, 20),
-      const Radius.circular(6),
-    );
-    final capRect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(17, 2, size.width - 34, 14),
-      const Radius.circular(5),
-    );
-
-    canvas.drawRRect(capRect, cap);
-    canvas.drawRRect(neck, outline);
-    canvas.drawRRect(body, outline);
-
-    final inner = body.deflate(4);
-    final milkHeight = inner.height * fillRatio;
-    final milkRect = Rect.fromLTWH(
-      inner.left,
-      inner.bottom - milkHeight,
-      inner.width,
-      milkHeight,
-    );
-
-    canvas.save();
-    canvas.clipRRect(inner);
-    canvas.drawRect(milkRect, milk);
-
-    if (milkHeight > 2) {
-      final wave = Path()..moveTo(inner.left, milkRect.top + 2);
-      for (double x = inner.left; x <= inner.right; x += 2) {
-        final y = milkRect.top + math.sin(x / 6) * 1.8;
-        wave.lineTo(x, y);
-      }
-      wave
-        ..lineTo(inner.right, milkRect.top + 5)
-        ..lineTo(inner.left, milkRect.top + 5)
-        ..close();
-      canvas.drawPath(wave, milk);
-    }
-    canvas.restore();
-
-    final marker = Paint()
-      ..color = const Color(0xffBBB7D8).withAlpha(130)
-      ..strokeWidth = 1;
-    for (var i = 1; i < 5; i++) {
-      final y = inner.bottom - inner.height * i / 5;
-      canvas.drawLine(
-        Offset(inner.right - 10, y),
-        Offset(inner.right, y),
-        marker,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant MilkBottlePainter oldDelegate) {
-    return oldDelegate.fillRatio != fillRatio;
-  }
-}
-
 class AddMilkBatchSheet extends StatefulWidget {
   const AddMilkBatchSheet({
     super.key,
     required this.suggestedLabel,
     required this.existingLabels,
+    this.childId = RecordIdentity.legacyChildId,
     this.existingBatch,
   });
 
   final String suggestedLabel;
   final Set<String> existingLabels;
+  final String childId;
   final MilkBatch? existingBatch;
 
   @override
@@ -957,8 +835,7 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
     final existing = widget.existingBatch;
     _amount = (existing?.remainingAmountMl ?? 120).toDouble();
     _expressedAt = existing?.expressedAt ?? DateTime.now();
-    _location =
-        existing?.storageLocation ?? MilkStorageLocation.refrigerator;
+    _location = existing?.storageLocation ?? MilkStorageLocation.refrigerator;
     _source = existing?.sourceSide ?? MilkSourceSide.unspecified;
     _labelController = TextEditingController(
       text: existing?.labelNumber ?? widget.suggestedLabel,
@@ -1004,17 +881,17 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
     final label = _labelController.text.trim();
     final amount = int.tryParse(_amountController.text);
     if (label.isEmpty || amount == null || amount <= 0 || amount > 500) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.invalidMilkEntry)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.invalidMilkEntry)));
       return;
     }
     if (widget.existingLabels.any(
       (existing) => existing.toLowerCase() == label.toLowerCase(),
     )) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.duplicateMilkLabel)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.duplicateMilkLabel)));
       return;
     }
 
@@ -1023,6 +900,7 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
       widget.existingBatch == null
           ? MilkBatch(
               id: DateTime.now().microsecondsSinceEpoch.toString(),
+              childId: widget.childId,
               labelNumber: label,
               initialAmountMl: amount,
               remainingAmountMl: amount,
@@ -1033,10 +911,9 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
             )
           : widget.existingBatch!.copyWith(
               labelNumber: label,
-              initialAmountMl: math.max(
-                widget.existingBatch!.initialAmountMl,
-                amount,
-              ).toInt(),
+              initialAmountMl: math
+                  .max(widget.existingBatch!.initialAmountMl, amount)
+                  .toInt(),
               remainingAmountMl: amount,
               expressedAt: _expressedAt,
               storageLocation: _location,
@@ -1062,12 +939,7 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
       ),
       child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(
-          20,
-          14,
-          20,
-          24 + media.viewInsets.bottom,
-        ),
+        padding: EdgeInsets.fromLTRB(20, 14, 20, 24 + media.viewInsets.bottom),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1083,20 +955,16 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
             ),
             const SizedBox(height: 18),
             Text(
-              widget.existingBatch == null
-                  ? l10n.addMilk
-                  : l10n.editMilkRecord,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-              ),
+              widget.existingBatch == null ? l10n.addMilk : l10n.editMilkRecord,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 5),
             Text(
               l10n.milkStorageSafetyNote,
               style: TextStyle(
-                color:
-                    Theme.of(context).textTheme.bodySmall?.color?.withAlpha(165),
+                color: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.color?.withAlpha(165),
                 fontSize: 12,
                 height: 1.4,
               ),
@@ -1163,9 +1031,8 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
                     icon: Icons.ac_unit_rounded,
                     label: l10n.freezer,
                     selected: _location == MilkStorageLocation.freezer,
-                    onTap: () => setState(
-                      () => _location = MilkStorageLocation.freezer,
-                    ),
+                    onTap: () =>
+                        setState(() => _location = MilkStorageLocation.freezer),
                   ),
                 ),
               ],
@@ -1186,13 +1053,14 @@ class _AddMilkBatchSheetState extends State<AddMilkBatchSheet> {
                 color: Color(0xff6D63E8),
               ),
               title: Text(
-                MaterialLocalizations.of(context)
-                    .formatMediumDate(_expressedAt),
+                MaterialLocalizations.of(
+                  context,
+                ).formatMediumDate(_expressedAt),
               ),
               subtitle: Text(
-                MaterialLocalizations.of(context).formatTimeOfDay(
-                  TimeOfDay.fromDateTime(_expressedAt),
-                ),
+                MaterialLocalizations.of(
+                  context,
+                ).formatTimeOfDay(TimeOfDay.fromDateTime(_expressedAt)),
               ),
             ),
             const SizedBox(height: 16),

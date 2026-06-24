@@ -23,10 +23,7 @@ class TimelineSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TimelineHeader(
-          title: title,
-          count: sessions.length,
-        ),
+        TimelineHeader(title: title, count: sessions.length),
         ListView.separated(
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
@@ -36,7 +33,7 @@ class TimelineSection extends StatelessWidget {
             final session = sessions[index];
 
             return Dismissible(
-              key: ValueKey(session.startTime.toIso8601String()),
+              key: ValueKey(session.id),
               direction: DismissDirection.endToStart,
               background: Container(
                 margin: const EdgeInsets.only(

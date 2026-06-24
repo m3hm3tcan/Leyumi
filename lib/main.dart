@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 import 'features/onboarding/onboarding_screen.dart';
@@ -10,10 +9,10 @@ import 'features/diaper/diaper_add_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'core/premium/premium_provider.dart';
 import 'core/theme_provider.dart';
+import 'core/theme/app_design_tokens.dart';
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  await SharedPreferences.getInstance();
 
   runApp(
     MultiProvider(
@@ -44,17 +43,12 @@ class LeyumiApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [
-            Locale('en'),
-            Locale('tr'),
-            Locale('hu'),
-          ],
+          supportedLocales: const [Locale('en'), Locale('tr'), Locale('hu')],
 
           localeResolutionCallback: (locale, supportedLocales) {
             if (locale == null) return supportedLocales.first;
             for (var supportedLocale in supportedLocales) {
-              if (supportedLocale.languageCode ==
-                  locale.languageCode) {
+              if (supportedLocale.languageCode == locale.languageCode) {
                 return supportedLocale;
               }
             }
@@ -66,10 +60,13 @@ class LeyumiApp extends StatelessWidget {
 
           theme: ThemeData(
             brightness: Brightness.light,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: AppColors.primary,
+              brightness: Brightness.light,
+            ),
             scaffoldBackgroundColor: const Color(0xffF6F7FB),
-
             cardColor: Colors.white,
-
+            useMaterial3: true,
             appBarTheme: const AppBarTheme(
               backgroundColor: Colors.white,
               foregroundColor: Colors.black,
@@ -79,10 +76,13 @@ class LeyumiApp extends StatelessWidget {
 
           darkTheme: ThemeData(
             brightness: Brightness.dark,
-
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: AppColors.primary,
+              brightness: Brightness.dark,
+            ),
             scaffoldBackgroundColor: const Color(0xff121212),
             cardColor: const Color(0xff1E1E1E),
-
+            useMaterial3: true,
             appBarTheme: const AppBarTheme(
               backgroundColor: Color(0xff1E1E1E),
               foregroundColor: Colors.white,

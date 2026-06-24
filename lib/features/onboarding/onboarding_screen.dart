@@ -22,6 +22,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   String gender = "Male"; // 👈 Lokalizasyon için İngilizce default
   DateTime? birthDate;
 
+  @override
+  void dispose() {
+    nameCtrl.dispose();
+    weightCtrl.dispose();
+    heightCtrl.dispose();
+    headCtrl.dispose();
+    waistCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> pickBirthDate() async {
     final now = DateTime.now();
     final picked = await showDatePicker(

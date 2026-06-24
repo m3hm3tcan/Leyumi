@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../features/feeding/feeding_session.dart';
+import '../domain/repositories/feeding_repository.dart';
+import '../core/data/json_record_decoder.dart';
+import '../core/logging/app_logger.dart';
 
-class FeedingStorage {
+class FeedingStorage implements FeedingRepository {
   static const String key = "feeding_sessions";
   static const String activeDraftKey = "feeding_active_draft";
 
@@ -21,10 +24,11 @@ class FeedingStorage {
     final prefs = await SharedPreferences.getInstance();
     final list = prefs.getStringList(key) ?? [];
 
-    return list.map((item) {
-      final data = jsonDecode(item);
-      return FeedingSession.fromJson(data);
-    }).toList();
+    return JsonRecordDecoder.decodeStringList(
+      values: list,
+      fromJson: FeedingSession.fromJson,
+      source: 'feeding',
+    );
   }
 
   Future<void> saveAllSessions(List<FeedingSession> sessions) async {
@@ -42,7 +46,16 @@ class FeedingStorage {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(activeDraftKey);
     if (raw == null || raw.isEmpty) return null;
-    return jsonDecode(raw) as Map<String, dynamic>;
+    try {
+      return Map<String, dynamic>.from(jsonDecode(raw) as Map);
+    } catch (error, stackTrace) {
+      AppLogger.warning(
+        'The active feeding draft could not be read.',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      return null;
+    }
   }
 
   Future<void> clearActiveDraft() async {
