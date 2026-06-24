@@ -110,9 +110,7 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
     if (!premium.hasAccess(PremiumFeature.milkInventory)) {
-      return const PremiumPaywallScreen(
-        feature: PremiumFeature.milkInventory,
-      );
+      return const PremiumPaywallScreen(feature: PremiumFeature.milkInventory);
     }
 
     return Scaffold(
@@ -131,9 +129,7 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
                 ),
                 const SizedBox(height: 8),
                 Expanded(
-                  child: _tabIndex == 0
-                      ? _activityList(l10n)
-                      : _insights(l10n),
+                  child: _tabIndex == 0 ? _activityList(l10n) : _insights(l10n),
                 ),
               ],
             ),
@@ -189,11 +185,11 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
   }
 
   Widget _divider() => Container(
-        width: 1,
-        height: 32,
-        margin: const EdgeInsets.symmetric(horizontal: 10),
-        color: Colors.white.withAlpha(40),
-      );
+    width: 1,
+    height: 32,
+    margin: const EdgeInsets.symmetric(horizontal: 10),
+    color: Colors.white.withAlpha(40),
+  );
 
   Widget _tabBar(AppLocalizations l10n) {
     return Container(
@@ -202,12 +198,7 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
         color: Theme.of(context).dividerColor.withAlpha(25),
         borderRadius: BorderRadius.circular(15),
       ),
-      child: Row(
-        children: [
-          _tab(l10n.activity, 0),
-          _tab(l10n.insights, 1),
-        ],
-      ),
+      child: Row(children: [_tab(l10n.activity, 0), _tab(l10n.insights, 1)]),
     );
   }
 
@@ -255,10 +246,7 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
             padding: const EdgeInsets.fromLTRB(4, 14, 4, 8),
             child: Text(
               MaterialLocalizations.of(context).formatMediumDate(group.key),
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w800,
-              ),
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
             ),
           ),
           for (final event in group.value) _eventCard(event, l10n),
@@ -269,9 +257,9 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
 
   Widget _eventCard(MilkInventoryEvent event, AppLocalizations l10n) {
     final presentation = _eventPresentation(event, l10n);
-    final time = MaterialLocalizations.of(context).formatTimeOfDay(
-      TimeOfDay.fromDateTime(event.eventAt),
-    );
+    final time = MaterialLocalizations.of(
+      context,
+    ).formatTimeOfDay(TimeOfDay.fromDateTime(event.eventAt));
 
     return Container(
       margin: const EdgeInsets.only(bottom: 9),
@@ -308,11 +296,9 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
                 Text(
                   presentation.detail,
                   style: TextStyle(
-                    color: Theme.of(context)
-                        .textTheme
-                        .bodySmall
-                        ?.color
-                        ?.withAlpha(165),
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.color?.withAlpha(165),
                     fontSize: 11,
                   ),
                 ),
@@ -372,13 +358,9 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
         ],
       );
     });
-    final maxY = math.max(
-      50,
-      [
-        ...added.values,
-        ...used.values,
-      ].fold<int>(0, math.max),
-    ).toDouble();
+    final maxY = math
+        .max(50, [...added.values, ...used.values].fold<int>(0, math.max))
+        .toDouble();
 
     return Column(
       children: [
@@ -415,10 +397,12 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
   }
 
   Widget _stockChart() {
-    final maxY = math.max(
-      50,
-      _stockSpots.fold<double>(0, (max, spot) => math.max(max, spot.y)),
-    ).toDouble();
+    final maxY = math
+        .max(
+          50,
+          _stockSpots.fold<double>(0, (max, spot) => math.max(max, spot.y)),
+        )
+        .toDouble();
     return SizedBox(
       height: 220,
       child: LineChart(
@@ -486,8 +470,9 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
             return SideTitleWidget(
               meta: meta,
               child: Text(
-                MaterialLocalizations.of(context)
-                    .formatShortDate(_chartDays[index]),
+                MaterialLocalizations.of(
+                  context,
+                ).formatShortDate(_chartDays[index]),
                 style: const TextStyle(fontSize: 8),
               ),
             );
@@ -521,7 +506,9 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
           Text(
             subtitle,
             style: TextStyle(
-              color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(150),
+              color: Theme.of(
+                context,
+              ).textTheme.bodySmall?.color?.withAlpha(150),
               fontSize: 10,
             ),
           ),
@@ -533,31 +520,25 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
   }
 
   Widget _legend(Color color, String label) => Row(
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-          ),
-          const SizedBox(width: 5),
-          Text(label, style: const TextStyle(fontSize: 10)),
-        ],
-      );
+    children: [
+      Container(
+        width: 8,
+        height: 8,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      ),
+      const SizedBox(width: 5),
+      Text(label, style: const TextStyle(fontSize: 10)),
+    ],
+  );
 
-  ({
-    String title,
-    String detail,
-    IconData icon,
-    Color color,
-  }) _eventPresentation(
-    MilkInventoryEvent event,
-    AppLocalizations l10n,
-  ) {
+  ({String title, String detail, IconData icon, Color color})
+  _eventPresentation(MilkInventoryEvent event, AppLocalizations l10n) {
     switch (event.type) {
       case MilkInventoryEventType.created:
         return (
           title: l10n.milkAdded,
-          detail: '${event.amountMl} ml · ${event.remainingAfterMl} ml '
+          detail:
+              '${event.amountMl} ml · ${event.remainingAfterMl} ml '
               '${l10n.remaining.toLowerCase()}',
           icon: Icons.add_rounded,
           color: const Color(0xff6D63E8),
@@ -565,7 +546,8 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
       case MilkInventoryEventType.used:
         return (
           title: l10n.usedMilk,
-          detail: '${event.amountMl} ml · ${event.remainingAfterMl} ml '
+          detail:
+              '${event.amountMl} ml · ${event.remainingAfterMl} ml '
               '${l10n.remaining.toLowerCase()}',
           icon: Icons.local_drink_rounded,
           color: const Color(0xff45B887),
@@ -573,7 +555,8 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
       case MilkInventoryEventType.discarded:
         return (
           title: l10n.discardedMilk,
-          detail: '${event.amountMl} ml · ${event.remainingAfterMl} ml '
+          detail:
+              '${event.amountMl} ml · ${event.remainingAfterMl} ml '
               '${l10n.remaining.toLowerCase()}',
           icon: Icons.delete_sweep_rounded,
           color: Colors.orange,
@@ -588,7 +571,8 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
       case MilkInventoryEventType.corrected:
         return (
           title: l10n.recordCorrected,
-          detail: '${event.remainingAfterMl} ml ${l10n.remaining.toLowerCase()}',
+          detail:
+              '${event.remainingAfterMl} ml ${l10n.remaining.toLowerCase()}',
           icon: Icons.edit_rounded,
           color: Colors.blueGrey,
         );
