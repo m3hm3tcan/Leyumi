@@ -103,6 +103,7 @@
   "reportPeriod": "Jelentési időszak",
   "reportSummary": "Összefoglaló",
   "minutesShort": "perc",
+  "secondsShort": "mp",
   "diaperSummary": "Pelenka összefoglaló",
   "growthSummary": "Növekedési összefoglaló",
   "dailyActivitySummary": "Napi tevékenységek",

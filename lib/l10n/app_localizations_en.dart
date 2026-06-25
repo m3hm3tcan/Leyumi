@@ -341,6 +341,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get minutesShort => 'min';
 
   @override
+  String get secondsShort => 'sec';
+
+  @override
   String get diaperSummary => 'Diaper summary';
 
   @override

@@ -103,6 +103,7 @@
   "reportPeriod": "Rapor dönemi",
   "reportSummary": "Özet",
   "minutesShort": "dk",
+  "secondsShort": "sn",
   "diaperSummary": "Bez özeti",
   "growthSummary": "Büyüme özeti",
   "dailyActivitySummary": "Günlük aktivite özeti",

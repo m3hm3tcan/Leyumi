@@ -103,6 +103,7 @@
   "reportPeriod": "Report period",
   "reportSummary": "Summary",
   "minutesShort": "min",
+  "secondsShort": "sec",
   "diaperSummary": "Diaper summary",
   "growthSummary": "Growth summary",
   "dailyActivitySummary": "Daily activity summary",

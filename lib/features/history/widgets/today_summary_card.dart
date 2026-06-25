@@ -5,19 +5,19 @@ import 'package:leyumi/l10n/app_localizations.dart';
 class TodaySummaryCard extends StatelessWidget {
   final List<FeedingSession> sessions;
 
-  const TodaySummaryCard({
-    super.key,
-    required this.sessions,
-  });
+  const TodaySummaryCard({super.key, required this.sessions});
 
-  String _format(Duration d) {
+  String _format(Duration d, AppLocalizations l10n) {
     final h = d.inHours;
     final m = d.inMinutes.remainder(60);
     final s = d.inSeconds.remainder(60);
 
-    if (h > 0) return "${h}h ${m}m ${s}s";
-    if (m > 0) return "${m}m ${s}s";
-    return "${s}s";
+    if (h > 0) {
+      return '$h ${l10n.hoursShort} $m ${l10n.minutesShort} '
+          '$s ${l10n.secondsShort}';
+    }
+    if (m > 0) return '$m ${l10n.minutesShort} $s ${l10n.secondsShort}';
+    return '$s ${l10n.secondsShort}';
   }
 
   @override
@@ -35,9 +35,7 @@ class TodaySummaryCard extends StatelessWidget {
 
     final avgDuration = sessions.isEmpty
         ? Duration.zero
-        : Duration(
-            seconds: totalDuration.inSeconds ~/ sessions.length,
-          );
+        : Duration(seconds: totalDuration.inSeconds ~/ sessions.length);
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 20),
@@ -47,17 +45,14 @@ class TodaySummaryCard extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            Color(0xff6C63FF),
-            Color(0xff8A7DFF),
-          ],
+          colors: [Color(0xff6C63FF), Color(0xff8A7DFF)],
         ),
         boxShadow: [
           BoxShadow(
             color: const Color(0xff6C63FF).withOpacity(.25),
             blurRadius: 30,
             offset: const Offset(0, 12),
-          )
+          ),
         ],
       ),
       child: Column(
@@ -103,7 +98,7 @@ class TodaySummaryCard extends StatelessWidget {
 
           /// HERO NUMBER
           Text(
-            _format(totalDuration),
+            _format(totalDuration, l10n),
             style: const TextStyle(
               color: Colors.white,
               fontSize: 42,
@@ -133,7 +128,7 @@ class TodaySummaryCard extends StatelessWidget {
               Expanded(
                 child: _metricCard(
                   icon: Icons.monitor_weight_outlined,
-                  value: "$totalMilk g ${l10n.milk}",
+                  value: '$totalMilk ${l10n.unitGr} ${l10n.milk}',
                   label: l10n.milk,
                 ),
               ),
@@ -141,7 +136,7 @@ class TodaySummaryCard extends StatelessWidget {
               Expanded(
                 child: _metricCard(
                   icon: Icons.schedule_rounded,
-                  value: _format(avgDuration),
+                  value: _format(avgDuration, l10n),
                   label: l10n.average,
                 ),
               ),
@@ -166,24 +161,15 @@ class TodaySummaryCard extends StatelessWidget {
     required String label,
   }) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 14,
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(.12),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: Colors.white.withOpacity(.12),
-        ),
+        border: Border.all(color: Colors.white.withOpacity(.12)),
       ),
       child: Column(
         children: [
-          Icon(
-            icon,
-            size: 18,
-            color: Colors.white,
-          ),
+          Icon(icon, size: 18, color: Colors.white),
           const SizedBox(height: 10),
           Text(
             value,

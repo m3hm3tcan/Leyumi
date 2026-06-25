@@ -14,19 +14,19 @@ class UIColors {
 class SessionCard extends StatelessWidget {
   final FeedingSession session;
 
-  const SessionCard({
-    super.key,
-    required this.session,
-  });
+  const SessionCard({super.key, required this.session});
 
-  String _formatDuration(Duration duration) {
+  String _formatDuration(Duration duration, AppLocalizations l10n) {
     final h = duration.inHours;
     final m = duration.inMinutes.remainder(60);
     final s = duration.inSeconds.remainder(60);
 
-    if (h > 0) return "${h}h ${m}m ${s}s";
-    if (m > 0) return "${m}m ${s}s";
-    return "${s}s";
+    if (h > 0) {
+      return '$h ${l10n.hoursShort} $m ${l10n.minutesShort} '
+          '$s ${l10n.secondsShort}';
+    }
+    if (m > 0) return '$m ${l10n.minutesShort} $s ${l10n.secondsShort}';
+    return '$s ${l10n.secondsShort}';
   }
 
   String _formatTime(DateTime dt) {
@@ -41,8 +41,7 @@ class SessionCard extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
     final secondaryTextColor =
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? UIColors.muted;
-    final primaryTextColor =
-        theme.textTheme.bodyLarge?.color ?? UIColors.text;
+    final primaryTextColor = theme.textTheme.bodyLarge?.color ?? UIColors.text;
 
     final leftTotal = session.entries
         .where((entry) => entry.side == FeedingSide.left)
@@ -53,8 +52,9 @@ class SessionCard extends StatelessWidget {
         .fold(Duration.zero, (a, b) => a + b.duration);
 
     final total = leftTotal + rightTotal;
-    final leftRatio =
-        total.inSeconds == 0 ? 0.5 : leftTotal.inSeconds / total.inSeconds;
+    final leftRatio = total.inSeconds == 0
+        ? 0.5
+        : leftTotal.inSeconds / total.inSeconds;
     final leftFlex = (leftRatio * 100).round().clamp(1, 99);
     final rightFlex = 100 - leftFlex;
     final milk = session.milkIntakeGr ?? 0;
@@ -103,7 +103,7 @@ class SessionCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            _formatDuration(session.totalDuration),
+            _formatDuration(session.totalDuration, l10n),
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w800,
@@ -147,13 +147,13 @@ class SessionCard extends StatelessWidget {
               _miniStat(
                 context: context,
                 label: l10n.leftLabel,
-                value: _formatDuration(leftTotal),
+                value: _formatDuration(leftTotal, l10n),
                 color: UIColors.left,
               ),
               _miniStat(
                 context: context,
                 label: l10n.rightLabel,
-                value: _formatDuration(rightTotal),
+                value: _formatDuration(rightTotal, l10n),
                 color: UIColors.right,
               ),
             ],
@@ -176,7 +176,7 @@ class SessionCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    "$milk g ${l10n.milk}",
+                    '$milk ${l10n.unitGr} ${l10n.milk}',
                     style: const TextStyle(
                       color: UIColors.milk,
                       fontWeight: FontWeight.w700,
@@ -207,10 +207,7 @@ class SessionCard extends StatelessWidget {
         Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 6),
         Text(

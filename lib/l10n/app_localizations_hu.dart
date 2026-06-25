@@ -344,6 +344,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get minutesShort => 'perc';
 
   @override
+  String get secondsShort => 'mp';
+
+  @override
   String get diaperSummary => 'Pelenka összefoglaló';
 
   @override

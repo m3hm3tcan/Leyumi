@@ -718,6 +718,12 @@ abstract class AppLocalizations {
   /// **'min'**
   String get minutesShort;
 
+  /// No description provided for @secondsShort.
+  ///
+  /// In en, this message translates to:
+  /// **'sec'**
+  String get secondsShort;
+
   /// No description provided for @diaperSummary.
   ///
   /// In en, this message translates to:
