@@ -7,7 +7,9 @@ import 'package:leyumi/features/milk_inventory/milk_history_screen.dart';
 import 'package:leyumi/features/doctor_report/doctor_report_screen.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../core/child/active_child_provider.dart';
 import 'tabs/diaper_tab.dart';
 import 'tabs/feeding_tab.dart';
 import 'tabs/growth_tab.dart';
@@ -22,6 +24,7 @@ class HistoryHubScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final secondaryTextColor =
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
+    final childName = context.watch<ActiveChildProvider>().activeChild?.name;
 
     return Scaffold(
       body: SafeArea(
@@ -41,7 +44,9 @@ class HistoryHubScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                l10n.historyHubSubtitle,
+                childName == null
+                    ? l10n.historyHubSubtitle
+                    : '${l10n.historyHubSubtitle} · $childName',
                 style: TextStyle(
                   fontSize: 13,
                   color: secondaryTextColor,
@@ -66,9 +71,7 @@ class HistoryHubScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const FeedingTab(),
-                          ),
+                          MaterialPageRoute(builder: (_) => const FeedingTab()),
                         );
                       },
                     ),
@@ -94,9 +97,7 @@ class HistoryHubScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const DiaperTab(),
-                          ),
+                          MaterialPageRoute(builder: (_) => const DiaperTab()),
                         );
                       },
                     ),
@@ -122,9 +123,7 @@ class HistoryHubScreen extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const GrowthTab(),
-                          ),
+                          MaterialPageRoute(builder: (_) => const GrowthTab()),
                         );
                       },
                     ),

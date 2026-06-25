@@ -81,6 +81,29 @@ class FeedingStorage implements FeedingRepository {
     await prefs.remove(await _draftKey());
   }
 
+  Future<void> deleteChildData(String childId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final sessions = await _loadAllSessions();
+    final remaining = sessions
+        .where((session) => session.childId != childId)
+        .map((session) => jsonEncode(session.toJson()))
+        .toList();
+    await prefs.setStringList(key, remaining);
+    await prefs.remove('${activeDraftKey}_$childId');
+
+    final legacyDraft = prefs.getString(activeDraftKey);
+    if (legacyDraft == null || legacyDraft.isEmpty) return;
+    try {
+      final draft = Map<String, dynamic>.from(jsonDecode(legacyDraft) as Map);
+      final session = draft['session'];
+      if (session is Map && session['childId'] == childId) {
+        await prefs.remove(activeDraftKey);
+      }
+    } catch (_) {
+      // Keep malformed legacy data untouched; normal decoder logging handles it.
+    }
+  }
+
   Future<String> _draftKey() async {
     final childId = await ActiveChildScope.id();
     return childId == null ? activeDraftKey : '${activeDraftKey}_$childId';

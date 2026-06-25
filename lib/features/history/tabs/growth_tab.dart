@@ -4,6 +4,8 @@ import 'package:leyumi/models/growth_entry.dart';
 import 'package:leyumi/services/growth_storage.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/child/active_child_aware.dart';
+
 class GrowthTab extends StatefulWidget {
   const GrowthTab({super.key});
 
@@ -11,16 +13,11 @@ class GrowthTab extends StatefulWidget {
   State<GrowthTab> createState() => _GrowthTabState();
 }
 
-class _GrowthTabState extends State<GrowthTab> {
+class _GrowthTabState extends State<GrowthTab>
+    with ActiveChildAware<GrowthTab> {
   List<GrowthEntry> entries = [];
   GrowthEntry? recentlyDeleted;
   int? recentlyDeletedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
 
   Future<void> load() async {
     final data = await GrowthStorage().loadEntries();
@@ -28,6 +25,9 @@ class _GrowthTabState extends State<GrowthTab> {
     if (!mounted) return;
     setState(() => entries = data);
   }
+
+  @override
+  Future<void> onActiveChildChanged() => load();
 
   Future<void> deleteEntry(GrowthEntry entry) async {
     final l10n = AppLocalizations.of(context);

@@ -11,6 +11,8 @@ import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:leyumi/services/milk_inventory_storage.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/child/active_child_aware.dart';
+
 class MilkHistoryScreen extends StatefulWidget {
   const MilkHistoryScreen({super.key});
 
@@ -18,20 +20,16 @@ class MilkHistoryScreen extends StatefulWidget {
   State<MilkHistoryScreen> createState() => _MilkHistoryScreenState();
 }
 
-class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
+class _MilkHistoryScreenState extends State<MilkHistoryScreen>
+    with ActiveChildAware<MilkHistoryScreen> {
   final _storage = MilkInventoryStorage();
   List<MilkInventoryEvent> _events = [];
   List<MilkBatch> _batches = [];
   bool _loading = true;
   int _tabIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
   Future<void> _load() async {
+    if (mounted) setState(() => _loading = true);
     final events = await _storage.loadEvents();
     final batches = await _storage.loadBatches();
     events.sort((a, b) => b.eventAt.compareTo(a.eventAt));
@@ -42,6 +40,9 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen> {
       _loading = false;
     });
   }
+
+  @override
+  Future<void> onActiveChildChanged() => _load();
 
   int get _totalUsed => _events
       .where((event) => event.type == MilkInventoryEventType.used)

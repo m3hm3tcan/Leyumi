@@ -53,4 +53,14 @@ class DiaperStorage implements DiaperRepository {
 
     await prefs.setStringList(key, data);
   }
+
+  Future<void> deleteChildData(String childId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final entries = await _loadAllEntries();
+    final remaining = entries
+        .where((entry) => entry.childId != childId)
+        .map((entry) => jsonEncode(entry.toJson()))
+        .toList();
+    await prefs.setStringList(key, remaining);
+  }
 }

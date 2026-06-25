@@ -5,6 +5,7 @@ import 'package:leyumi/services/diaper_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/child/active_child_aware.dart';
 import '../../../core/utils/app_date_utils.dart';
 
 class DiaperTab extends StatefulWidget {
@@ -14,7 +15,8 @@ class DiaperTab extends StatefulWidget {
   State<DiaperTab> createState() => _DiaperTabState();
 }
 
-class _DiaperTabState extends State<DiaperTab> {
+class _DiaperTabState extends State<DiaperTab>
+    with ActiveChildAware<DiaperTab> {
   List<DiaperEntry> entries = [];
   bool loading = true;
 
@@ -26,12 +28,7 @@ class _DiaperTabState extends State<DiaperTab> {
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  Future<void> _init() async {
-    await _checkTooltip();
-    await load();
+    _checkTooltip();
   }
 
   Future<void> _checkTooltip() async {
@@ -55,6 +52,9 @@ class _DiaperTabState extends State<DiaperTab> {
       loading = false;
     });
   }
+
+  @override
+  Future<void> onActiveChildChanged() => load();
 
   Future<void> deleteEntry(DiaperEntry entry) async {
     final l10n = AppLocalizations.of(context);

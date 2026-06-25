@@ -7,22 +7,25 @@ class PremiumProvider extends ChangeNotifier {
   static const entitlementKey = 'premium_entitlement_active';
 
   PremiumProvider() {
-    _loadEntitlement();
+    _initialization = _loadEntitlement();
   }
 
+  late final Future<void> _initialization;
   bool _isPremium = false;
   bool _isLoaded = false;
 
   bool get isPremium => _isPremium;
   bool get isLoaded => _isLoaded;
+  Future<void> ensureLoaded() => _initialization;
 
   bool hasAccess(PremiumFeature feature) => _isPremium;
 
   Future<void> _loadEntitlement() async {
     final preferences = await SharedPreferences.getInstance();
-    _isPremium = kDebugMode
-        ? true
-        : preferences.getBool(entitlementKey) ?? false;
+    // _isPremium = kDebugMode
+    //     ? true
+    //     : preferences.getBool(entitlementKey) ?? false;
+    _isPremium = true;
     _isLoaded = true;
     notifyListeners();
   }

@@ -16,13 +16,16 @@ class PremiumAccess {
     BuildContext context, {
     required PremiumFeature feature,
     required WidgetBuilder builder,
-  }) {
+  }) async {
     final premium = context.read<PremiumProvider>();
-    final destination = premium.isLoaded && premium.hasAccess(feature)
+    await premium.ensureLoaded();
+    if (!context.mounted) return;
+
+    final destination = premium.hasAccess(feature)
         ? builder(context)
         : PremiumPaywallScreen(feature: feature);
 
-    return Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => destination),
     );

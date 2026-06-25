@@ -10,6 +10,7 @@ import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/services/feeding_storage.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../../../core/child/active_child_aware.dart';
 
 class FeedingGraphScreen extends StatefulWidget {
   const FeedingGraphScreen({super.key});
@@ -18,16 +19,11 @@ class FeedingGraphScreen extends StatefulWidget {
   State<FeedingGraphScreen> createState() => _FeedingGraphScreenState();
 }
 
-class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
+class _FeedingGraphScreenState extends State<FeedingGraphScreen>
+    with ActiveChildAware<FeedingGraphScreen> {
   List<FeedingSession> sessions = [];
   bool loading = true;
   String filter = '30';
-
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
 
   Future<void> load() async {
     final data = await FeedingStorage().loadSessions();
@@ -38,6 +34,9 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen> {
       loading = false;
     });
   }
+
+  @override
+  Future<void> onActiveChildChanged() => load();
 
   List<FeedingSession> get filtered {
     if (filter == 'all') return sessions;

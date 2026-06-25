@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/child/active_child_aware.dart';
+import '../../core/child/active_child_app_bar_title.dart';
+import '../../core/child/active_child_provider.dart';
 import '../../core/data/record_identity.dart';
 import '../../core/premium/premium_feature.dart';
 import '../../core/premium/premium_provider.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/baby_storage.dart';
 import '../premium/premium_paywall_screen.dart';
 import 'dialogs/milk_inventory_dialogs.dart';
 import 'milk_batch.dart';
@@ -23,7 +25,8 @@ class MilkInventoryScreen extends StatefulWidget {
   State<MilkInventoryScreen> createState() => _MilkInventoryScreenState();
 }
 
-class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
+class _MilkInventoryScreenState extends State<MilkInventoryScreen>
+    with ActiveChildAware<MilkInventoryScreen> {
   late final MilkInventoryController _controller;
   String _childId = RecordIdentity.legacyChildId;
 
@@ -31,7 +34,6 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
   void initState() {
     super.initState();
     _controller = MilkInventoryController()..addListener(_onChanged);
-    _load();
   }
 
   @override
@@ -48,9 +50,13 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
 
   Future<void> _load() async {
     _childId =
-        (await BabyStorage().loadProfile())?.id ?? RecordIdentity.legacyChildId;
+        context.read<ActiveChildProvider>().activeChildId ??
+        RecordIdentity.legacyChildId;
     await _controller.load();
   }
+
+  @override
+  Future<void> onActiveChildChanged() => _load();
 
   Future<void> _addMilk() async {
     final batch = await _openMilkSheet(
@@ -140,7 +146,7 @@ class _MilkInventoryScreenState extends State<MilkInventoryScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.milkInventory),
+        title: ActiveChildAppBarTitle(title: l10n.milkInventory),
         actions: [
           IconButton(
             onPressed: _addMilk,

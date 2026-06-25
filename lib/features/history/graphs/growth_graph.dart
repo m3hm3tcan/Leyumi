@@ -8,6 +8,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../../../core/child/active_child_aware.dart';
 
 class GrowthGraphScreen extends StatefulWidget {
   const GrowthGraphScreen({super.key});
@@ -16,15 +17,10 @@ class GrowthGraphScreen extends StatefulWidget {
   State<GrowthGraphScreen> createState() => _GrowthGraphScreenState();
 }
 
-class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
+class _GrowthGraphScreenState extends State<GrowthGraphScreen>
+    with ActiveChildAware<GrowthGraphScreen> {
   List<GrowthEntry> entries = [];
   String filter = "30";
-
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
 
   Future<void> load() async {
     final data = await GrowthStorage().loadEntries();
@@ -32,6 +28,9 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen> {
     if (!mounted) return;
     setState(() => entries = data);
   }
+
+  @override
+  Future<void> onActiveChildChanged() => load();
 
   List<GrowthEntry> get filtered {
     if (filter == "all") return entries;

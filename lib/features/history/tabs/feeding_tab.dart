@@ -3,6 +3,7 @@ import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:leyumi/services/feeding_storage.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/child/active_child_aware.dart';
 import '../../../core/utils/app_date_utils.dart';
 import '../widgets/timeline_section.dart';
 import '../widgets/today_summary_card.dart';
@@ -14,14 +15,9 @@ class FeedingTab extends StatefulWidget {
   State<FeedingTab> createState() => _FeedingTabState();
 }
 
-class _FeedingTabState extends State<FeedingTab> {
+class _FeedingTabState extends State<FeedingTab>
+    with ActiveChildAware<FeedingTab> {
   List<FeedingSession> sessions = [];
-
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
 
   Future<void> load() async {
     final data = await FeedingStorage().loadSessions();
@@ -29,6 +25,9 @@ class _FeedingTabState extends State<FeedingTab> {
     if (!mounted) return;
     setState(() => sessions = data);
   }
+
+  @override
+  Future<void> onActiveChildChanged() => load();
 
   Map<String, List<FeedingSession>> group(AppLocalizations l10n) {
     final map = <String, List<FeedingSession>>{};

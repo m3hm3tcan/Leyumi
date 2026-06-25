@@ -244,6 +244,14 @@ class MilkInventoryStorage implements MilkInventoryRepository {
     await _saveState(batches: batches, events: events);
   }
 
+  Future<void> deleteChildData(String childId) async {
+    final batches = await _loadAllBatches();
+    final events = await _loadAllEvents();
+    batches.removeWhere((batch) => batch.childId == childId);
+    events.removeWhere((event) => event.childId == childId);
+    await _saveState(batches: batches, events: events);
+  }
+
   Future<void> _saveState({
     required List<MilkBatch> batches,
     required List<MilkInventoryEvent> events,

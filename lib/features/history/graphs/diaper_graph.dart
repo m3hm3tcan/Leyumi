@@ -10,6 +10,7 @@ import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/services/diaper_storage.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../../../core/child/active_child_aware.dart';
 
 class DiaperGraphScreen extends StatefulWidget {
   const DiaperGraphScreen({super.key});
@@ -18,7 +19,8 @@ class DiaperGraphScreen extends StatefulWidget {
   State<DiaperGraphScreen> createState() => _DiaperGraphScreenState();
 }
 
-class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
+class _DiaperGraphScreenState extends State<DiaperGraphScreen>
+    with ActiveChildAware<DiaperGraphScreen> {
   static const _peeColor = Color(0xff56A8F5);
   static const _poopColor = Color(0xffD89A62);
   static const _bothColor = Color(0xffA878E8);
@@ -27,12 +29,6 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
   bool loading = true;
   String filter = '30';
   int tabIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    load();
-  }
 
   Future<void> load() async {
     final data = await DiaperStorage().loadEntries();
@@ -43,6 +39,9 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen> {
       loading = false;
     });
   }
+
+  @override
+  Future<void> onActiveChildChanged() => load();
 
   List<DiaperEntry> get filtered {
     if (filter == 'all') return entries;

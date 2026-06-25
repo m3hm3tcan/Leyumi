@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../core/child/active_child_app_bar_title.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/baby_storage.dart';
 import '../../services/feeding_storage.dart';
@@ -210,7 +211,7 @@ class _FeedingScreenState extends State<FeedingScreen>
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(l10n.feedingSessionTitle),
+          title: ActiveChildAppBarTitle(title: l10n.feedingSessionTitle),
           centerTitle: true,
           actions: [
             IconButton(

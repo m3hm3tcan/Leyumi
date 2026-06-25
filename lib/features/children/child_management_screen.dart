@@ -65,6 +65,15 @@ class ChildManagementScreen extends StatelessWidget {
                     ),
                     icon: const Icon(Icons.edit_outlined),
                   ),
+                  if (children.profiles.length > 1)
+                    IconButton(
+                      onPressed: () => _deleteChild(
+                        context,
+                        children: children,
+                        profileId: profile.id,
+                      ),
+                      icon: const Icon(Icons.delete_outline_rounded),
+                    ),
                 ],
               ),
             ),
@@ -90,5 +99,32 @@ class ChildManagementScreen extends StatelessWidget {
       context,
       MaterialPageRoute(builder: (_) => const ChildProfileScreen()),
     );
+  }
+
+  Future<void> _deleteChild(
+    BuildContext context, {
+    required ActiveChildProvider children,
+    required String profileId,
+  }) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.deleteChildProfileTitle),
+        content: Text(l10n.deleteChildProfileContent),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) await children.deleteChild(profileId);
   }
 }

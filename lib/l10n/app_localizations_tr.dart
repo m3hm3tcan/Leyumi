@@ -80,6 +80,13 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ek çocuk profilleri Premium\'a dahildir.';
 
   @override
+  String get deleteChildProfileTitle => 'Çocuk profili silinsin mi?';
+
+  @override
+  String get deleteChildProfileContent =>
+      'Bu çocuk profili ile ilişkili tüm beslenme, bez, büyüme ve süt kayıtları kalıcı olarak silinecektir.';
+
+  @override
   String get nameLengthError => 'İsim 2–30 karakter arasında olmalıdır.';
 
   @override
@@ -115,6 +122,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get feedingDurationRangeError =>
       'Manuel beslenme kaydı 12 saatten uzun olamaz.';
+
+  @override
+  String get feedingBeforeBirthError =>
+      'Beslenme tarihi çocuğun doğum tarihinden önce olamaz.';
+
+  @override
+  String get feedingDate => 'Beslenme tarihi';
 
   @override
   String get milkInventory => 'Süt Stoğu';

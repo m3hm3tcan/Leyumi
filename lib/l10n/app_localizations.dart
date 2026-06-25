@@ -226,6 +226,18 @@ abstract class AppLocalizations {
   /// **'Additional child profiles are included with Premium.'**
   String get multipleChildrenPremiumHint;
 
+  /// No description provided for @deleteChildProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete child profile?'**
+  String get deleteChildProfileTitle;
+
+  /// No description provided for @deleteChildProfileContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This child profile and all feeding, diaper, growth and milk records linked to it will be permanently deleted.'**
+  String get deleteChildProfileContent;
+
   /// No description provided for @nameLengthError.
   ///
   /// In en, this message translates to:
@@ -291,6 +303,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A manual feeding session cannot exceed 12 hours.'**
   String get feedingDurationRangeError;
+
+  /// No description provided for @feedingBeforeBirthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding date cannot be before the child\'s birth date.'**
+  String get feedingBeforeBirthError;
+
+  /// No description provided for @feedingDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding date'**
+  String get feedingDate;
 
   /// No description provided for @milkInventory.
   ///

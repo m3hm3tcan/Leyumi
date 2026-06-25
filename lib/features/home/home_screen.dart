@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/premium/premium_access.dart';
 import '../../core/premium/premium_feature.dart';
+import '../../core/child/active_child_aware.dart';
 import '../../core/child/active_child_provider.dart';
 import '../../core/theme_provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -24,7 +25,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver, ActiveChildAware<HomeScreen> {
   BabyProfile? _profile;
   bool _loading = true;
   double _opacity = 0;
@@ -34,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _loadProfile();
     Future.delayed(const Duration(milliseconds: 200), () {
       if (!mounted) return;
       setState(() => _opacity = 1);
@@ -66,8 +67,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     setState(() {
       _profile = profile;
       _loading = false;
+      _dashboardRefreshVersion++;
     });
   }
+
+  @override
+  Future<void> onActiveChildChanged() => _loadProfile();
 
   void _refreshDashboard() {
     if (!mounted) return;

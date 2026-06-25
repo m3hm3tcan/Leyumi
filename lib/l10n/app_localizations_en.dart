@@ -80,6 +80,13 @@ class AppLocalizationsEn extends AppLocalizations {
       'Additional child profiles are included with Premium.';
 
   @override
+  String get deleteChildProfileTitle => 'Delete child profile?';
+
+  @override
+  String get deleteChildProfileContent =>
+      'This child profile and all feeding, diaper, growth and milk records linked to it will be permanently deleted.';
+
+  @override
   String get nameLengthError =>
       'Name must contain between 2 and 30 characters.';
 
@@ -117,6 +124,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get feedingDurationRangeError =>
       'A manual feeding session cannot exceed 12 hours.';
+
+  @override
+  String get feedingBeforeBirthError =>
+      'Feeding date cannot be before the child\'s birth date.';
+
+  @override
+  String get feedingDate => 'Feeding date';
 
   @override
   String get milkInventory => 'Milk Inventory';

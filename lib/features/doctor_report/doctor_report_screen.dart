@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:printing/printing.dart';
 
+import '../../core/child/active_child_aware.dart';
+import '../../core/child/active_child_app_bar_title.dart';
 import '../../features/diaper/diaper_entry.dart';
 import '../../features/feeding/feeding_session.dart';
 import '../../l10n/app_localizations.dart';
@@ -21,7 +23,8 @@ class DoctorReportScreen extends StatefulWidget {
   State<DoctorReportScreen> createState() => _DoctorReportScreenState();
 }
 
-class _DoctorReportScreenState extends State<DoctorReportScreen> {
+class _DoctorReportScreenState extends State<DoctorReportScreen>
+    with ActiveChildAware<DoctorReportScreen> {
   BabyProfile? _profile;
   List<FeedingSession> _feedings = [];
   List<DiaperEntry> _diapers = [];
@@ -30,13 +33,8 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
   bool _isLoading = true;
   bool _isGenerating = false;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadData();
-  }
-
   Future<void> _loadData() async {
+    if (mounted) setState(() => _isLoading = true);
     final results = await Future.wait<dynamic>([
       BabyStorage().loadProfile(),
       FeedingStorage().loadSessions(),
@@ -53,6 +51,9 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
     });
   }
 
+  @override
+  Future<void> onActiveChildChanged() => _loadData();
+
   DateTime get _endDate {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
@@ -62,14 +63,23 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
     final end = _endDate;
     switch (_range) {
       case _ReportRange.sevenDays:
-        return DateTime(end.year, end.month, end.day)
-            .subtract(const Duration(days: 6));
+        return DateTime(
+          end.year,
+          end.month,
+          end.day,
+        ).subtract(const Duration(days: 6));
       case _ReportRange.thirtyDays:
-        return DateTime(end.year, end.month, end.day)
-            .subtract(const Duration(days: 29));
+        return DateTime(
+          end.year,
+          end.month,
+          end.day,
+        ).subtract(const Duration(days: 29));
       case _ReportRange.ninetyDays:
-        return DateTime(end.year, end.month, end.day)
-            .subtract(const Duration(days: 89));
+        return DateTime(
+          end.year,
+          end.month,
+          end.day,
+        ).subtract(const Duration(days: 89));
       case _ReportRange.all:
         final dates = <DateTime>[
           ..._feedings.map((entry) => entry.startTime),
@@ -77,8 +87,11 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
           ..._growth.map((entry) => entry.date),
         ];
         if (dates.isEmpty) {
-          return DateTime(end.year, end.month, end.day)
-              .subtract(const Duration(days: 29));
+          return DateTime(
+            end.year,
+            end.month,
+            end.day,
+          ).subtract(const Duration(days: 29));
         }
         dates.sort();
         final first = dates.first;
@@ -126,9 +139,9 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
       );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.reportGenerationFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.reportGenerationFailed)));
     } finally {
       if (mounted) setState(() => _isGenerating = false);
     }
@@ -144,7 +157,7 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.doctorReport)),
+      appBar: AppBar(title: ActiveChildAppBarTitle(title: l10n.doctorReport)),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SafeArea(
@@ -241,8 +254,7 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton.icon(
-                        onPressed:
-                            _isGenerating ? null : _createAndShareReport,
+                        onPressed: _isGenerating ? null : _createAndShareReport,
                         icon: _isGenerating
                             ? const SizedBox(
                                 width: 20,
@@ -261,8 +273,9 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
                         style: FilledButton.styleFrom(
                           backgroundColor: const Color(0xff6558E8),
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor:
-                              const Color(0xff6558E8).withAlpha(150),
+                          disabledBackgroundColor: const Color(
+                            0xff6558E8,
+                          ).withAlpha(150),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18),
@@ -279,8 +292,7 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
                       l10n.reportPrivacyNote,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        color:
-                            theme.textTheme.bodySmall?.color?.withAlpha(145),
+                        color: theme.textTheme.bodySmall?.color?.withAlpha(145),
                         fontSize: 11,
                         height: 1.35,
                       ),
@@ -326,10 +338,7 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.date_range_rounded,
-                color: Color(0xff6558E8),
-              ),
+              const Icon(Icons.date_range_rounded, color: Color(0xff6558E8)),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -404,7 +413,10 @@ class _DoctorReportScreenState extends State<DoctorReportScreen> {
           _contentLine(Icons.local_drink_rounded, l10n.feedingSummary),
           _contentLine(Icons.baby_changing_station, l10n.diaperSummary),
           _contentLine(Icons.monitor_weight_rounded, l10n.growthSummary),
-          _contentLine(Icons.calendar_view_week_rounded, l10n.dailyActivitySummary),
+          _contentLine(
+            Icons.calendar_view_week_rounded,
+            l10n.dailyActivitySummary,
+          ),
         ],
       ),
     );

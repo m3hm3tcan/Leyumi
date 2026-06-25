@@ -3,6 +3,10 @@ import 'package:flutter/foundation.dart';
 import '../../models/baby_profile.dart';
 import '../../services/baby_storage.dart';
 import '../../services/child_data_migration_service.dart';
+import '../../services/diaper_storage.dart';
+import '../../services/feeding_storage.dart';
+import '../../services/growth_storage.dart';
+import '../../services/milk_inventory_storage.dart';
 
 class ActiveChildProvider extends ChangeNotifier {
   ActiveChildProvider({BabyStorage? storage})
@@ -43,12 +47,20 @@ class ActiveChildProvider extends ChangeNotifier {
   }
 
   Future<void> saveChild(BabyProfile profile) async {
+    final isNew = !_profiles.any((item) => item.id == profile.id);
     await _storage.saveProfile(profile);
+    if (isNew) await _storage.setActiveProfile(profile.id);
     await reload();
-    await selectChild(profile.id);
   }
 
   Future<void> deleteChild(String profileId) async {
+    if (_profiles.length <= 1) return;
+    await Future.wait([
+      FeedingStorage().deleteChildData(profileId),
+      DiaperStorage().deleteChildData(profileId),
+      GrowthStorage().deleteChildData(profileId),
+      MilkInventoryStorage().deleteChildData(profileId),
+    ]);
     await _storage.deleteProfile(profileId);
     await reload();
   }

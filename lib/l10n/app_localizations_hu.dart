@@ -80,6 +80,13 @@ class AppLocalizationsHu extends AppLocalizations {
       'További gyermekprofilok a Premium részei.';
 
   @override
+  String get deleteChildProfileTitle => 'Törlöd a gyermekprofilt?';
+
+  @override
+  String get deleteChildProfileContent =>
+      'A gyermekprofilhoz tartozó összes etetési, pelenka-, növekedési és tejadat véglegesen törlődik.';
+
+  @override
   String get nameLengthError => 'A névnek 2–30 karakter hosszúnak kell lennie.';
 
   @override
@@ -120,6 +127,13 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get feedingDurationRangeError =>
       'A kézi etetési bejegyzés nem lehet hosszabb 12 óránál.';
+
+  @override
+  String get feedingBeforeBirthError =>
+      'Az etetés dátuma nem lehet korábbi a gyermek születési dátumánál.';
+
+  @override
+  String get feedingDate => 'Etetés dátuma';
 
   @override
   String get milkInventory => 'Tejkészlet';
