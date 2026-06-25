@@ -223,7 +223,7 @@ class _FeedingScreenState extends State<FeedingScreen>
           ],
         ),
         body: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: Column(
             children: [
               if (session == null) ...[
@@ -238,22 +238,22 @@ class _FeedingScreenState extends State<FeedingScreen>
                     }
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 14),
               ],
               FeedingTimerCard(elapsed: _currentTimer, activeSide: _activeSide),
-              const SizedBox(height: 30),
+              const SizedBox(height: 16),
               FeedingSideSelector(
                 activeSide: _activeSide,
                 leftDuration: session?.leftDuration ?? Duration.zero,
                 rightDuration: session?.rightDuration ?? Duration.zero,
                 onSelected: _startFeeding,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 14),
               if (_activeSide != null) _stopButton(l10n),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               if (entries.isNotEmpty && _activeSide == null)
                 _finishSection(l10n),
-              const SizedBox(height: 30),
+              const SizedBox(height: 20),
               if (entries.isNotEmpty) FeedingSummaryCard(entries: entries),
             ],
           ),

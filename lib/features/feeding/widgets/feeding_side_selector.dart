@@ -30,7 +30,7 @@ class FeedingSideSelector extends StatelessWidget {
             onTap: onSelected,
           ),
         ),
-        const SizedBox(width: 14),
+        const SizedBox(width: 12),
         Expanded(
           child: _SideCard(
             side: FeedingSide.right,
@@ -44,7 +44,7 @@ class FeedingSideSelector extends StatelessWidget {
   }
 }
 
-class _SideCard extends StatelessWidget {
+class _SideCard extends StatefulWidget {
   const _SideCard({
     required this.side,
     required this.activeSide,
@@ -57,77 +57,228 @@ class _SideCard extends StatelessWidget {
   final Duration duration;
   final ValueChanged<FeedingSide> onTap;
 
-  bool get isActive => activeSide == side;
-  bool get isLeft => side == FeedingSide.left;
-  Color get accent => isLeft ? Colors.pink : const Color(0xff4DA3FF);
+  @override
+  State<_SideCard> createState() => _SideCardState();
+}
+
+class _SideCardState extends State<_SideCard>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _nursingController;
+
+  bool get isActive => widget.activeSide == widget.side;
+  bool get isLeft => widget.side == FeedingSide.left;
+  Color get accent =>
+      isLeft ? const Color(0xffE96B9B) : const Color(0xff4D8FE8);
+
+  @override
+  void initState() {
+    super.initState();
+    _nursingController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1250),
+    );
+    if (isActive) _nursingController.repeat();
+  }
+
+  @override
+  void didUpdateWidget(covariant _SideCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (isActive && !_nursingController.isAnimating) {
+      _nursingController.repeat();
+    } else if (!isActive && _nursingController.isAnimating) {
+      _nursingController
+        ..stop()
+        ..value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _nursingController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return GestureDetector(
-      onTap: activeSide == null ? () => onTap(side) : null,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        height: 145,
-        decoration: BoxDecoration(
-          color: isActive ? accent.withAlpha(38) : Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(
-            color: isActive ? accent : Theme.of(context).dividerColor,
-            width: 2,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(13),
-              blurRadius: 14,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.favorite, color: accent, size: 34),
-            const SizedBox(height: 12),
-            Text(
-              isLeft ? l10n.leftSide : l10n.rightSide,
-              style: GoogleFonts.poppins(
-                fontWeight: FontWeight.w700,
-                fontSize: 13,
-                letterSpacing: 1,
+    final theme = Theme.of(context);
+    final disabled = widget.activeSide != null && !isActive;
+
+    return Semantics(
+      button: true,
+      selected: isActive,
+      child: GestureDetector(
+        onTap: widget.activeSide == null
+            ? () => widget.onTap(widget.side)
+            : null,
+        child: AnimatedOpacity(
+          duration: const Duration(milliseconds: 220),
+          opacity: disabled ? .55 : 1,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 260),
+            height: 116,
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isActive ? accent.withAlpha(18) : theme.cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isActive ? accent : theme.dividerColor.withAlpha(85),
+                width: isActive ? 1.7 : 1,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '${duration.inMinutes}m',
-              style: GoogleFonts.poppins(
-                fontSize: 24,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-            if (isActive) ...[
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
+              boxShadow: [
+                BoxShadow(
+                  color: isActive
+                      ? accent.withAlpha(20)
+                      : Colors.black.withAlpha(8),
+                  blurRadius: isActive ? 13 : 8,
+                  offset: const Offset(0, 4),
                 ),
-                decoration: BoxDecoration(
+              ],
+            ),
+            child: Row(
+              children: [
+                _NursingPulse(
+                  animation: _nursingController,
+                  active: isActive,
                   color: accent,
-                  borderRadius: BorderRadius.circular(20),
+                  mirror: !isLeft,
                 ),
-                child: Text(
-                  l10n.live,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isLeft ? l10n.leftSide : l10n.rightSide,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        _format(widget.duration),
+                        style: GoogleFonts.robotoMono(
+                          color: accent,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 5),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        child: Text(
+                          isActive ? l10n.live : l10n.ready.toUpperCase(),
+                          key: ValueKey(isActive),
+                          style: TextStyle(
+                            color: isActive
+                                ? accent
+                                : theme.textTheme.bodySmall?.color?.withAlpha(
+                                    120,
+                                  ),
+                            fontSize: 9,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
-          ],
+              ],
+            ),
+          ),
         ),
+      ),
+    );
+  }
+
+  String _format(Duration duration) {
+    final minutes = duration.inMinutes.toString().padLeft(2, '0');
+    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return '$minutes:$seconds';
+  }
+}
+
+class _NursingPulse extends StatelessWidget {
+  const _NursingPulse({
+    required this.animation,
+    required this.active,
+    required this.color,
+    required this.mirror,
+  });
+
+  final Animation<double> animation;
+  final bool active;
+  final Color color;
+  final bool mirror;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 52,
+      height: 72,
+      child: AnimatedBuilder(
+        animation: animation,
+        builder: (context, child) {
+          final pulse = active
+              ? Curves.easeInOut.transform(
+                  animation.value <= .5
+                      ? animation.value * 2
+                      : (1 - animation.value) * 2,
+                )
+              : 0.0;
+          return Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.diagonal3Values(mirror ? -1.0 : 1.0, 1, 1),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                if (active)
+                  Container(
+                    width: 42 + (pulse * 8),
+                    height: 42 + (pulse * 8),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: color.withAlpha((70 * (1 - pulse)).round()),
+                        width: 2,
+                      ),
+                    ),
+                  ),
+                Transform.scale(
+                  scale: 1 + (pulse * .06),
+                  child: Container(
+                    width: 42,
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: color.withAlpha(active ? 30 : 18),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.child_care_rounded,
+                      color: color,
+                      size: 25,
+                    ),
+                  ),
+                ),
+                if (active)
+                  Positioned(
+                    right: 0,
+                    top: 16 + (pulse * 4),
+                    child: Icon(
+                      Icons.water_drop_rounded,
+                      color: color.withAlpha((210 - pulse * 70).round()),
+                      size: 11,
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
