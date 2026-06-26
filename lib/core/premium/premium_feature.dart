@@ -4,5 +4,6 @@ enum PremiumFeature {
   multipleChildren,
   cloudBackup,
   smartReminders,
+  advancedCarePlanning,
   milkInventory,
 }

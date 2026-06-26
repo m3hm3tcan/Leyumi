@@ -34,11 +34,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get freePlanFeatures =>
-      'Beslenme, bez ve büyüme kayıtları\nEksiksiz geçmiş\nKaranlık mod ve 3 dil';
+      'Beslenme, bez ve büyüme kayıtları\nBakım takvimi ve yaklaşan etkinlikler\nEksiksiz geçmiş, karanlık mod ve 3 dil';
 
   @override
   String get premiumPlanFeatures =>
-      'Gelişmiş grafikler\nSüt stoğu\nPDF doktor raporları\nÇoklu çocuk profili';
+      'Gelişmiş grafikler ve bakım planları\nSüt stoğu\nPDF doktor raporları\nÇoklu çocuk profili';
 
   @override
   String get onboardingPrivacyTitle => 'Aile verileriniz size aittir';
@@ -84,7 +84,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get deleteChildProfileContent =>
-      'Bu çocuk profili ile ilişkili tüm beslenme, bez, büyüme ve süt kayıtları kalıcı olarak silinecektir.';
+      'Bu çocuk profili ile ilişkili tüm beslenme, bez, büyüme, süt ve bakım takvimi kayıtları kalıcı olarak silinecektir.';
 
   @override
   String get nameLengthError => 'İsim 2–30 karakter arasında olmalıdır.';
@@ -129,6 +129,130 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get feedingDate => 'Beslenme tarihi';
+
+  @override
+  String get careCalendar => 'Bakım Takvimi';
+
+  @override
+  String get careCalendarSubtitle => 'Aşı, randevu ve ilaç takibi';
+
+  @override
+  String get addCareEvent => 'Etkinlik ekle';
+
+  @override
+  String get editCareEvent => 'Etkinliği düzenle';
+
+  @override
+  String get eventType => 'Etkinlik türü';
+
+  @override
+  String get eventTitle => 'Başlık';
+
+  @override
+  String get careTitleError => 'Başlık en az 2 karakter içermelidir.';
+
+  @override
+  String get careBeforeBirthError =>
+      'Etkinlik tarihi çocuğun doğumundan önce olamaz.';
+
+  @override
+  String get careTypeVaccine => 'Aşı';
+
+  @override
+  String get careTypeDoctor => 'Doktor';
+
+  @override
+  String get careTypeMedicine => 'İlaç';
+
+  @override
+  String get careTypeCheckup => 'Kontrol';
+
+  @override
+  String get careTypeLaboratory => 'Tahlil/Test';
+
+  @override
+  String get careTypeTherapy => 'Terapi';
+
+  @override
+  String get careTypeCustom => 'Diğer';
+
+  @override
+  String get doctorOrLocation => 'Doktor veya konum';
+
+  @override
+  String get medicineDosage => 'İlaç dozu';
+
+  @override
+  String get repeatPlan => 'Tekrar planı';
+
+  @override
+  String get repeatNone => 'Tekrarlanmaz';
+
+  @override
+  String get repeatDaily => 'Her gün';
+
+  @override
+  String get repeatWeekly => 'Her hafta';
+
+  @override
+  String get repeatMonthly => 'Her ay';
+
+  @override
+  String get reminder => 'Hatırlatma';
+
+  @override
+  String get reminderNone => 'Hatırlatma yok';
+
+  @override
+  String get reminderOneHour => '1 saat önce';
+
+  @override
+  String get reminderOneDay => '1 gün önce';
+
+  @override
+  String get reminderTwoDays => '2 gün önce';
+
+  @override
+  String get advancedCarePremiumHint =>
+      'Tekrarlayan planlar ve ilaç dozu Premium\'a dahildir.';
+
+  @override
+  String get premiumCarePlanning => 'Gelişmiş bakım ve ilaç planları';
+
+  @override
+  String get noCareEventsForDay => 'Bu gün için planlanmış etkinlik yok.';
+
+  @override
+  String get markCompleted => 'Tamamlandı olarak işaretle';
+
+  @override
+  String get markCancelled => 'İptal edildi olarak işaretle';
+
+  @override
+  String get statusScheduled => 'Planlandı';
+
+  @override
+  String get statusCompleted => 'Tamamlandı';
+
+  @override
+  String get statusCancelled => 'İptal edildi';
+
+  @override
+  String get edit => 'Düzenle';
+
+  @override
+  String get upcomingCare => 'Yaklaşanlar';
+
+  @override
+  String get viewCalendar => 'Takvimi gör';
+
+  @override
+  String get tomorrow => 'Yarın';
+
+  @override
+  String inDays(int count) {
+    return '$count gün içinde';
+  }
 
   @override
   String get milkInventory => 'Süt Stoğu';

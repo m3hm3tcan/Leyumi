@@ -124,6 +124,13 @@ class PremiumPaywallScreen extends StatelessWidget {
               ),
               _featureTile(
                 context,
+                icon: Icons.event_note,
+                title: l10n.premiumCarePlanning,
+                active: feature == PremiumFeature.advancedCarePlanning,
+                available: true,
+              ),
+              _featureTile(
+                context,
                 icon: Icons.inventory_2_rounded,
                 title: l10n.premiumMilkInventory,
                 active: feature == PremiumFeature.milkInventory,

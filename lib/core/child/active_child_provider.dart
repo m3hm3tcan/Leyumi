@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../../models/baby_profile.dart';
 import '../../services/baby_storage.dart';
 import '../../services/child_data_migration_service.dart';
+import '../../services/care_event_storage.dart';
 import '../../services/diaper_storage.dart';
 import '../../services/feeding_storage.dart';
 import '../../services/growth_storage.dart';
@@ -60,6 +61,7 @@ class ActiveChildProvider extends ChangeNotifier {
       DiaperStorage().deleteChildData(profileId),
       GrowthStorage().deleteChildData(profileId),
       MilkInventoryStorage().deleteChildData(profileId),
+      CareEventStorage().deleteChildData(profileId),
     ]);
     await _storage.deleteProfile(profileId);
     await reload();

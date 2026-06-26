@@ -14,9 +14,11 @@ import '../feeding/feeding_screen.dart';
 import '../history/history_hub_screen.dart';
 import '../milk_inventory/milk_inventory_screen.dart';
 import '../children/child_management_screen.dart';
+import '../care_calendar/care_calendar_screen.dart';
 import 'widgets/home_action_card.dart';
 import 'widgets/live_feeding_home_card.dart';
 import 'widgets/today_summary_card.dart';
+import 'widgets/upcoming_care_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -125,6 +127,8 @@ class _HomeScreenState extends State<HomeScreen>
               TodaySummaryCard(refreshVersion: _dashboardRefreshVersion),
               const SizedBox(height: 12),
               LiveFeedingHomeCard(refreshVersion: _dashboardRefreshVersion),
+              const SizedBox(height: 12),
+              UpcomingCareCard(refreshVersion: _dashboardRefreshVersion),
               const SizedBox(height: 16),
               _buildQuickActionsTitle(l10n),
               const SizedBox(height: 10),
@@ -288,6 +292,26 @@ class _HomeScreenState extends State<HomeScreen>
                   await context.read<ActiveChildProvider>().reload();
                   await _loadProfile();
                 },
+              ),
+              SizedBox(
+                width: constraints.maxWidth,
+                height: 88,
+                child: HomeActionCard(
+                  icon: Icons.calendar_month_rounded,
+                  title: l10n.careCalendar,
+                  subtitle: l10n.careCalendarSubtitle,
+                  colors: const [Color(0xff5B6CFF), Color(0xff9B5DE5)],
+                  isWide: true,
+                  onTap: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const CareCalendarScreen(),
+                      ),
+                    );
+                    _refreshDashboard();
+                  },
+                ),
               ),
               SizedBox(
                 width: constraints.maxWidth,

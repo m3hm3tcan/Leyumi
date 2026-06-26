@@ -34,11 +34,11 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get freePlanFeatures =>
-      'Etetési, pelenka- és növekedési adatok\nTeljes előzmény\nSötét mód és 3 nyelv';
+      'Etetési, pelenka- és növekedési adatok\nGondozási naptár és közelgő események\nTeljes előzmény, sötét mód és 3 nyelv';
 
   @override
   String get premiumPlanFeatures =>
-      'Fejlett grafikonok\nTejkészlet\nPDF orvosi jelentések\nTöbb gyermekprofil';
+      'Fejlett grafikonok és gondozási tervek\nTejkészlet\nPDF orvosi jelentések\nTöbb gyermekprofil';
 
   @override
   String get onboardingPrivacyTitle => 'A családi adataid a tieid maradnak';
@@ -84,7 +84,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get deleteChildProfileContent =>
-      'A gyermekprofilhoz tartozó összes etetési, pelenka-, növekedési és tejadat véglegesen törlődik.';
+      'A gyermekprofilhoz tartozó összes etetési, pelenka-, növekedési, tej- és gondozási naptáradat véglegesen törlődik.';
 
   @override
   String get nameLengthError => 'A névnek 2–30 karakter hosszúnak kell lennie.';
@@ -134,6 +134,130 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get feedingDate => 'Etetés dátuma';
+
+  @override
+  String get careCalendar => 'Gondozási naptár';
+
+  @override
+  String get careCalendarSubtitle => 'Oltások, időpontok és gyógyszerek';
+
+  @override
+  String get addCareEvent => 'Esemény hozzáadása';
+
+  @override
+  String get editCareEvent => 'Esemény szerkesztése';
+
+  @override
+  String get eventType => 'Esemény típusa';
+
+  @override
+  String get eventTitle => 'Cím';
+
+  @override
+  String get careTitleError => 'A cím legalább 2 karakterből álljon.';
+
+  @override
+  String get careBeforeBirthError =>
+      'Az esemény dátuma nem lehet korábbi a gyermek születésénél.';
+
+  @override
+  String get careTypeVaccine => 'Oltás';
+
+  @override
+  String get careTypeDoctor => 'Orvos';
+
+  @override
+  String get careTypeMedicine => 'Gyógyszer';
+
+  @override
+  String get careTypeCheckup => 'Ellenőrzés';
+
+  @override
+  String get careTypeLaboratory => 'Labor/Teszt';
+
+  @override
+  String get careTypeTherapy => 'Terápia';
+
+  @override
+  String get careTypeCustom => 'Egyéb';
+
+  @override
+  String get doctorOrLocation => 'Orvos vagy helyszín';
+
+  @override
+  String get medicineDosage => 'Gyógyszeradag';
+
+  @override
+  String get repeatPlan => 'Ismétlődési terv';
+
+  @override
+  String get repeatNone => 'Nem ismétlődik';
+
+  @override
+  String get repeatDaily => 'Naponta';
+
+  @override
+  String get repeatWeekly => 'Hetente';
+
+  @override
+  String get repeatMonthly => 'Havonta';
+
+  @override
+  String get reminder => 'Emlékeztető';
+
+  @override
+  String get reminderNone => 'Nincs emlékeztető';
+
+  @override
+  String get reminderOneHour => '1 órával előtte';
+
+  @override
+  String get reminderOneDay => '1 nappal előtte';
+
+  @override
+  String get reminderTwoDays => '2 nappal előtte';
+
+  @override
+  String get advancedCarePremiumHint =>
+      'Az ismétlődő tervek és gyógyszeradagok a Premium részei.';
+
+  @override
+  String get premiumCarePlanning => 'Fejlett gondozási és gyógyszertervek';
+
+  @override
+  String get noCareEventsForDay => 'Erre a napra nincs tervezett esemény.';
+
+  @override
+  String get markCompleted => 'Megjelölés teljesítettként';
+
+  @override
+  String get markCancelled => 'Megjelölés töröltként';
+
+  @override
+  String get statusScheduled => 'Tervezett';
+
+  @override
+  String get statusCompleted => 'Teljesítve';
+
+  @override
+  String get statusCancelled => 'Törölve';
+
+  @override
+  String get edit => 'Szerkesztés';
+
+  @override
+  String get upcomingCare => 'Közelgő események';
+
+  @override
+  String get viewCalendar => 'Naptár megnyitása';
+
+  @override
+  String get tomorrow => 'Holnap';
+
+  @override
+  String inDays(int count) {
+    return '$count nap múlva';
+  }
 
   @override
   String get milkInventory => 'Tejkészlet';

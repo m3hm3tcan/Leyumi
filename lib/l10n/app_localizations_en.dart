@@ -34,11 +34,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get freePlanFeatures =>
-      'Feeding, diaper and growth records\nComplete history\nDark mode and 3 languages';
+      'Feeding, diaper and growth records\nCare calendar and upcoming events\nComplete history, dark mode and 3 languages';
 
   @override
   String get premiumPlanFeatures =>
-      'Advanced charts\nMilk inventory\nPDF doctor reports\nMultiple child profiles';
+      'Advanced charts and care plans\nMilk inventory\nPDF doctor reports\nMultiple child profiles';
 
   @override
   String get onboardingPrivacyTitle => 'Your family data stays yours';
@@ -84,7 +84,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deleteChildProfileContent =>
-      'This child profile and all feeding, diaper, growth and milk records linked to it will be permanently deleted.';
+      'This child profile and all feeding, diaper, growth, milk and care calendar records linked to it will be permanently deleted.';
 
   @override
   String get nameLengthError =>
@@ -131,6 +131,131 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get feedingDate => 'Feeding date';
+
+  @override
+  String get careCalendar => 'Care Calendar';
+
+  @override
+  String get careCalendarSubtitle => 'Vaccines, appointments and medicine';
+
+  @override
+  String get addCareEvent => 'Add event';
+
+  @override
+  String get editCareEvent => 'Edit event';
+
+  @override
+  String get eventType => 'Event type';
+
+  @override
+  String get eventTitle => 'Title';
+
+  @override
+  String get careTitleError => 'Title must contain at least 2 characters.';
+
+  @override
+  String get careBeforeBirthError =>
+      'Event date cannot be before the child\'s birth date.';
+
+  @override
+  String get careTypeVaccine => 'Vaccine';
+
+  @override
+  String get careTypeDoctor => 'Doctor';
+
+  @override
+  String get careTypeMedicine => 'Medicine';
+
+  @override
+  String get careTypeCheckup => 'Checkup';
+
+  @override
+  String get careTypeLaboratory => 'Lab/Test';
+
+  @override
+  String get careTypeTherapy => 'Therapy';
+
+  @override
+  String get careTypeCustom => 'Other';
+
+  @override
+  String get doctorOrLocation => 'Doctor or location';
+
+  @override
+  String get medicineDosage => 'Medicine dose';
+
+  @override
+  String get repeatPlan => 'Repeat plan';
+
+  @override
+  String get repeatNone => 'Does not repeat';
+
+  @override
+  String get repeatDaily => 'Daily';
+
+  @override
+  String get repeatWeekly => 'Weekly';
+
+  @override
+  String get repeatMonthly => 'Monthly';
+
+  @override
+  String get reminder => 'Reminder';
+
+  @override
+  String get reminderNone => 'No reminder';
+
+  @override
+  String get reminderOneHour => '1 hour before';
+
+  @override
+  String get reminderOneDay => '1 day before';
+
+  @override
+  String get reminderTwoDays => '2 days before';
+
+  @override
+  String get advancedCarePremiumHint =>
+      'Repeating plans and medicine doses are included with Premium.';
+
+  @override
+  String get premiumCarePlanning =>
+      'Advanced care plans and medicine schedules';
+
+  @override
+  String get noCareEventsForDay => 'No events planned for this day.';
+
+  @override
+  String get markCompleted => 'Mark completed';
+
+  @override
+  String get markCancelled => 'Mark cancelled';
+
+  @override
+  String get statusScheduled => 'Scheduled';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get upcomingCare => 'Upcoming care';
+
+  @override
+  String get viewCalendar => 'View calendar';
+
+  @override
+  String get tomorrow => 'Tomorrow';
+
+  @override
+  String inDays(int count) {
+    return 'In $count days';
+  }
 
   @override
   String get milkInventory => 'Milk Inventory';

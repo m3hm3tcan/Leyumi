@@ -145,13 +145,13 @@ abstract class AppLocalizations {
   /// No description provided for @freePlanFeatures.
   ///
   /// In en, this message translates to:
-  /// **'Feeding, diaper and growth records\nComplete history\nDark mode and 3 languages'**
+  /// **'Feeding, diaper and growth records\nCare calendar and upcoming events\nComplete history, dark mode and 3 languages'**
   String get freePlanFeatures;
 
   /// No description provided for @premiumPlanFeatures.
   ///
   /// In en, this message translates to:
-  /// **'Advanced charts\nMilk inventory\nPDF doctor reports\nMultiple child profiles'**
+  /// **'Advanced charts and care plans\nMilk inventory\nPDF doctor reports\nMultiple child profiles'**
   String get premiumPlanFeatures;
 
   /// No description provided for @onboardingPrivacyTitle.
@@ -235,7 +235,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteChildProfileContent.
   ///
   /// In en, this message translates to:
-  /// **'This child profile and all feeding, diaper, growth and milk records linked to it will be permanently deleted.'**
+  /// **'This child profile and all feeding, diaper, growth, milk and care calendar records linked to it will be permanently deleted.'**
   String get deleteChildProfileContent;
 
   /// No description provided for @nameLengthError.
@@ -315,6 +315,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Feeding date'**
   String get feedingDate;
+
+  /// No description provided for @careCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Care Calendar'**
+  String get careCalendar;
+
+  /// No description provided for @careCalendarSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccines, appointments and medicine'**
+  String get careCalendarSubtitle;
+
+  /// No description provided for @addCareEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add event'**
+  String get addCareEvent;
+
+  /// No description provided for @editCareEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit event'**
+  String get editCareEvent;
+
+  /// No description provided for @eventType.
+  ///
+  /// In en, this message translates to:
+  /// **'Event type'**
+  String get eventType;
+
+  /// No description provided for @eventTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get eventTitle;
+
+  /// No description provided for @careTitleError.
+  ///
+  /// In en, this message translates to:
+  /// **'Title must contain at least 2 characters.'**
+  String get careTitleError;
+
+  /// No description provided for @careBeforeBirthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Event date cannot be before the child\'s birth date.'**
+  String get careBeforeBirthError;
+
+  /// No description provided for @careTypeVaccine.
+  ///
+  /// In en, this message translates to:
+  /// **'Vaccine'**
+  String get careTypeVaccine;
+
+  /// No description provided for @careTypeDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor'**
+  String get careTypeDoctor;
+
+  /// No description provided for @careTypeMedicine.
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine'**
+  String get careTypeMedicine;
+
+  /// No description provided for @careTypeCheckup.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkup'**
+  String get careTypeCheckup;
+
+  /// No description provided for @careTypeLaboratory.
+  ///
+  /// In en, this message translates to:
+  /// **'Lab/Test'**
+  String get careTypeLaboratory;
+
+  /// No description provided for @careTypeTherapy.
+  ///
+  /// In en, this message translates to:
+  /// **'Therapy'**
+  String get careTypeTherapy;
+
+  /// No description provided for @careTypeCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get careTypeCustom;
+
+  /// No description provided for @doctorOrLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor or location'**
+  String get doctorOrLocation;
+
+  /// No description provided for @medicineDosage.
+  ///
+  /// In en, this message translates to:
+  /// **'Medicine dose'**
+  String get medicineDosage;
+
+  /// No description provided for @repeatPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat plan'**
+  String get repeatPlan;
+
+  /// No description provided for @repeatNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Does not repeat'**
+  String get repeatNone;
+
+  /// No description provided for @repeatDaily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get repeatDaily;
+
+  /// No description provided for @repeatWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get repeatWeekly;
+
+  /// No description provided for @repeatMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get repeatMonthly;
+
+  /// No description provided for @reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder'**
+  String get reminder;
+
+  /// No description provided for @reminderNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No reminder'**
+  String get reminderNone;
+
+  /// No description provided for @reminderOneHour.
+  ///
+  /// In en, this message translates to:
+  /// **'1 hour before'**
+  String get reminderOneHour;
+
+  /// No description provided for @reminderOneDay.
+  ///
+  /// In en, this message translates to:
+  /// **'1 day before'**
+  String get reminderOneDay;
+
+  /// No description provided for @reminderTwoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'2 days before'**
+  String get reminderTwoDays;
+
+  /// No description provided for @advancedCarePremiumHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeating plans and medicine doses are included with Premium.'**
+  String get advancedCarePremiumHint;
+
+  /// No description provided for @premiumCarePlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced care plans and medicine schedules'**
+  String get premiumCarePlanning;
+
+  /// No description provided for @noCareEventsForDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No events planned for this day.'**
+  String get noCareEventsForDay;
+
+  /// No description provided for @markCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark completed'**
+  String get markCompleted;
+
+  /// No description provided for @markCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark cancelled'**
+  String get markCancelled;
+
+  /// No description provided for @statusScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get statusScheduled;
+
+  /// No description provided for @statusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statusCompleted;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @upcomingCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming care'**
+  String get upcomingCare;
+
+  /// No description provided for @viewCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'View calendar'**
+  String get viewCalendar;
+
+  /// No description provided for @tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get tomorrow;
+
+  /// No description provided for @inDays.
+  ///
+  /// In en, this message translates to:
+  /// **'In {count} days'**
+  String inDays(int count);
 
   /// No description provided for @milkInventory.
   ///
