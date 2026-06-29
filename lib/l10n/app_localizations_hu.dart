@@ -555,6 +555,64 @@ class AppLocalizationsHu extends AppLocalizations {
       'A Premium vásárlás hamarosan elérhető lesz.';
 
   @override
+  String get settings => 'Beállítások';
+
+  @override
+  String get premiumActive => 'A Premium aktív';
+
+  @override
+  String get premiumInactive => 'A Premium nem aktív';
+
+  @override
+  String get notificationSettings => 'Értesítési beállítások';
+
+  @override
+  String get notificationsPremiumHint =>
+      'Az intelligens emlékeztetők a Premium részei.';
+
+  @override
+  String get notificationsEnabled => 'Az értesítések engedélyezve vannak';
+
+  @override
+  String get notificationsDenied =>
+      'Az értesítések le vannak tiltva. Koppints az engedély újbóli kéréséhez, vagy kapcsold be a rendszerbeállításokban.';
+
+  @override
+  String get notificationsNotChecked =>
+      'Az értesítési engedély még nincs ellenőrizve.';
+
+  @override
+  String get sendTestNotification => 'Tesztértesítés küldése';
+
+  @override
+  String get sendTestNotificationDescription =>
+      'Mutass egy teszt emlékeztetőt, hogy lásd, működnek-e az értesítések.';
+
+  @override
+  String get testNotificationTitle => 'Leyumi emlékeztető';
+
+  @override
+  String get testNotificationBody =>
+      'Az értesítések működnek. Kis győzelem, nagy nyugalom.';
+
+  @override
+  String get testNotificationSent => 'Tesztértesítés elküldve.';
+
+  @override
+  String get darkMode => 'Sötét mód';
+
+  @override
+  String get darkModeDescription =>
+      'Váltás világos és sötét megjelenés között.';
+
+  @override
+  String get resetAppDescription =>
+      'Helyi adatok törlése és visszatérés az onboardinghoz.';
+
+  @override
+  String get loading => 'Betöltés...';
+
+  @override
   String get confirmDeleteTitle => 'Törlöd a bejegyzést?';
 
   @override

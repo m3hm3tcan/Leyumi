@@ -44,6 +44,8 @@ dependencies:
   google_fonts: ^8.1.0
   pdf: ^3.13.0
   printing: ^5.15.0
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

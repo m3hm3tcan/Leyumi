@@ -1120,6 +1120,108 @@ abstract class AppLocalizations {
   /// **'Premium purchasing will be available soon.'**
   String get premiumPurchaseComingSoon;
 
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @premiumActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium is active'**
+  String get premiumActive;
+
+  /// No description provided for @premiumInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium is not active'**
+  String get premiumInactive;
+
+  /// No description provided for @notificationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification settings'**
+  String get notificationSettings;
+
+  /// No description provided for @notificationsPremiumHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart reminders are included with Premium.'**
+  String get notificationsPremiumHint;
+
+  /// No description provided for @notificationsEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are enabled'**
+  String get notificationsEnabled;
+
+  /// No description provided for @notificationsDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are disabled. Tap to request permission again or enable them in system settings.'**
+  String get notificationsDenied;
+
+  /// No description provided for @notificationsNotChecked.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification permission has not been checked yet.'**
+  String get notificationsNotChecked;
+
+  /// No description provided for @sendTestNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Send test notification'**
+  String get sendTestNotification;
+
+  /// No description provided for @sendTestNotificationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Show a test reminder now to confirm notifications work.'**
+  String get sendTestNotificationDescription;
+
+  /// No description provided for @testNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi reminder'**
+  String get testNotificationTitle;
+
+  /// No description provided for @testNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are working. Tiny victory, big peace of mind.'**
+  String get testNotificationBody;
+
+  /// No description provided for @testNotificationSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Test notification sent.'**
+  String get testNotificationSent;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark mode'**
+  String get darkMode;
+
+  /// No description provided for @darkModeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch between light and dark appearance.'**
+  String get darkModeDescription;
+
+  /// No description provided for @resetAppDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear local records and return to onboarding.'**
+  String get resetAppDescription;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
   /// No description provided for @confirmDeleteTitle.
   ///
   /// In en, this message translates to:

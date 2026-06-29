@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/child/active_child_app_bar_title.dart';
 import '../../core/child/active_child_aware.dart';
+import '../../core/premium/premium_feature.dart';
+import '../../core/premium/premium_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/care_notification_service.dart';
 import '../../services/care_event_storage.dart';
 import '../history/helpers/delete_confirmation.dart';
 import 'care_event.dart';
@@ -47,7 +51,9 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
       builder: (_) => CareEventFormSheet(initialEvent: event),
     );
     if (result == null) return;
+    final l10n = AppLocalizations.of(context);
     await _storage.save(result);
+    await _syncNotification(result, l10n);
     await _load();
     if (!mounted) return;
     setState(() {
@@ -61,13 +67,26 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
 
   Future<void> _delete(CareEvent event) async {
     if (!await confirmHistoryDelete(context)) return;
+    await CareNotificationService.instance.cancelCareEvent(event.id);
     await _storage.delete(event.id);
     await _load();
   }
 
   Future<void> _setStatus(CareEvent event, CareEventStatus status) async {
-    await _storage.save(event.copyWith(status: status));
+    final l10n = AppLocalizations.of(context);
+    final updated = event.copyWith(status: status);
+    await _storage.save(updated);
+    await _syncNotification(updated, l10n);
     await _load();
+  }
+
+  Future<void> _syncNotification(CareEvent event, AppLocalizations l10n) async {
+    final premium = context.read<PremiumProvider>();
+    await CareNotificationService.instance.scheduleCareEvent(
+      event: event,
+      enabled: premium.hasAccess(PremiumFeature.smartReminders),
+      reminderTitle: l10n.reminder,
+    );
   }
 
   List<CareEvent> get _selectedEvents =>

@@ -549,6 +549,63 @@ class AppLocalizationsTr extends AppLocalizations {
       'Premium satın alma çok yakında kullanıma açılacak.';
 
   @override
+  String get settings => 'Ayarlar';
+
+  @override
+  String get premiumActive => 'Premium aktif';
+
+  @override
+  String get premiumInactive => 'Premium aktif değil';
+
+  @override
+  String get notificationSettings => 'Bildirim ayarları';
+
+  @override
+  String get notificationsPremiumHint =>
+      'Akıllı hatırlatmalar Premium\'a dahildir.';
+
+  @override
+  String get notificationsEnabled => 'Bildirimler açık';
+
+  @override
+  String get notificationsDenied =>
+      'Bildirim izni kapalı. Tekrar izin istemek veya sistem ayarlarından açmak için dokunun.';
+
+  @override
+  String get notificationsNotChecked => 'Bildirim izni henüz kontrol edilmedi.';
+
+  @override
+  String get sendTestNotification => 'Test bildirimi gönder';
+
+  @override
+  String get sendTestNotificationDescription =>
+      'Bildirimlerin çalıştığını kontrol etmek için hemen bir test bildirimi göster.';
+
+  @override
+  String get testNotificationTitle => 'Leyumi hatırlatma';
+
+  @override
+  String get testNotificationBody =>
+      'Bildirimler çalışıyor. Küçük zafer, büyük rahatlık.';
+
+  @override
+  String get testNotificationSent => 'Test bildirimi gönderildi.';
+
+  @override
+  String get darkMode => 'Karanlık mod';
+
+  @override
+  String get darkModeDescription =>
+      'Açık ve karanlık görünüm arasında geçiş yap.';
+
+  @override
+  String get resetAppDescription =>
+      'Yerel kayıtları sil ve onboarding ekranına dön.';
+
+  @override
+  String get loading => 'Yükleniyor...';
+
+  @override
   String get confirmDeleteTitle => 'Kayıt silinsin mi?';
 
   @override

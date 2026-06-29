@@ -553,6 +553,63 @@ class AppLocalizationsEn extends AppLocalizations {
       'Premium purchasing will be available soon.';
 
   @override
+  String get settings => 'Settings';
+
+  @override
+  String get premiumActive => 'Premium is active';
+
+  @override
+  String get premiumInactive => 'Premium is not active';
+
+  @override
+  String get notificationSettings => 'Notification settings';
+
+  @override
+  String get notificationsPremiumHint =>
+      'Smart reminders are included with Premium.';
+
+  @override
+  String get notificationsEnabled => 'Notifications are enabled';
+
+  @override
+  String get notificationsDenied =>
+      'Notifications are disabled. Tap to request permission again or enable them in system settings.';
+
+  @override
+  String get notificationsNotChecked =>
+      'Notification permission has not been checked yet.';
+
+  @override
+  String get sendTestNotification => 'Send test notification';
+
+  @override
+  String get sendTestNotificationDescription =>
+      'Show a test reminder now to confirm notifications work.';
+
+  @override
+  String get testNotificationTitle => 'Leyumi reminder';
+
+  @override
+  String get testNotificationBody =>
+      'Notifications are working. Tiny victory, big peace of mind.';
+
+  @override
+  String get testNotificationSent => 'Test notification sent.';
+
+  @override
+  String get darkMode => 'Dark mode';
+
+  @override
+  String get darkModeDescription => 'Switch between light and dark appearance.';
+
+  @override
+  String get resetAppDescription =>
+      'Clear local records and return to onboarding.';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
   String get confirmDeleteTitle => 'Delete record?';
 
   @override

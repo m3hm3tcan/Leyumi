@@ -5,16 +5,14 @@ import '../../core/premium/premium_access.dart';
 import '../../core/premium/premium_feature.dart';
 import '../../core/child/active_child_aware.dart';
 import '../../core/child/active_child_provider.dart';
-import '../../core/theme_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/baby_profile.dart';
-import '../../services/reset_service.dart';
 import '../../widgets/baby_card.dart';
 import '../feeding/feeding_screen.dart';
 import '../history/history_hub_screen.dart';
 import '../milk_inventory/milk_inventory_screen.dart';
-import '../children/child_management_screen.dart';
 import '../care_calendar/care_calendar_screen.dart';
+import '../settings/settings_screen.dart';
 import 'widgets/home_action_card.dart';
 import 'widgets/live_feeding_home_card.dart';
 import 'widgets/today_summary_card.dart';
@@ -79,32 +77,6 @@ class _HomeScreenState extends State<HomeScreen>
   void _refreshDashboard() {
     if (!mounted) return;
     setState(() => _dashboardRefreshVersion++);
-  }
-
-  Future<void> _handleReset() async {
-    final l10n = AppLocalizations.of(context);
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.confirmResetTitle),
-        content: Text(l10n.confirmResetContent),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed != true) return;
-    await ResetService.clearAll();
-    if (!mounted) return;
-    Navigator.pushReplacementNamed(context, '/onboarding');
   }
 
   @override
@@ -179,34 +151,16 @@ class _HomeScreenState extends State<HomeScreen>
       centerTitle: true,
       actions: [
         IconButton(
-          tooltip: l10n.switchChild,
+          tooltip: l10n.settings,
           onPressed: () async {
             await Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const ChildManagementScreen()),
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
             );
             await _loadProfile();
             _refreshDashboard();
           },
-          icon: const Icon(Icons.switch_account_rounded),
-        ),
-        IconButton(
-          icon: Icon(
-            Theme.of(context).brightness == Brightness.dark
-                ? Icons.light_mode
-                : Icons.dark_mode,
-          ),
-          onPressed: () {
-            context.read<ThemeProvider>().toggleTheme();
-          },
-        ),
-        PopupMenuButton<String>(
-          onSelected: (value) {
-            if (value == 'reset') _handleReset();
-          },
-          itemBuilder: (_) => [
-            PopupMenuItem(value: 'reset', child: Text(l10n.resetApp)),
-          ],
+          icon: const Icon(Icons.settings),
         ),
       ],
     );

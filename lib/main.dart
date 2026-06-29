@@ -5,14 +5,17 @@ import 'features/onboarding/onboarding_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/growth/growth_update_screen.dart';
 import 'features/diaper/diaper_add_screen.dart';
+import 'features/settings/settings_screen.dart';
 import 'l10n/app_localizations.dart';
 import 'core/premium/premium_provider.dart';
 import 'core/theme_provider.dart';
 import 'core/theme/app_design_tokens.dart';
 import 'core/child/active_child_provider.dart';
+import 'services/care_notification_service.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await CareNotificationService.instance.initialize();
 
   runApp(
     MultiProvider(
@@ -93,6 +96,7 @@ class LeyumiApp extends StatelessWidget {
             "/home": (_) => const HomeScreen(),
             "/growth_update": (_) => const GrowthUpdateScreen(),
             "/diaper": (_) => const DiaperAddScreen(),
+            "/settings": (_) => const SettingsScreen(),
           },
         );
       },

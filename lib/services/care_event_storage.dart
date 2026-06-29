@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../core/data/json_record_decoder.dart';
 import '../features/care_calendar/care_event.dart';
 import 'active_child_scope.dart';
+import 'care_notification_service.dart';
 
 class CareEventStorage {
   static const key = 'care_calendar_events_v1';
@@ -32,12 +33,17 @@ class CareEventStorage {
 
   Future<void> delete(String eventId) async {
     final events = await _loadAll();
+    await CareNotificationService.instance.cancelCareEvent(eventId);
     events.removeWhere((event) => event.id == eventId);
     await _saveAll(events);
   }
 
   Future<void> deleteChildData(String childId) async {
     final events = await _loadAll();
+    final childEvents = events.where((event) => event.childId == childId);
+    for (final event in childEvents) {
+      await CareNotificationService.instance.cancelCareEvent(event.id);
+    }
     events.removeWhere((event) => event.childId == childId);
     await _saveAll(events);
   }
