@@ -2,6 +2,7 @@ import 'package:leyumi/features/feeding/feeding_session.dart';
 import 'package:leyumi/features/history/helpers/delete_confirmation.dart';
 import 'package:flutter/material.dart';
 
+import '../../../core/utils/app_date_utils.dart';
 import 'session_card.dart';
 import 'timeline_header.dart';
 import 'timeline_item.dart';
@@ -10,12 +11,14 @@ class TimelineSection extends StatelessWidget {
   final String title;
   final List<FeedingSession> sessions;
   final Function(FeedingSession) onDelete;
+  final Function(FeedingSession)? onEdit;
 
   const TimelineSection({
     super.key,
     required this.title,
     required this.sessions,
     required this.onDelete,
+    this.onEdit,
   });
 
   @override
@@ -58,7 +61,12 @@ class TimelineSection extends StatelessWidget {
               onDismissed: (_) => onDelete(session),
               child: TimelineItem(
                 isLast: index == sessions.length - 1,
-                child: SessionCard(session: session),
+                child: SessionCard(
+                  session: session,
+                  onEdit: AppDateUtils.isToday(session.startTime)
+                      ? () => onEdit?.call(session)
+                      : null,
+                ),
               ),
             );
           },

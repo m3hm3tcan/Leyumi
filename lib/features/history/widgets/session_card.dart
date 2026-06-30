@@ -13,8 +13,9 @@ class UIColors {
 
 class SessionCard extends StatelessWidget {
   final FeedingSession session;
+  final VoidCallback? onEdit;
 
-  const SessionCard({super.key, required this.session});
+  const SessionCard({super.key, required this.session, this.onEdit});
 
   String _formatDuration(Duration duration, AppLocalizations l10n) {
     final h = duration.inHours;
@@ -110,6 +111,28 @@ class SessionCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
+              if (onEdit != null) ...[
+                Tooltip(
+                  message: l10n.edit,
+                  child: InkWell(
+                    onTap: onEdit,
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xff4DA3FF).withAlpha(18),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.edit_rounded,
+                        color: Color(0xff4DA3FF),
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
               Icon(
                 Icons.swipe_left_rounded,
                 color: secondaryTextColor,
