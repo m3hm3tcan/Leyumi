@@ -75,6 +75,20 @@ class CareNotificationService {
     return preferences.getBool(_permissionGrantedKey);
   }
 
+  Future<bool> canScheduleExactAlarms() async {
+    await initialize();
+    final android = _androidPlugin();
+    if (android == null) return true;
+    return await android.canScheduleExactNotifications() ?? false;
+  }
+
+  Future<bool> requestExactAlarmPermission() async {
+    await initialize();
+    final android = _androidPlugin();
+    if (android == null) return true;
+    return await android.requestExactAlarmsPermission() ?? false;
+  }
+
   Future<bool> showTestNotification({
     required String title,
     required String body,
@@ -93,7 +107,7 @@ class CareNotificationService {
     return true;
   }
 
-  Future<void> scheduleCareEvent({
+  Future<int> scheduleCareEvent({
     required CareEvent event,
     required bool enabled,
     required String reminderTitle,
@@ -104,34 +118,33 @@ class CareNotificationService {
     if (!enabled ||
         event.status != CareEventStatus.scheduled ||
         event.reminderMinutesBefore == null) {
-      return;
+      return 0;
     }
 
     final granted = await requestPermissions();
-    if (!granted) return;
+    if (!granted) return 0;
 
     final now = DateTime.now();
     final reminderTimes = _reminderTimes(event, now);
     final ids = <int>[];
+    final scheduleMode = await _scheduleMode();
 
     for (var index = 0; index < reminderTimes.length; index++) {
       final reminderAt = reminderTimes[index];
       final id = _notificationId(event.id, index);
-      await _plugin.zonedSchedule(
+      await _zonedSchedule(
         id,
         reminderTitle,
         _notificationBody(event),
-        tz.TZDateTime.from(reminderAt, _fixedLocalLocation(reminderAt)),
-        _notificationDetails(),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
+        tz.TZDateTime.from(reminderAt.toUtc(), tz.UTC),
+        scheduleMode: scheduleMode,
         payload: event.id,
       );
       ids.add(id);
     }
 
     if (ids.isNotEmpty) await _rememberIds(event.id, ids);
+    return ids.length;
   }
 
   Future<void> cancelCareEvent(String eventId) async {
@@ -143,6 +156,63 @@ class CareNotificationService {
       if (id != null) await _plugin.cancel(id);
     }
     await preferences.remove(_mapKey(eventId));
+  }
+
+  Future<void> _zonedSchedule(
+    int id,
+    String title,
+    String body,
+    tz.TZDateTime date, {
+    required AndroidScheduleMode scheduleMode,
+    required String payload,
+  }) async {
+    try {
+      await _plugin.zonedSchedule(
+        id,
+        title,
+        body,
+        date,
+        _notificationDetails(),
+        androidScheduleMode: scheduleMode,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: payload,
+      );
+    } catch (_) {
+      if (scheduleMode == AndroidScheduleMode.inexactAllowWhileIdle) rethrow;
+      await _plugin.zonedSchedule(
+        id,
+        title,
+        body,
+        date,
+        _notificationDetails(),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        payload: payload,
+      );
+    }
+  }
+
+  Future<AndroidScheduleMode> _scheduleMode() async {
+    final android = _androidPlugin();
+    if (android == null) return AndroidScheduleMode.exactAllowWhileIdle;
+
+    final canScheduleExact = await android.canScheduleExactNotifications();
+    if (canScheduleExact == true)
+      return AndroidScheduleMode.exactAllowWhileIdle;
+
+    final granted = await android.requestExactAlarmsPermission();
+    return granted == true
+        ? AndroidScheduleMode.exactAllowWhileIdle
+        : AndroidScheduleMode.inexactAllowWhileIdle;
+  }
+
+  AndroidFlutterLocalNotificationsPlugin? _androidPlugin() {
+    return _plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
   }
 
   NotificationDetails _notificationDetails() {
@@ -194,17 +264,6 @@ class CareNotificationService {
       if (event.location != null) event.location!,
     ];
     return details.join(' - ');
-  }
-
-  tz.Location _fixedLocalLocation(DateTime value) {
-    final offset = value.timeZoneOffset;
-    return tz.Location('local', [tz.minTime], [0], [
-      tz.TimeZone(
-        offset.inMilliseconds,
-        isDst: value.timeZoneName.toUpperCase().contains('DST'),
-        abbreviation: value.timeZoneName,
-      ),
-    ]);
   }
 
   int _notificationId(String eventId, int occurrenceIndex) {

@@ -364,6 +364,12 @@ abstract class AppLocalizations {
   /// **'Event date cannot be before the child\'s birth date.'**
   String get careBeforeBirthError;
 
+  /// No description provided for @carePastDateTimeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Event date and time must be in the future.'**
+  String get carePastDateTimeError;
+
   /// No description provided for @careTypeVaccine.
   ///
   /// In en, this message translates to:
@@ -477,6 +483,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'2 days before'**
   String get reminderTwoDays;
+
+  /// No description provided for @reminderScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder scheduled.'**
+  String get reminderScheduled;
+
+  /// No description provided for @reminderTimeAlreadyPassed.
+  ///
+  /// In en, this message translates to:
+  /// **'This reminder time has already passed. Choose a later event time or a shorter reminder.'**
+  String get reminderTimeAlreadyPassed;
+
+  /// No description provided for @reminderCouldNotBeScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder could not be scheduled. Please check notification permission.'**
+  String get reminderCouldNotBeScheduled;
+
+  /// No description provided for @exactAlarmPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow timely reminders?'**
+  String get exactAlarmPermissionTitle;
+
+  /// No description provided for @exactAlarmPermissionContent.
+  ///
+  /// In en, this message translates to:
+  /// **'To deliver reminders on time, Leyumi may need the phone\'s alarm permission.'**
+  String get exactAlarmPermissionContent;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get openSettings;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
 
   /// No description provided for @advancedCarePremiumHint.
   ///
@@ -1360,6 +1408,12 @@ abstract class AppLocalizations {
   /// **'Today'**
   String get today;
 
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
   /// No description provided for @older.
   ///
   /// In en, this message translates to:
@@ -1822,6 +1876,78 @@ abstract class AppLocalizations {
   /// **'Track everything about your baby'**
   String get historyHubSubtitle;
 
+  /// No description provided for @timeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get timeline;
+
+  /// No description provided for @analytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get analytics;
+
+  /// No description provided for @reports.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reports;
+
+  /// No description provided for @recordsOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Records overview'**
+  String get recordsOverview;
+
+  /// No description provided for @recentTimeline.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent timeline'**
+  String get recentTimeline;
+
+  /// No description provided for @noTimelineRecords.
+  ///
+  /// In en, this message translates to:
+  /// **'No records yet. Start tracking from the home screen.'**
+  String get noTimelineRecords;
+
+  /// No description provided for @analyticsHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium analytics'**
+  String get analyticsHubTitle;
+
+  /// No description provided for @analyticsHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Charts and trends for feeding, diapers, growth and milk.'**
+  String get analyticsHubSubtitle;
+
+  /// No description provided for @reportsHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reportsHubTitle;
+
+  /// No description provided for @reportsHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create clean summaries for doctor visits and checkups.'**
+  String get reportsHubSubtitle;
+
+  /// No description provided for @diaperPatterns.
+  ///
+  /// In en, this message translates to:
+  /// **'Diaper patterns'**
+  String get diaperPatterns;
+
+  /// No description provided for @growthTrends.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth trends'**
+  String get growthTrends;
+
   /// No description provided for @milkTracking.
   ///
   /// In en, this message translates to:
@@ -1851,12 +1977,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'UNDO'**
   String get undo;
-
-  /// No description provided for @yesterday.
-  ///
-  /// In en, this message translates to:
-  /// **'Yesterday'**
-  String get yesterday;
 
   /// No description provided for @thisWeek.
   ///

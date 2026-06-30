@@ -105,6 +105,7 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
     final hasAdvanced = premium.hasAccess(PremiumFeature.advancedCarePlanning);
     final hasSmartReminders = premium.hasAccess(PremiumFeature.smartReminders);
     final title = _titleController.text.trim();
+    final now = DateTime.now();
     final beforeBirth =
         profile != null &&
         DateTime(_dateTime.year, _dateTime.month, _dateTime.day).isBefore(
@@ -114,6 +115,7 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
             profile.birthDate.day,
           ),
         );
+    final inPast = !_dateTime.isAfter(now);
 
     if (!hasAdvanced && _isPremiumOnlyType(_type)) {
       _openPremium(PremiumFeature.advancedCarePlanning);
@@ -122,7 +124,11 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
 
     setState(() {
       _titleError = title.length < 2 ? l10n.careTitleError : null;
-      _dateError = beforeBirth ? l10n.careBeforeBirthError : null;
+      _dateError = beforeBirth
+          ? l10n.careBeforeBirthError
+          : inPast
+          ? l10n.carePastDateTimeError
+          : null;
     });
     if (_titleError != null) {
       _titleFocus.requestFocus();

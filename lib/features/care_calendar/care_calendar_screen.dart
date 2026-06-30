@@ -70,6 +70,10 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
     await CareNotificationService.instance.cancelCareEvent(event.id);
     await _storage.delete(event.id);
     await _load();
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context).entryDeleted)),
+    );
   }
 
   Future<void> _setStatus(CareEvent event, CareEventStatus status) async {
@@ -82,11 +86,65 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
 
   Future<void> _syncNotification(CareEvent event, AppLocalizations l10n) async {
     final premium = context.read<PremiumProvider>();
-    await CareNotificationService.instance.scheduleCareEvent(
-      event: event,
-      enabled: premium.hasAccess(PremiumFeature.smartReminders),
-      reminderTitle: l10n.reminder,
+    if (event.reminderMinutesBefore != null &&
+        premium.hasAccess(PremiumFeature.smartReminders)) {
+      await _maybeExplainExactAlarmPermission(l10n);
+      if (!mounted) return;
+    }
+    final scheduledCount = await CareNotificationService.instance
+        .scheduleCareEvent(
+          event: event,
+          enabled: premium.hasAccess(PremiumFeature.smartReminders),
+          reminderTitle: l10n.reminder,
+        );
+    if (!mounted || event.reminderMinutesBefore == null) return;
+
+    final message = scheduledCount > 0
+        ? l10n.reminderScheduled
+        : _reminderTimeHasPassed(event)
+        ? l10n.reminderTimeAlreadyPassed
+        : l10n.reminderCouldNotBeScheduled;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _maybeExplainExactAlarmPermission(AppLocalizations l10n) async {
+    final service = CareNotificationService.instance;
+    if (await service.canScheduleExactAlarms()) return;
+    if (!mounted) return;
+
+    final openSettings = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.exactAlarmPermissionTitle),
+        content: Text(l10n.exactAlarmPermissionContent),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: Text(l10n.later),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(l10n.openSettings),
+          ),
+        ],
+      ),
     );
+
+    if (openSettings == true) {
+      await service.requestExactAlarmPermission();
+    }
+  }
+
+  bool _reminderTimeHasPassed(CareEvent event) {
+    final minutesBefore = event.reminderMinutesBefore;
+    if (minutesBefore == null) return false;
+    final reminderAt = event.scheduledAt.subtract(
+      Duration(minutes: minutesBefore),
+    );
+    return reminderAt.isBefore(DateTime.now()) ||
+        reminderAt.isAtSameMomentAs(DateTime.now());
   }
 
   List<CareEvent> get _selectedEvents =>

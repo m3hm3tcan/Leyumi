@@ -1,15 +1,15 @@
-import 'package:leyumi/core/premium/premium_access.dart';
-import 'package:leyumi/core/premium/premium_feature.dart';
-import 'package:leyumi/features/history/graphs/diaper_graph.dart';
-import 'package:leyumi/features/history/graphs/feeding_graph.dart';
-import 'package:leyumi/features/history/graphs/growth_graph.dart';
-import 'package:leyumi/features/milk_inventory/milk_history_screen.dart';
-import 'package:leyumi/features/doctor_report/doctor_report_screen.dart';
-import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/child/active_child_provider.dart';
+import '../../core/premium/premium_access.dart';
+import '../../core/premium/premium_feature.dart';
+import '../../features/doctor_report/doctor_report_screen.dart';
+import '../../features/milk_inventory/milk_history_screen.dart';
+import '../../l10n/app_localizations.dart';
+import 'graphs/diaper_graph.dart';
+import 'graphs/feeding_graph.dart';
+import 'graphs/growth_graph.dart';
 import 'tabs/diaper_tab.dart';
 import 'tabs/feeding_tab.dart';
 import 'tabs/growth_tab.dart';
@@ -65,7 +65,7 @@ class HistoryHubScreen extends StatelessWidget {
                   children: [
                     HubCard(
                       title: l10n.feeding,
-                      icon: Icons.local_drink_rounded,
+                      icon: Icons.local_drink,
                       color: const Color(0xff4DA3FF),
                       subtitle: l10n.milkTracking,
                       onTap: () {
@@ -103,7 +103,7 @@ class HistoryHubScreen extends StatelessWidget {
                     ),
                     HubCard(
                       title: l10n.diaperGraph,
-                      icon: Icons.bar_chart_rounded,
+                      icon: Icons.bar_chart,
                       color: const Color(0xffD97706),
                       subtitle: l10n.viewCharts,
                       isPremium: true,
@@ -117,7 +117,7 @@ class HistoryHubScreen extends StatelessWidget {
                     ),
                     HubCard(
                       title: l10n.growth,
-                      icon: Icons.show_chart_rounded,
+                      icon: Icons.show_chart,
                       color: const Color(0xff22C55E),
                       subtitle: l10n.weightAndHeight,
                       onTap: () {
@@ -129,7 +129,7 @@ class HistoryHubScreen extends StatelessWidget {
                     ),
                     HubCard(
                       title: l10n.growthGraph,
-                      icon: Icons.area_chart_rounded,
+                      icon: Icons.area_chart,
                       color: const Color(0xff16A34A),
                       subtitle: l10n.viewCharts,
                       isPremium: true,
@@ -143,7 +143,7 @@ class HistoryHubScreen extends StatelessWidget {
                     ),
                     HubCard(
                       title: l10n.milkHistory,
-                      icon: Icons.history_rounded,
+                      icon: Icons.history,
                       color: const Color(0xff7C5CE7),
                       subtitle: l10n.usedAndRemainingMilk,
                       isPremium: true,
@@ -157,7 +157,7 @@ class HistoryHubScreen extends StatelessWidget {
                     ),
                     HubCard(
                       title: l10n.doctorReport,
-                      icon: Icons.picture_as_pdf_rounded,
+                      icon: Icons.picture_as_pdf,
                       color: const Color(0xffE05273),
                       subtitle: l10n.createShareableReport,
                       isPremium: true,

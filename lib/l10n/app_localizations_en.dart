@@ -158,6 +158,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Event date cannot be before the child\'s birth date.';
 
   @override
+  String get carePastDateTimeError =>
+      'Event date and time must be in the future.';
+
+  @override
   String get careTypeVaccine => 'Vaccine';
 
   @override
@@ -213,6 +217,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reminderTwoDays => '2 days before';
+
+  @override
+  String get reminderScheduled => 'Reminder scheduled.';
+
+  @override
+  String get reminderTimeAlreadyPassed =>
+      'This reminder time has already passed. Choose a later event time or a shorter reminder.';
+
+  @override
+  String get reminderCouldNotBeScheduled =>
+      'Reminder could not be scheduled. Please check notification permission.';
+
+  @override
+  String get exactAlarmPermissionTitle => 'Allow timely reminders?';
+
+  @override
+  String get exactAlarmPermissionContent =>
+      'To deliver reminders on time, Leyumi may need the phone\'s alarm permission.';
+
+  @override
+  String get openSettings => 'Open settings';
+
+  @override
+  String get later => 'Later';
 
   @override
   String get advancedCarePremiumHint =>
@@ -682,6 +710,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get today => 'Today';
 
   @override
+  String get yesterday => 'Yesterday';
+
+  @override
   String get older => 'Older';
 
   @override
@@ -916,6 +947,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get historyHubSubtitle => 'Track everything about your baby';
 
   @override
+  String get timeline => 'Timeline';
+
+  @override
+  String get analytics => 'Analytics';
+
+  @override
+  String get reports => 'Reports';
+
+  @override
+  String get recordsOverview => 'Records overview';
+
+  @override
+  String get recentTimeline => 'Recent timeline';
+
+  @override
+  String get noTimelineRecords =>
+      'No records yet. Start tracking from the home screen.';
+
+  @override
+  String get analyticsHubTitle => 'Premium analytics';
+
+  @override
+  String get analyticsHubSubtitle =>
+      'Charts and trends for feeding, diapers, growth and milk.';
+
+  @override
+  String get reportsHubTitle => 'Reports';
+
+  @override
+  String get reportsHubSubtitle =>
+      'Create clean summaries for doctor visits and checkups.';
+
+  @override
+  String get diaperPatterns => 'Diaper patterns';
+
+  @override
+  String get growthTrends => 'Growth trends';
+
+  @override
   String get milkTracking => 'Milk tracking';
 
   @override
@@ -929,9 +999,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get undo => 'UNDO';
-
-  @override
-  String get yesterday => 'Yesterday';
 
   @override
   String get thisWeek => 'This Week';

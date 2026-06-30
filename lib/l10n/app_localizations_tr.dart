@@ -156,6 +156,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Etkinlik tarihi çocuğun doğumundan önce olamaz.';
 
   @override
+  String get carePastDateTimeError =>
+      'Etkinlik tarihi ve saati gelecekte olmalıdır.';
+
+  @override
   String get careTypeVaccine => 'Aşı';
 
   @override
@@ -211,6 +215,31 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get reminderTwoDays => '2 gün önce';
+
+  @override
+  String get reminderScheduled => 'Hatırlatma planlandı.';
+
+  @override
+  String get reminderTimeAlreadyPassed =>
+      'Bu hatırlatma zamanı zaten geçmiş. Daha ileri bir etkinlik zamanı veya daha kısa bir hatırlatma seçin.';
+
+  @override
+  String get reminderCouldNotBeScheduled =>
+      'Hatırlatma planlanamadı. Lütfen bildirim iznini kontrol edin.';
+
+  @override
+  String get exactAlarmPermissionTitle =>
+      'Zamanında hatırlatma izni verilsin mi?';
+
+  @override
+  String get exactAlarmPermissionContent =>
+      'Hatırlatmaların zamanında gelmesi için Leyumi telefonun alarm iznine ihtiyaç duyabilir.';
+
+  @override
+  String get openSettings => 'Ayarları aç';
+
+  @override
+  String get later => 'Daha sonra';
 
   @override
   String get advancedCarePremiumHint =>
@@ -678,6 +707,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get today => 'Bugün';
 
   @override
+  String get yesterday => 'Dün';
+
+  @override
   String get older => 'Daha eski';
 
   @override
@@ -911,6 +943,45 @@ class AppLocalizationsTr extends AppLocalizations {
   String get historyHubSubtitle => 'Bebeğinizle ilgili her şeyi takip edin';
 
   @override
+  String get timeline => 'Zaman Akışı';
+
+  @override
+  String get analytics => 'Analizler';
+
+  @override
+  String get reports => 'Raporlar';
+
+  @override
+  String get recordsOverview => 'Kayıt özeti';
+
+  @override
+  String get recentTimeline => 'Son kayıt akışı';
+
+  @override
+  String get noTimelineRecords =>
+      'Henüz kayıt yok. Ana ekrandan takip etmeye başlayın.';
+
+  @override
+  String get analyticsHubTitle => 'Premium analizler';
+
+  @override
+  String get analyticsHubSubtitle =>
+      'Beslenme, bez, büyüme ve süt için grafikler ve trendler.';
+
+  @override
+  String get reportsHubTitle => 'Raporlar';
+
+  @override
+  String get reportsHubSubtitle =>
+      'Doktor ziyaretleri ve kontroller için temiz özetler oluşturun.';
+
+  @override
+  String get diaperPatterns => 'Bez düzeni';
+
+  @override
+  String get growthTrends => 'Büyüme trendleri';
+
+  @override
   String get milkTracking => 'Süt takibi';
 
   @override
@@ -924,9 +995,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get undo => 'GERİ AL';
-
-  @override
-  String get yesterday => 'Dün';
 
   @override
   String get thisWeek => 'Bu Hafta';

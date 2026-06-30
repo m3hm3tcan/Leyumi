@@ -161,6 +161,10 @@ class AppLocalizationsHu extends AppLocalizations {
       'Az esemény dátuma nem lehet korábbi a gyermek születésénél.';
 
   @override
+  String get carePastDateTimeError =>
+      'Az esemény dátumának és idejének a jövőben kell lennie.';
+
+  @override
   String get careTypeVaccine => 'Oltás';
 
   @override
@@ -216,6 +220,31 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get reminderTwoDays => '2 nappal előtte';
+
+  @override
+  String get reminderScheduled => 'Emlékeztető ütemezve.';
+
+  @override
+  String get reminderTimeAlreadyPassed =>
+      'Ez az emlékeztetési idő már elmúlt. Válassz későbbi eseményidőt vagy rövidebb emlékeztetőt.';
+
+  @override
+  String get reminderCouldNotBeScheduled =>
+      'Az emlékeztetőt nem sikerült ütemezni. Ellenőrizd az értesítési engedélyt.';
+
+  @override
+  String get exactAlarmPermissionTitle =>
+      'Engedélyezed a pontos emlékeztetőket?';
+
+  @override
+  String get exactAlarmPermissionContent =>
+      'Ahhoz, hogy az emlékeztetők időben megérkezzenek, a Leyuminak szüksége lehet a telefon ébresztési engedélyére.';
+
+  @override
+  String get openSettings => 'Beállítások megnyitása';
+
+  @override
+  String get later => 'Később';
 
   @override
   String get advancedCarePremiumHint =>
@@ -685,6 +714,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get today => 'Ma';
 
   @override
+  String get yesterday => 'Tegnap';
+
+  @override
   String get older => 'Korábbiak';
 
   @override
@@ -920,6 +952,45 @@ class AppLocalizationsHu extends AppLocalizations {
   String get historyHubSubtitle => 'Kövesd a babával kapcsolatos összes adatot';
 
   @override
+  String get timeline => 'Idővonal';
+
+  @override
+  String get analytics => 'Elemzések';
+
+  @override
+  String get reports => 'Jelentések';
+
+  @override
+  String get recordsOverview => 'Bejegyzések áttekintése';
+
+  @override
+  String get recentTimeline => 'Legutóbbi idővonal';
+
+  @override
+  String get noTimelineRecords =>
+      'Még nincs bejegyzés. Kezdd a követést a főoldalról.';
+
+  @override
+  String get analyticsHubTitle => 'Premium elemzések';
+
+  @override
+  String get analyticsHubSubtitle =>
+      'Grafikonok és trendek etetéshez, pelenkához, növekedéshez és tejhez.';
+
+  @override
+  String get reportsHubTitle => 'Jelentések';
+
+  @override
+  String get reportsHubSubtitle =>
+      'Készíts tiszta összefoglalókat orvosi látogatásokhoz és kontrollokhoz.';
+
+  @override
+  String get diaperPatterns => 'Pelenka minták';
+
+  @override
+  String get growthTrends => 'Növekedési trendek';
+
+  @override
   String get milkTracking => 'Tej követése';
 
   @override
@@ -933,9 +1004,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get undo => 'VISSZAVONÁS';
-
-  @override
-  String get yesterday => 'Tegnap';
 
   @override
   String get thisWeek => 'Ezen a héten';
