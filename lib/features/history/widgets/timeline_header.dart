@@ -18,12 +18,21 @@ class TimelineHeader extends StatelessWidget {
       margin: const EdgeInsets.only(left: 16, right: 16, top: 18, bottom: 10),
       child: Row(
         children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: const BoxDecoration(
+              color: Color(0xff4DA3FF),
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: 10),
           Text(
             title.toUpperCase(),
             style: TextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.2,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.1,
               color: secondaryTextColor,
               decoration: TextDecoration.none,
             ),
@@ -42,6 +51,7 @@ class TimelineHeader extends StatelessWidget {
             '$count ${l10n.sessions.toLowerCase()}',
             style: TextStyle(
               fontSize: 12,
+              fontWeight: FontWeight.w700,
               color: secondaryTextColor,
               decoration: TextDecoration.none,
             ),

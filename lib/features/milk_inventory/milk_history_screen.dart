@@ -12,6 +12,7 @@ import 'package:leyumi/services/milk_inventory_storage.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/child/active_child_aware.dart';
+import '../history/widgets/history_page_shell.dart';
 
 class MilkHistoryScreen extends StatefulWidget {
   const MilkHistoryScreen({super.key});
@@ -114,37 +115,65 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
       return const PremiumPaywallScreen(feature: PremiumFeature.milkInventory);
     }
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(title: Text(l10n.milkHistory)),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                  child: _summary(l10n),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _tabBar(l10n),
-                ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: _tabIndex == 0 ? _activityList(l10n) : _insights(l10n),
-                ),
-              ],
-            ),
+      body: DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: isDark
+                ? const [Color(0xff111827), Color(0xff0B1120)]
+                : [
+                    const Color(0xff7C5CE7).withAlpha(18),
+                    theme.scaffoldBackgroundColor,
+                  ],
+          ),
+        ),
+        child: _loading
+            ? const Center(child: CircularProgressIndicator())
+            : Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+                    child: _summary(l10n),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: _tabBar(l10n),
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: _tabIndex == 0
+                        ? _activityList(l10n)
+                        : _insights(l10n),
+                  ),
+                ],
+              ),
+      ),
     );
   }
 
   Widget _summary(AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
           colors: [Color(0xff6257D9), Color(0xff9A67DC)],
         ),
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xff6257D9).withAlpha(55),
+            blurRadius: 30,
+            offset: const Offset(0, 14),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -170,8 +199,9 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
           value,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 17,
+            fontSize: 18,
             fontWeight: FontWeight.w900,
+            decoration: TextDecoration.none,
           ),
         ),
         const SizedBox(height: 3),
@@ -179,7 +209,12 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
           label,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: TextStyle(color: Colors.white.withAlpha(175), fontSize: 9),
+          style: TextStyle(
+            color: Colors.white.withAlpha(190),
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            decoration: TextDecoration.none,
+          ),
         ),
       ],
     );
@@ -196,8 +231,17 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Theme.of(context).dividerColor.withAlpha(25),
-        borderRadius: BorderRadius.circular(15),
+        color: Theme.of(context).cardColor.withAlpha(220),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(
+              Theme.of(context).brightness == Brightness.dark ? 25 : 7,
+            ),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Row(children: [_tab(l10n.activity, 0), _tab(l10n.insights, 1)]),
     );
@@ -212,8 +256,10 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
           duration: const Duration(milliseconds: 180),
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? Theme.of(context).cardColor : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
+            color: selected
+                ? const Color(0xff6257D9).withAlpha(28)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(14),
           ),
           child: Text(
             label,
@@ -231,7 +277,12 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
 
   Widget _activityList(AppLocalizations l10n) {
     if (_events.isEmpty) {
-      return Center(child: Text(l10n.noMilkHistory));
+      return HistoryEmptyState(
+        icon: Icons.local_drink_rounded,
+        color: const Color(0xff6257D9),
+        title: l10n.noMilkHistory,
+        subtitle: l10n.usedAndRemainingMilk,
+      );
     }
 
     final grouped = <DateTime, List<MilkInventoryEvent>>{};
@@ -243,12 +294,13 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
       children: [
         for (final group in grouped.entries) ...[
-          Padding(
-            padding: const EdgeInsets.fromLTRB(4, 14, 4, 8),
-            child: Text(
-              MaterialLocalizations.of(context).formatMediumDate(group.key),
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800),
-            ),
+          HistorySectionTitle(
+            title: MaterialLocalizations.of(
+              context,
+            ).formatMediumDate(group.key),
+            count: group.value.length,
+            countLabel: l10n.activity.toLowerCase(),
+            color: const Color(0xff6257D9),
           ),
           for (final event in group.value) _eventCard(event, l10n),
         ],
@@ -263,21 +315,32 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
     ).formatTimeOfDay(TimeOfDay.fromDateTime(event.eventAt));
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 9),
-      padding: const EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: presentation.color.withAlpha(35)),
+        color: Theme.of(context).cardColor.withAlpha(
+          Theme.of(context).brightness == Brightness.dark ? 220 : 250,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: presentation.color.withAlpha(38)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(
+              Theme.of(context).brightness == Brightness.dark ? 34 : 9,
+            ),
+            blurRadius: 16,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: presentation.color.withAlpha(18),
-              borderRadius: BorderRadius.circular(13),
+              color: presentation.color.withAlpha(22),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(presentation.icon, color: presentation.color, size: 21),
           ),
@@ -317,7 +380,12 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
 
   Widget _insights(AppLocalizations l10n) {
     if (_events.isEmpty) {
-      return Center(child: Text(l10n.noMilkHistory));
+      return HistoryEmptyState(
+        icon: Icons.insights_rounded,
+        color: const Color(0xff6257D9),
+        title: l10n.noMilkHistory,
+        subtitle: l10n.insights,
+      );
     }
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
@@ -492,9 +560,20 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: Theme.of(context).dividerColor.withAlpha(55)),
+        color: Theme.of(context).cardColor.withAlpha(
+          Theme.of(context).brightness == Brightness.dark ? 220 : 250,
+        ),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: Theme.of(context).dividerColor.withAlpha(45)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(
+              Theme.of(context).brightness == Brightness.dark ? 34 : 9,
+            ),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

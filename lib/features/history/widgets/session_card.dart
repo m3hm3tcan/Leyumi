@@ -61,15 +61,16 @@ class SessionCard extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.only(right: 16, bottom: 12),
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(22),
+        color: theme.cardColor.withAlpha(isDark ? 220 : 250),
+        borderRadius: BorderRadius.circular(26),
+        border: Border.all(color: const Color(0xff4DA3FF).withAlpha(22)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(isDark ? 35 : 10),
-            blurRadius: 14,
-            offset: const Offset(0, 4),
+            color: Colors.black.withAlpha(isDark ? 38 : 10),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -77,23 +78,38 @@ class SessionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(
-                Icons.schedule_rounded,
-                size: 14,
-                color: UIColors.muted,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                _formatTime(session.startTime),
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: secondaryTextColor,
-                  decoration: TextDecoration.none,
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xff4DA3FF).withAlpha(22),
+                  borderRadius: BorderRadius.circular(100),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.schedule_rounded,
+                      size: 14,
+                      color: Color(0xff4DA3FF),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      _formatTime(session.startTime),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xff4DA3FF),
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const Spacer(),
               Icon(
                 Icons.swipe_left_rounded,
                 color: secondaryTextColor,
@@ -105,8 +121,9 @@ class SessionCard extends StatelessWidget {
           Text(
             _formatDuration(session.totalDuration, l10n),
             style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
+              fontSize: 28,
+              height: 1,
+              fontWeight: FontWeight.w900,
               color: primaryTextColor,
               letterSpacing: -0.5,
               decoration: TextDecoration.none,
@@ -125,7 +142,7 @@ class SessionCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: SizedBox(
-              height: 8,
+              height: 10,
               child: Row(
                 children: [
                   Expanded(
@@ -142,19 +159,23 @@ class SessionCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _miniStat(
-                context: context,
-                label: l10n.leftLabel,
-                value: _formatDuration(leftTotal, l10n),
-                color: UIColors.left,
+              Expanded(
+                child: _miniStat(
+                  context: context,
+                  label: l10n.leftLabel,
+                  value: _formatDuration(leftTotal, l10n),
+                  color: UIColors.left,
+                ),
               ),
-              _miniStat(
-                context: context,
-                label: l10n.rightLabel,
-                value: _formatDuration(rightTotal, l10n),
-                color: UIColors.right,
+              const SizedBox(width: 8),
+              Expanded(
+                child: _miniStat(
+                  context: context,
+                  label: l10n.rightLabel,
+                  value: _formatDuration(rightTotal, l10n),
+                  color: UIColors.right,
+                ),
               ),
             ],
           ),
@@ -202,24 +223,35 @@ class SessionCard extends StatelessWidget {
     final primaryTextColor =
         Theme.of(context).textTheme.bodyLarge?.color ?? UIColors.text;
 
-    return Row(
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          "$label - $value",
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: primaryTextColor,
-            decoration: TextDecoration.none,
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+      decoration: BoxDecoration(
+        color: color.withAlpha(18),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 8,
+            height: 8,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
-        ),
-      ],
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              "$label - $value",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w800,
+                color: primaryTextColor,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

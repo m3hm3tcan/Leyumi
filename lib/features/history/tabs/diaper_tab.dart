@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/child/active_child_aware.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../widgets/history_page_shell.dart';
 
 class DiaperTab extends StatefulWidget {
   const DiaperTab({super.key});
@@ -127,34 +128,26 @@ class _DiaperTabState extends State<DiaperTab>
 
     final l10n = AppLocalizations.of(context);
     final grouped = group(l10n);
-    final theme = Theme.of(context);
-    final secondaryTextColor =
-        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
 
-    return ColoredBox(
-      color: theme.scaffoldBackgroundColor,
+    return HistoryPageShell(
+      title: l10n.diaper,
+      subtitle: l10n.addDiaperChangesHint,
+      icon: Icons.baby_changing_station_rounded,
+      color: const Color(0xffF59E0B),
+      showHeader: false,
       child: entries.isEmpty
           ? _emptyState(l10n)
           : ListView(
-              padding: const EdgeInsets.only(bottom: 28),
+              padding: const EdgeInsets.only(bottom: 32),
               children: [
-                const SizedBox(height: 12),
+                _summaryCard(l10n),
                 if (showTooltip) _swipeHint(l10n),
                 for (final section in grouped.entries) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Text(
-                      section.key,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: secondaryTextColor,
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
+                  HistorySectionTitle(
+                    title: section.key,
+                    count: section.value.length,
+                    countLabel: l10n.diaperChanges.toLowerCase(),
+                    color: const Color(0xffF59E0B),
                   ),
                   ...section.value.map(
                     (entry) => Padding(
@@ -170,6 +163,114 @@ class _DiaperTabState extends State<DiaperTab>
             ),
     );
   }
+
+  Widget _summaryCard(AppLocalizations l10n) {
+    final todayEntries = entries
+        .where((entry) => AppDateUtils.isToday(entry.timestamp))
+        .length;
+    final peeCount = entries
+        .where(
+          (entry) =>
+              entry.type == DiaperType.pee || entry.type == DiaperType.both,
+        )
+        .length;
+    final poopCount = entries
+        .where(
+          (entry) =>
+              entry.type == DiaperType.poop || entry.type == DiaperType.both,
+        )
+        .length;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 2, 16, 12),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xffF59E0B), Color(0xffF97316)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xffF59E0B).withAlpha(55),
+            blurRadius: 28,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _summaryMetric(
+              icon: Icons.today_rounded,
+              value: todayEntries.toString(),
+              label: l10n.today,
+            ),
+          ),
+          _summaryDivider(),
+          Expanded(
+            child: _summaryMetric(
+              icon: Icons.invert_colors_rounded,
+              value: peeCount.toString(),
+              label: l10n.pee,
+            ),
+          ),
+          _summaryDivider(),
+          Expanded(
+            child: _summaryMetric(
+              icon: Icons.bubble_chart_rounded,
+              value: poopCount.toString(),
+              label: l10n.poop,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryMetric({
+    required IconData icon,
+    required String value,
+    required String label,
+  }) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w900,
+            decoration: TextDecoration.none,
+          ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.white.withAlpha(205),
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _summaryDivider() => Container(
+    width: 1,
+    height: 54,
+    margin: const EdgeInsets.symmetric(horizontal: 10),
+    color: Colors.white.withAlpha(45),
+  );
 
   Widget _swipeHint(AppLocalizations l10n) {
     final theme = Theme.of(context);
@@ -237,7 +338,7 @@ class _DiaperTabState extends State<DiaperTab>
         margin: const EdgeInsets.only(top: 4, bottom: 4),
         decoration: BoxDecoration(
           color: Colors.red.shade400,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(22),
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
@@ -246,27 +347,29 @@ class _DiaperTabState extends State<DiaperTab>
       confirmDismiss: (_) => confirmHistoryDelete(context),
       onDismissed: (_) => deleteEntry(entry),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          color: theme.cardColor.withAlpha(isDark ? 220 : 250),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: _bgForType(entry.type).withAlpha(90)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(isDark ? 30 : 8),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
+              color: Colors.black.withAlpha(isDark ? 34 : 10),
+              blurRadius: 16,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 color: _bgForType(entry.type),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: _icon(entry.type),
+              child: Center(child: _icon(entry.type)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -440,58 +543,11 @@ class _DiaperTabState extends State<DiaperTab>
   }
 
   Widget _emptyState(AppLocalizations l10n) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final secondaryTextColor =
-        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(isDark ? 35 : 13),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.baby_changing_station,
-                size: 60,
-                color: Colors.blueGrey,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              l10n.noDiaperRecordsYet,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                decoration: TextDecoration.none,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.addDiaperChangesHint,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: secondaryTextColor,
-                decoration: TextDecoration.none,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return HistoryEmptyState(
+      icon: Icons.baby_changing_station_rounded,
+      color: const Color(0xffF59E0B),
+      title: l10n.noDiaperRecordsYet,
+      subtitle: l10n.addDiaperChangesHint,
     );
   }
 }

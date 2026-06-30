@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/child/active_child_aware.dart';
 import '../../../core/utils/app_date_utils.dart';
+import '../widgets/history_page_shell.dart';
 import '../widgets/timeline_section.dart';
 import '../widgets/today_summary_card.dart';
 
@@ -62,14 +63,17 @@ class _FeedingTabState extends State<FeedingTab>
     final l10n = AppLocalizations.of(context);
     final grouped = group(l10n);
 
-    return ColoredBox(
-      color: Theme.of(context).scaffoldBackgroundColor,
+    return HistoryPageShell(
+      title: l10n.feeding,
+      subtitle: l10n.startFeedingSessionHint,
+      icon: Icons.local_drink_rounded,
+      color: const Color(0xff4DA3FF),
+      showHeader: false,
       child: sessions.isEmpty
           ? _emptyState(l10n)
           : ListView(
-              padding: const EdgeInsets.only(bottom: 28),
+              padding: const EdgeInsets.only(bottom: 32),
               children: [
-                const SizedBox(height: 12),
                 if (grouped[l10n.today] != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -88,62 +92,11 @@ class _FeedingTabState extends State<FeedingTab>
   }
 
   Widget _emptyState(AppLocalizations l10n) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final secondaryTextColor =
-        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
-
-    return ColoredBox(
-      color: theme.scaffoldBackgroundColor,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(28),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withAlpha(isDark ? 35 : 13),
-                      blurRadius: 18,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: const Icon(
-                  Icons.local_drink_outlined,
-                  size: 60,
-                  color: Colors.blueGrey,
-                ),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                l10n.noFeedingSessionsYet,
-                style: const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w700,
-                  decoration: TextDecoration.none,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.startFeedingSessionHint,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: secondaryTextColor,
-                  fontSize: 13,
-                  height: 1.4,
-                  decoration: TextDecoration.none,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    return HistoryEmptyState(
+      icon: Icons.local_drink_outlined,
+      color: const Color(0xff4DA3FF),
+      title: l10n.noFeedingSessionsYet,
+      subtitle: l10n.startFeedingSessionHint,
     );
   }
 }

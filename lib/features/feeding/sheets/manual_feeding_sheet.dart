@@ -113,22 +113,26 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
 
   (DateTime, DateTime)? get _dateRange {
     if (_startTime == null || _endTime == null) return null;
-    return (
-      DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _startTime!.hour,
-        _startTime!.minute,
-      ),
-      DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _endTime!.hour,
-        _endTime!.minute,
-      ),
+    final start = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _startTime!.hour,
+      _startTime!.minute,
     );
+    var end = DateTime(
+      _selectedDate.year,
+      _selectedDate.month,
+      _selectedDate.day,
+      _endTime!.hour,
+      _endTime!.minute,
+    );
+
+    if (end.isBefore(start)) {
+      end = end.add(const Duration(days: 1));
+    }
+
+    return (start, end);
   }
 
   Future<void> _save() async {
