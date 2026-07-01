@@ -367,6 +367,9 @@
   "daysAgo": "{count} napja",
   "liveFeedingContinues": "Az élő etetés folyamatban van",
   "unsavedFeedingDraft": "Egy nem mentett etetési vázlat vár",
+  "longFeedingWarning": "Az etetés már egy ideje tart. Ha elfelejtetted menteni, mentsd el most, és később módosíthatod az időt az etetési előzményekben.",
+  "activeFeedingNotificationTitle": "Etetés folyamatban",
+  "activeFeedingNotificationBody": "Az etetési időzítő fut. Nyisd meg a Leyumit a leállításhoz vagy mentéshez.",
   "feedingSideProgress": "{side} oldal - {duration}",
   "open": "Megnyitás",
   "@generatedOn": {

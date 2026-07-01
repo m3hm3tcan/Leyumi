@@ -367,6 +367,9 @@
   "daysAgo": "{count} d ago",
   "liveFeedingContinues": "Live feeding is in progress",
   "unsavedFeedingDraft": "An unsaved feeding draft is ready",
+  "longFeedingWarning": "Feeding has been running for a while. If you forgot to save it, save now and adjust the time later from feeding history.",
+  "activeFeedingNotificationTitle": "Feeding in progress",
+  "activeFeedingNotificationBody": "The feeding timer is running. Open Leyumi to stop or save it.",
   "feedingSideProgress": "{side} side - {duration}",
   "open": "Open",
   "@generatedOn": {

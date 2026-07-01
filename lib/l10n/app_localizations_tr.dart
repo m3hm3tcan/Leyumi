@@ -1144,6 +1144,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get unsavedFeedingDraft => 'Kaydedilmemiş beslenme taslağı hazır';
 
   @override
+  String get longFeedingWarning =>
+      'Beslenme süresi uzadı. Kaydetmeyi unuttuysanız şimdi kaydedip beslenme geçmişinden saati düzenleyebilirsiniz.';
+
+  @override
+  String get activeFeedingNotificationTitle => 'Beslenme devam ediyor';
+
+  @override
+  String get activeFeedingNotificationBody =>
+      'Beslenme zamanlayıcısı çalışıyor. Durdurmak veya kaydetmek için Leyumi\'yi açın.';
+
+  @override
   String feedingSideProgress(String side, String duration) {
     return '$side tarafı - $duration';
   }

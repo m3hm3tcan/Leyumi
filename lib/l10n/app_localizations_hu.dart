@@ -1153,6 +1153,17 @@ class AppLocalizationsHu extends AppLocalizations {
   String get unsavedFeedingDraft => 'Egy nem mentett etetési vázlat vár';
 
   @override
+  String get longFeedingWarning =>
+      'Az etetés már egy ideje tart. Ha elfelejtetted menteni, mentsd el most, és később módosíthatod az időt az etetési előzményekben.';
+
+  @override
+  String get activeFeedingNotificationTitle => 'Etetés folyamatban';
+
+  @override
+  String get activeFeedingNotificationBody =>
+      'Az etetési időzítő fut. Nyisd meg a Leyumit a leállításhoz vagy mentéshez.';
+
+  @override
   String feedingSideProgress(String side, String duration) {
     return '$side oldal - $duration';
   }

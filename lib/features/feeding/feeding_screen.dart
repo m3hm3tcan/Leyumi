@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../core/child/active_child_app_bar_title.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/baby_storage.dart';
+import '../../services/feeding_notification_service.dart';
 import '../../services/feeding_storage.dart';
 import 'feeding_controller.dart';
 import 'feeding_draft_service.dart';
@@ -37,6 +38,8 @@ class _FeedingScreenState extends State<FeedingScreen>
   FeedingSide? _activeSide;
   String? _startWeightError;
   String? _endWeightError;
+  bool _longFeedingWarningShown = false;
+  static const _longFeedingWarningAfter = Duration(minutes: 45);
 
   @override
   void initState() {
@@ -44,7 +47,9 @@ class _FeedingScreenState extends State<FeedingScreen>
     WidgetsBinding.instance.addObserver(this);
     _controller = FeedingController(
       onTick: (duration) {
-        if (mounted) setState(() => _currentTimer = duration);
+        if (!mounted) return;
+        setState(() => _currentTimer = duration);
+        _maybeShowLongFeedingWarning(duration);
       },
     );
     _restoreDraft();
@@ -81,6 +86,27 @@ class _FeedingScreenState extends State<FeedingScreen>
       _currentTimer = draft.activeSideStartedAt == null
           ? Duration.zero
           : DateTime.now().difference(draft.activeSideStartedAt!);
+    });
+    _maybeShowLongFeedingWarning(_currentTimer);
+    await _syncActiveFeedingNotification();
+  }
+
+  void _maybeShowLongFeedingWarning(Duration duration) {
+    if (_activeSide == null) return;
+    if (_longFeedingWarningShown) return;
+    if (duration < _longFeedingWarningAfter) return;
+
+    _longFeedingWarningShown = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || _activeSide == null) return;
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.hideCurrentSnackBar();
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).longFeedingWarning),
+          duration: const Duration(seconds: 6),
+        ),
+      );
     });
   }
 
@@ -128,8 +154,10 @@ class _FeedingScreenState extends State<FeedingScreen>
     setState(() {
       _activeSide = side;
       _currentTimer = Duration.zero;
+      _longFeedingWarningShown = false;
     });
     _controller.startSide(side);
+    await _syncActiveFeedingNotification();
     await _draftService.persist(_controller);
   }
 
@@ -139,7 +167,9 @@ class _FeedingScreenState extends State<FeedingScreen>
     setState(() {
       _activeSide = null;
       _currentTimer = Duration.zero;
+      _longFeedingWarningShown = false;
     });
+    await FeedingNotificationService.instance.cancelActiveFeeding();
     await _draftService.persist(_controller);
   }
 
@@ -155,6 +185,7 @@ class _FeedingScreenState extends State<FeedingScreen>
 
     if (decision == FeedingSaveDecision.discard) {
       await _draftService.clear();
+      await FeedingNotificationService.instance.cancelActiveFeeding();
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
       return;
     }
@@ -163,7 +194,26 @@ class _FeedingScreenState extends State<FeedingScreen>
     final session = _controller.finishSession();
     await _storage.saveSession(session);
     await _draftService.clear();
-    if (mounted) Navigator.pop(context);
+    await FeedingNotificationService.instance.cancelActiveFeeding();
+    if (mounted) {
+      setState(() => _longFeedingWarningShown = false);
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> _syncActiveFeedingNotification() async {
+    final startedAt = _controller.activeSideStartedAt;
+    if (_activeSide == null || startedAt == null) {
+      await FeedingNotificationService.instance.cancelActiveFeeding();
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context);
+    await FeedingNotificationService.instance.showActiveFeeding(
+      title: l10n.activeFeedingNotificationTitle,
+      body: l10n.activeFeedingNotificationBody,
+      startedAt: startedAt,
+    );
   }
 
   int? _validatedWeight(

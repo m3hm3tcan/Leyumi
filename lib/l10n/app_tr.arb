@@ -367,6 +367,9 @@
   "daysAgo": "{count} gün önce",
   "liveFeedingContinues": "Canlı beslenme devam ediyor",
   "unsavedFeedingDraft": "Kaydedilmemiş beslenme taslağı hazır",
+  "longFeedingWarning": "Beslenme süresi uzadı. Kaydetmeyi unuttuysanız şimdi kaydedip beslenme geçmişinden saati düzenleyebilirsiniz.",
+  "activeFeedingNotificationTitle": "Beslenme devam ediyor",
+  "activeFeedingNotificationBody": "Beslenme zamanlayıcısı çalışıyor. Durdurmak veya kaydetmek için Leyumi'yi açın.",
   "feedingSideProgress": "{side} tarafı - {duration}",
   "open": "Aç",
   "@generatedOn": {

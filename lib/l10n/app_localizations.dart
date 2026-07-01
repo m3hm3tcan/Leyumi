@@ -2254,6 +2254,24 @@ abstract class AppLocalizations {
   /// **'An unsaved feeding draft is ready'**
   String get unsavedFeedingDraft;
 
+  /// No description provided for @longFeedingWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding has been running for a while. If you forgot to save it, save now and adjust the time later from feeding history.'**
+  String get longFeedingWarning;
+
+  /// No description provided for @activeFeedingNotificationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding in progress'**
+  String get activeFeedingNotificationTitle;
+
+  /// No description provided for @activeFeedingNotificationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The feeding timer is running. Open Leyumi to stop or save it.'**
+  String get activeFeedingNotificationBody;
+
   /// No description provided for @feedingSideProgress.
   ///
   /// In en, this message translates to:

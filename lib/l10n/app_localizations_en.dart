@@ -1148,6 +1148,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unsavedFeedingDraft => 'An unsaved feeding draft is ready';
 
   @override
+  String get longFeedingWarning =>
+      'Feeding has been running for a while. If you forgot to save it, save now and adjust the time later from feeding history.';
+
+  @override
+  String get activeFeedingNotificationTitle => 'Feeding in progress';
+
+  @override
+  String get activeFeedingNotificationBody =>
+      'The feeding timer is running. Open Leyumi to stop or save it.';
+
+  @override
   String feedingSideProgress(String side, String duration) {
     return '$side side - $duration';
   }
