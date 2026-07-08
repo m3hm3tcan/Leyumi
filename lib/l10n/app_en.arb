@@ -67,8 +67,6 @@
   "reminderScheduled": "Reminder scheduled.",
   "reminderTimeAlreadyPassed": "This reminder time has already passed. Choose a later event time or a shorter reminder.",
   "reminderCouldNotBeScheduled": "Reminder could not be scheduled. Please check notification permission.",
-  "exactAlarmPermissionTitle": "Allow timely reminders?",
-  "exactAlarmPermissionContent": "To deliver reminders on time, Leyumi may need the phone's alarm permission.",
   "openSettings": "Open settings",
   "later": "Later",
   "advancedCarePremiumHint": "Repeating plans and medicine doses are included with Premium.",

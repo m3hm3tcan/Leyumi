@@ -67,8 +67,6 @@
   "reminderScheduled": "Emlékeztető ütemezve.",
   "reminderTimeAlreadyPassed": "Ez az emlékeztetési idő már elmúlt. Válassz későbbi eseményidőt vagy rövidebb emlékeztetőt.",
   "reminderCouldNotBeScheduled": "Az emlékeztetőt nem sikerült ütemezni. Ellenőrizd az értesítési engedélyt.",
-  "exactAlarmPermissionTitle": "Engedélyezed a pontos emlékeztetőket?",
-  "exactAlarmPermissionContent": "Ahhoz, hogy az emlékeztetők időben megérkezzenek, a Leyuminak szüksége lehet a telefon ébresztési engedélyére.",
   "openSettings": "Beállítások megnyitása",
   "later": "Később",
   "advancedCarePremiumHint": "Az ismétlődő tervek és gyógyszeradagok a Premium részei.",

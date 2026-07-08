@@ -29,7 +29,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
   late CareEventType _type;
   late DateTime _dateTime;
   late CareEventRecurrence _recurrence;
-  int? _reminderMinutesBefore;
   String? _titleError;
   String? _dateError;
 
@@ -41,7 +40,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
     _dateTime =
         event?.scheduledAt ?? DateTime.now().add(const Duration(days: 1));
     _recurrence = event?.recurrence ?? CareEventRecurrence.none;
-    _reminderMinutesBefore = event?.reminderMinutesBefore;
     _titleController.text = event?.title ?? '';
     _locationController.text = event?.location ?? '';
     _noteController.text = event?.note ?? '';
@@ -103,7 +101,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
     final profile = context.read<ActiveChildProvider>().activeChild;
     final premium = context.read<PremiumProvider>();
     final hasAdvanced = premium.hasAccess(PremiumFeature.advancedCarePlanning);
-    final hasSmartReminders = premium.hasAccess(PremiumFeature.smartReminders);
     final title = _titleController.text.trim();
     final now = DateTime.now();
     final beforeBirth =
@@ -152,9 +149,7 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
         dosage: hasAdvanced && _type == CareEventType.medicine
             ? _nullIfEmpty(_dosageController.text)
             : null,
-        reminderMinutesBefore: hasSmartReminders
-            ? _reminderMinutesBefore
-            : null,
+        reminderMinutesBefore: null,
         createdAt: initial?.createdAt,
       ),
     );
@@ -165,7 +160,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
     final l10n = AppLocalizations.of(context);
     final premium = context.watch<PremiumProvider>();
     final hasAdvanced = premium.hasAccess(PremiumFeature.advancedCarePlanning);
-    final hasSmartReminders = premium.hasAccess(PremiumFeature.smartReminders);
     final media = MediaQuery.of(context);
 
     return Container(
@@ -308,17 +302,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
             ),
             const SizedBox(height: 12),
             _premiumSelector(
-              title: l10n.reminder,
-              value: hasSmartReminders
-                  ? _reminderLabel(_reminderMinutesBefore, l10n)
-                  : l10n.premiumSmartReminders,
-              locked: !hasSmartReminders,
-              onTap: () => hasSmartReminders
-                  ? _selectReminder()
-                  : _openPremium(PremiumFeature.smartReminders),
-            ),
-            const SizedBox(height: 12),
-            _premiumSelector(
               title: l10n.repeatPlan,
               value: _recurrenceLabel(_recurrence, l10n),
               locked: !hasAdvanced,
@@ -382,33 +365,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
       },
     );
     if (selected != null) setState(() => _recurrence = selected);
-  }
-
-  Future<void> _selectReminder() async {
-    final selected = await showModalBottomSheet<int>(
-      context: context,
-      builder: (context) {
-        final l10n = AppLocalizations.of(context);
-        final options = <int?>[null, 60, 1440, 2880];
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: options.map((value) {
-              final selected = value == _reminderMinutesBefore;
-              return ListTile(
-                title: Text(_reminderLabel(value, l10n)),
-                trailing: selected ? const Icon(Icons.check) : null,
-                onTap: () => Navigator.pop(context, value ?? -1),
-              );
-            }).toList(),
-          ),
-        );
-      },
-    );
-    if (selected == null) return;
-    setState(() {
-      _reminderMinutesBefore = selected < 0 ? null : selected;
-    });
   }
 
   Future<void> _openPremium(PremiumFeature feature) {
@@ -502,15 +458,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
         CareEventRecurrence.daily => l10n.repeatDaily,
         CareEventRecurrence.weekly => l10n.repeatWeekly,
         CareEventRecurrence.monthly => l10n.repeatMonthly,
-      };
-
-  String _reminderLabel(int? minutesBefore, AppLocalizations l10n) =>
-      switch (minutesBefore) {
-        null => l10n.reminderNone,
-        60 => l10n.reminderOneHour,
-        1440 => l10n.reminderOneDay,
-        2880 => l10n.reminderTwoDays,
-        _ => l10n.reminderNone,
       };
 
   String? _nullIfEmpty(String value) {

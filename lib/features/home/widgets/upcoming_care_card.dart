@@ -34,6 +34,8 @@ class _UpcomingCareCardState extends State<UpcomingCareCard> {
 
   Future<void> _load() async {
     final now = DateTime.now();
+    final today = CareEventSchedule.dateOnly(now);
+    final dayAfterTomorrow = today.add(const Duration(days: 2));
     final events = await CareEventStorage().loadEvents();
     final upcoming =
         events
@@ -44,16 +46,27 @@ class _UpcomingCareCardState extends State<UpcomingCareCard> {
                   : (event: event, occurrence: occurrence);
             })
             .whereType<({CareEvent event, DateTime occurrence})>()
+            .where((item) => item.occurrence.isBefore(dayAfterTomorrow))
             .toList()
           ..sort((a, b) => a.occurrence.compareTo(b.occurrence));
     if (!mounted) return;
-    setState(() => _upcoming = upcoming.take(3).toList());
+    setState(() => _upcoming = upcoming);
+  }
+
+  Future<void> _openCalendar() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const CareCalendarScreen()),
+    );
+    await _load();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     if (_upcoming.isEmpty) return const SizedBox.shrink();
+    final visibleUpcoming = _upcoming.take(2).toList();
+    final hiddenCount = _upcoming.length - visibleUpcoming.length;
 
     return AppCard(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -76,20 +89,13 @@ class _UpcomingCareCardState extends State<UpcomingCareCard> {
                 ),
               ),
               TextButton(
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const CareCalendarScreen(),
-                    ),
-                  );
-                  await _load();
-                },
+                onPressed: _openCalendar,
                 child: Text(l10n.viewCalendar),
               ),
             ],
           ),
-          for (final item in _upcoming) _eventRow(item, l10n),
+          for (final item in visibleUpcoming) _eventRow(item, l10n),
+          if (hiddenCount > 0) _moreRow(hiddenCount, l10n),
         ],
       ),
     );
@@ -154,6 +160,57 @@ class _UpcomingCareCardState extends State<UpcomingCareCard> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _moreRow(int count, AppLocalizations l10n) {
+    final mutedColor = Theme.of(context).textTheme.bodySmall?.color;
+    return Padding(
+      padding: const EdgeInsets.only(top: 9),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: _openCalendar,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 6),
+          child: Row(
+            children: [
+              Container(
+                width: 35,
+                height: 35,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: const Color(0xff6558E8).withAlpha(22),
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: Text(
+                  '+$count',
+                  style: const TextStyle(
+                    color: Color(0xff6558E8),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  l10n.viewCalendar,
+                  style: TextStyle(
+                    color: mutedColor?.withAlpha(180),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: mutedColor?.withAlpha(150),
+                size: 20,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

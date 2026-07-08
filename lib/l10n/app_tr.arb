@@ -67,8 +67,6 @@
   "reminderScheduled": "Hatırlatma planlandı.",
   "reminderTimeAlreadyPassed": "Bu hatırlatma zamanı zaten geçmiş. Daha ileri bir etkinlik zamanı veya daha kısa bir hatırlatma seçin.",
   "reminderCouldNotBeScheduled": "Hatırlatma planlanamadı. Lütfen bildirim iznini kontrol edin.",
-  "exactAlarmPermissionTitle": "Zamanında hatırlatma izni verilsin mi?",
-  "exactAlarmPermissionContent": "Hatırlatmaların zamanında gelmesi için Leyumi telefonun alarm iznine ihtiyaç duyabilir.",
   "openSettings": "Ayarları aç",
   "later": "Daha sonra",
   "advancedCarePremiumHint": "Tekrarlayan planlar ve ilaç dozu Premium'a dahildir.",

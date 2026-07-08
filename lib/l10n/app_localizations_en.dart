@@ -230,13 +230,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reminder could not be scheduled. Please check notification permission.';
 
   @override
-  String get exactAlarmPermissionTitle => 'Allow timely reminders?';
-
-  @override
-  String get exactAlarmPermissionContent =>
-      'To deliver reminders on time, Leyumi may need the phone\'s alarm permission.';
-
-  @override
   String get openSettings => 'Open settings';
 
   @override

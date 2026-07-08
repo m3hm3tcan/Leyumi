@@ -228,14 +228,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Hatırlatma planlanamadı. Lütfen bildirim iznini kontrol edin.';
 
   @override
-  String get exactAlarmPermissionTitle =>
-      'Zamanında hatırlatma izni verilsin mi?';
-
-  @override
-  String get exactAlarmPermissionContent =>
-      'Hatırlatmaların zamanında gelmesi için Leyumi telefonun alarm iznine ihtiyaç duyabilir.';
-
-  @override
   String get openSettings => 'Ayarları aç';
 
   @override

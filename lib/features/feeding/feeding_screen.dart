@@ -185,7 +185,7 @@ class _FeedingScreenState extends State<FeedingScreen>
 
     if (decision == FeedingSaveDecision.discard) {
       await _draftService.clear();
-      await FeedingNotificationService.instance.cancelActiveFeeding();
+      _cancelActiveFeedingNotification();
       if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
       return;
     }
@@ -194,11 +194,17 @@ class _FeedingScreenState extends State<FeedingScreen>
     final session = _controller.finishSession();
     await _storage.saveSession(session);
     await _draftService.clear();
-    await FeedingNotificationService.instance.cancelActiveFeeding();
+    _cancelActiveFeedingNotification();
     if (mounted) {
       setState(() => _longFeedingWarningShown = false);
       Navigator.pop(context);
     }
+  }
+
+  void _cancelActiveFeedingNotification() {
+    FeedingNotificationService.instance.cancelActiveFeeding().catchError(
+      (_) {},
+    );
   }
 
   Future<void> _syncActiveFeedingNotification() async {

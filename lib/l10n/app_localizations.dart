@@ -502,18 +502,6 @@ abstract class AppLocalizations {
   /// **'Reminder could not be scheduled. Please check notification permission.'**
   String get reminderCouldNotBeScheduled;
 
-  /// No description provided for @exactAlarmPermissionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Allow timely reminders?'**
-  String get exactAlarmPermissionTitle;
-
-  /// No description provided for @exactAlarmPermissionContent.
-  ///
-  /// In en, this message translates to:
-  /// **'To deliver reminders on time, Leyumi may need the phone\'s alarm permission.'**
-  String get exactAlarmPermissionContent;
-
   /// No description provided for @openSettings.
   ///
   /// In en, this message translates to:

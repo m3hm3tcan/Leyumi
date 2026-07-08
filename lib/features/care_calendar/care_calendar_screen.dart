@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import '../../core/child/active_child_app_bar_title.dart';
 import '../../core/child/active_child_aware.dart';
-import '../../core/premium/premium_feature.dart';
-import '../../core/premium/premium_provider.dart';
 import '../../l10n/app_localizations.dart';
-import '../../services/care_notification_service.dart';
 import '../../services/care_event_storage.dart';
 import '../history/helpers/delete_confirmation.dart';
 import 'care_event.dart';
@@ -51,23 +47,27 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
       builder: (_) => CareEventFormSheet(initialEvent: event),
     );
     if (result == null) return;
-    final l10n = AppLocalizations.of(context);
     await _storage.save(result);
-    await _syncNotification(result, l10n);
-    await _load();
     if (!mounted) return;
+    _upsertLocalEvent(result);
+  }
+
+  void _upsertLocalEvent(CareEvent event) {
     setState(() {
-      _selectedDay = CareEventSchedule.dateOnly(result.scheduledAt);
-      _visibleMonth = DateTime(
-        result.scheduledAt.year,
-        result.scheduledAt.month,
-      );
+      final index = _events.indexWhere((item) => item.id == event.id);
+      if (index < 0) {
+        _events.add(event);
+      } else {
+        _events[index] = event;
+      }
+      _events.sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
+      _selectedDay = CareEventSchedule.dateOnly(event.scheduledAt);
+      _visibleMonth = DateTime(event.scheduledAt.year, event.scheduledAt.month);
     });
   }
 
   Future<void> _delete(CareEvent event) async {
     if (!await confirmHistoryDelete(context)) return;
-    await CareNotificationService.instance.cancelCareEvent(event.id);
     await _storage.delete(event.id);
     await _load();
     if (!mounted) return;
@@ -77,74 +77,9 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
   }
 
   Future<void> _setStatus(CareEvent event, CareEventStatus status) async {
-    final l10n = AppLocalizations.of(context);
     final updated = event.copyWith(status: status);
     await _storage.save(updated);
-    await _syncNotification(updated, l10n);
     await _load();
-  }
-
-  Future<void> _syncNotification(CareEvent event, AppLocalizations l10n) async {
-    final premium = context.read<PremiumProvider>();
-    if (event.reminderMinutesBefore != null &&
-        premium.hasAccess(PremiumFeature.smartReminders)) {
-      await _maybeExplainExactAlarmPermission(l10n);
-      if (!mounted) return;
-    }
-    final scheduledCount = await CareNotificationService.instance
-        .scheduleCareEvent(
-          event: event,
-          enabled: premium.hasAccess(PremiumFeature.smartReminders),
-          reminderTitle: l10n.reminder,
-        );
-    if (!mounted || event.reminderMinutesBefore == null) return;
-
-    final message = scheduledCount > 0
-        ? l10n.reminderScheduled
-        : _reminderTimeHasPassed(event)
-        ? l10n.reminderTimeAlreadyPassed
-        : l10n.reminderCouldNotBeScheduled;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  Future<void> _maybeExplainExactAlarmPermission(AppLocalizations l10n) async {
-    final service = CareNotificationService.instance;
-    if (await service.canScheduleExactAlarms()) return;
-    if (!mounted) return;
-
-    final openSettings = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.exactAlarmPermissionTitle),
-        content: Text(l10n.exactAlarmPermissionContent),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: Text(l10n.later),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: Text(l10n.openSettings),
-          ),
-        ],
-      ),
-    );
-
-    if (openSettings == true) {
-      await service.requestExactAlarmPermission();
-    }
-  }
-
-  bool _reminderTimeHasPassed(CareEvent event) {
-    final minutesBefore = event.reminderMinutesBefore;
-    if (minutesBefore == null) return false;
-    final reminderAt = event.scheduledAt.subtract(
-      Duration(minutes: minutesBefore),
-    );
-    return reminderAt.isBefore(DateTime.now()) ||
-        reminderAt.isAtSameMomentAs(DateTime.now());
   }
 
   List<CareEvent> get _selectedEvents =>

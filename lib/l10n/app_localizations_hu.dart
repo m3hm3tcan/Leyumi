@@ -233,14 +233,6 @@ class AppLocalizationsHu extends AppLocalizations {
       'Az emlékeztetőt nem sikerült ütemezni. Ellenőrizd az értesítési engedélyt.';
 
   @override
-  String get exactAlarmPermissionTitle =>
-      'Engedélyezed a pontos emlékeztetőket?';
-
-  @override
-  String get exactAlarmPermissionContent =>
-      'Ahhoz, hogy az emlékeztetők időben megérkezzenek, a Leyuminak szüksége lehet a telefon ébresztési engedélyére.';
-
-  @override
   String get openSettings => 'Beállítások megnyitása';
 
   @override
