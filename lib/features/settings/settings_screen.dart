@@ -9,6 +9,7 @@ import '../../core/theme_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/reset_service.dart';
 import '../children/child_management_screen.dart';
+import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -79,6 +80,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
           const SizedBox(height: 14),
           _section(
             children: [
+              ListTile(
+                leading: const Icon(Icons.privacy_tip_outlined),
+                title: Text(l10n.privacyPolicyTitle),
+                subtitle: Text(l10n.privacyPolicySubtitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const PrivacyPolicyScreen(),
+                  ),
+                ),
+              ),
+              const Divider(height: 1),
               ListTile(
                 leading: const Icon(Icons.child_care),
                 title: Text(l10n.childProfiles),

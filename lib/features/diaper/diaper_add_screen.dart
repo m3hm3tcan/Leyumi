@@ -5,8 +5,6 @@ import '../../services/diaper_storage.dart';
 import '../../services/baby_storage.dart';
 import '../../core/data/record_identity.dart';
 import 'diaper_entry.dart';
-import 'package:provider/provider.dart';
-import 'package:leyumi/core/theme_provider.dart';
 import '../../core/child/active_child_app_bar_title.dart';
 
 class DiaperAddScreen extends StatefulWidget {

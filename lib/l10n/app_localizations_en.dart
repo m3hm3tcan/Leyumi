@@ -1157,6 +1157,61 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get privacyPolicyTitle => 'Privacy Policy';
+
+  @override
+  String get privacyPolicySubtitle => 'How Leyumi protects your local data';
+
+  @override
+  String get privacyPolicyIntro =>
+      'Leyumi is designed as an offline baby-care application. This version does not require an account and does not send your care records to Leyumi servers.';
+
+  @override
+  String get privacyDataTitle => 'Data used by the app';
+
+  @override
+  String get privacyDataBody =>
+      'Leyumi stores the child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans and app preferences that you enter.';
+
+  @override
+  String get privacyStorageTitle => 'Local storage';
+
+  @override
+  String get privacyStorageBody =>
+      'Your records are stored only in Leyumi\'s private app storage on this device. Cloud backup and device transfer are disabled for this version. Removing the app or losing the device can permanently remove these records.';
+
+  @override
+  String get privacySharingTitle => 'Collection and sharing';
+
+  @override
+  String get privacySharingBody =>
+      'Leyumi does not transmit, sell or share your care records with the developer or third parties. Reports are shared only when you explicitly use your device\'s share or print controls.';
+
+  @override
+  String get privacyRetentionTitle => 'Retention and deletion';
+
+  @override
+  String get privacyRetentionBody =>
+      'Records remain on your device until you delete them, reset Leyumi, clear the app\'s storage or uninstall the app. Reset Leyumi in Settings permanently deletes all locally stored Leyumi data.';
+
+  @override
+  String get privacySecurityTitle => 'Security';
+
+  @override
+  String get privacySecurityBody =>
+      'Leyumi relies on Android\'s application sandbox and your device lock to protect local records. Keep your device updated and protected with a PIN, password or biometric lock.';
+
+  @override
+  String get privacyContactTitle => 'Contact';
+
+  @override
+  String get privacyContactBody =>
+      'For privacy questions, use the developer contact shown on Leyumi\'s Google Play listing.';
+
+  @override
+  String get privacyPolicyEffectiveDate => 'Effective date: July 11, 2026';
+
+  @override
   String get feedingAnalytics => 'Feeding Analytics';
 
   @override

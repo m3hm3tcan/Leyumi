@@ -1152,6 +1152,61 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get privacyPolicyTitle => 'Gizlilik Politikası';
+
+  @override
+  String get privacyPolicySubtitle => 'Leyumi yerel verilerinizi nasıl korur';
+
+  @override
+  String get privacyPolicyIntro =>
+      'Leyumi çevrimdışı çalışan bir bebek bakım uygulaması olarak tasarlanmıştır. Bu sürüm hesap gerektirmez ve bakım kayıtlarınızı Leyumi sunucularına göndermez.';
+
+  @override
+  String get privacyDataTitle => 'Uygulamanın kullandığı veriler';
+
+  @override
+  String get privacyDataBody =>
+      'Leyumi; girdiğiniz çocuk profillerini, doğum tarihlerini, büyüme ölçümlerini, beslenme ve bez kayıtlarını, süt stoğunu, bakım planlarını ve uygulama tercihlerini saklar.';
+
+  @override
+  String get privacyStorageTitle => 'Yerel saklama';
+
+  @override
+  String get privacyStorageBody =>
+      'Kayıtlarınız yalnızca bu cihazdaki Leyumi\'ye özel uygulama alanında saklanır. Bu sürümde bulut yedekleme ve cihaz aktarımı kapalıdır. Uygulamayı kaldırmak veya cihazı kaybetmek bu kayıtları kalıcı olarak kaybetmenize neden olabilir.';
+
+  @override
+  String get privacySharingTitle => 'Veri toplama ve paylaşma';
+
+  @override
+  String get privacySharingBody =>
+      'Leyumi bakım kayıtlarınızı geliştiriciye veya üçüncü taraflara iletmez, satmaz ya da paylaşmaz. Raporlar yalnızca cihazınızdaki paylaşma veya yazdırma kontrollerini açıkça kullandığınızda paylaşılır.';
+
+  @override
+  String get privacyRetentionTitle => 'Saklama ve silme';
+
+  @override
+  String get privacyRetentionBody =>
+      'Kayıtlar siz silene, Leyumi\'yi sıfırlayana, uygulama verilerini temizleyene veya uygulamayı kaldırana kadar cihazınızda kalır. Ayarlar\'daki Leyumi\'yi Sıfırla işlemi yerel olarak saklanan tüm Leyumi verilerini kalıcı biçimde siler.';
+
+  @override
+  String get privacySecurityTitle => 'Güvenlik';
+
+  @override
+  String get privacySecurityBody =>
+      'Leyumi yerel kayıtları korumak için Android uygulama alanına ve cihaz kilidinize dayanır. Cihazınızı güncel tutun ve PIN, parola veya biyometrik kilitle koruyun.';
+
+  @override
+  String get privacyContactTitle => 'İletişim';
+
+  @override
+  String get privacyContactBody =>
+      'Gizlilikle ilgili sorular için Leyumi\'nin Google Play sayfasında gösterilen geliştirici iletişim kanalını kullanın.';
+
+  @override
+  String get privacyPolicyEffectiveDate => 'Yürürlük tarihi: 11 Temmuz 2026';
+
+  @override
   String get feedingAnalytics => 'Beslenme Analizleri';
 
   @override

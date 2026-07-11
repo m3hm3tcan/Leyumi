@@ -2266,6 +2266,102 @@ abstract class AppLocalizations {
   /// **'{side} side - {duration}'**
   String feedingSideProgress(String side, String duration);
 
+  /// No description provided for @privacyPolicyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyTitle;
+
+  /// No description provided for @privacyPolicySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How Leyumi protects your local data'**
+  String get privacyPolicySubtitle;
+
+  /// No description provided for @privacyPolicyIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi is designed as an offline baby-care application. This version does not require an account and does not send your care records to Leyumi servers.'**
+  String get privacyPolicyIntro;
+
+  /// No description provided for @privacyDataTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Data used by the app'**
+  String get privacyDataTitle;
+
+  /// No description provided for @privacyDataBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi stores the child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans and app preferences that you enter.'**
+  String get privacyDataBody;
+
+  /// No description provided for @privacyStorageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Local storage'**
+  String get privacyStorageTitle;
+
+  /// No description provided for @privacyStorageBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your records are stored only in Leyumi\'s private app storage on this device. Cloud backup and device transfer are disabled for this version. Removing the app or losing the device can permanently remove these records.'**
+  String get privacyStorageBody;
+
+  /// No description provided for @privacySharingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Collection and sharing'**
+  String get privacySharingTitle;
+
+  /// No description provided for @privacySharingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi does not transmit, sell or share your care records with the developer or third parties. Reports are shared only when you explicitly use your device\'s share or print controls.'**
+  String get privacySharingBody;
+
+  /// No description provided for @privacyRetentionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Retention and deletion'**
+  String get privacyRetentionTitle;
+
+  /// No description provided for @privacyRetentionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Records remain on your device until you delete them, reset Leyumi, clear the app\'s storage or uninstall the app. Reset Leyumi in Settings permanently deletes all locally stored Leyumi data.'**
+  String get privacyRetentionBody;
+
+  /// No description provided for @privacySecurityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get privacySecurityTitle;
+
+  /// No description provided for @privacySecurityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi relies on Android\'s application sandbox and your device lock to protect local records. Keep your device updated and protected with a PIN, password or biometric lock.'**
+  String get privacySecurityBody;
+
+  /// No description provided for @privacyContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get privacyContactTitle;
+
+  /// No description provided for @privacyContactBody.
+  ///
+  /// In en, this message translates to:
+  /// **'For privacy questions, use the developer contact shown on Leyumi\'s Google Play listing.'**
+  String get privacyContactBody;
+
+  /// No description provided for @privacyPolicyEffectiveDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective date: July 11, 2026'**
+  String get privacyPolicyEffectiveDate;
+
   /// No description provided for @feedingAnalytics.
   ///
   /// In en, this message translates to:

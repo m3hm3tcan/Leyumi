@@ -86,7 +86,6 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
   }
 
   void _save() {
-    final l10n = AppLocalizations.of(context);
     final valid = _formKey.currentState!.validate();
     if (!valid) {
       _focusFirstInvalidField();

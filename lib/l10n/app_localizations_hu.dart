@@ -1161,6 +1161,61 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String get privacyPolicyTitle => 'Adatvédelmi szabályzat';
+
+  @override
+  String get privacyPolicySubtitle => 'Hogyan védi a Leyumi a helyi adataidat';
+
+  @override
+  String get privacyPolicyIntro =>
+      'A Leyumi offline babaápolási alkalmazásként készült. Ez a verzió nem igényel fiókot, és nem küldi el a gondozási adatokat Leyumi-szerverekre.';
+
+  @override
+  String get privacyDataTitle => 'Az alkalmazás által használt adatok';
+
+  @override
+  String get privacyDataBody =>
+      'A Leyumi tárolja az általad megadott gyermekprofilokat, születési dátumokat, növekedési méréseket, etetési és pelenkaadatokat, tejkészletet, gondozási terveket és alkalmazásbeállításokat.';
+
+  @override
+  String get privacyStorageTitle => 'Helyi tárolás';
+
+  @override
+  String get privacyStorageBody =>
+      'Az adataid kizárólag ezen az eszközön, a Leyumi privát alkalmazástárhelyén vannak. Ebben a verzióban a felhőmentés és az eszközátvitel ki van kapcsolva. Az alkalmazás eltávolítása vagy az eszköz elvesztése véglegesen törölheti ezeket az adatokat.';
+
+  @override
+  String get privacySharingTitle => 'Adatgyűjtés és megosztás';
+
+  @override
+  String get privacySharingBody =>
+      'A Leyumi nem továbbítja, nem értékesíti és nem osztja meg gondozási adataidat a fejlesztővel vagy harmadik felekkel. Jelentés csak akkor kerül megosztásra, amikor kifejezetten használod az eszköz megosztási vagy nyomtatási funkcióját.';
+
+  @override
+  String get privacyRetentionTitle => 'Megőrzés és törlés';
+
+  @override
+  String get privacyRetentionBody =>
+      'Az adatok addig maradnak az eszközödön, amíg nem törlöd őket, nem állítod alaphelyzetbe a Leyumit, nem törlöd az alkalmazás adatait vagy nem távolítod el az alkalmazást. A Leyumi alaphelyzetbe állítása a Beállításokban véglegesen töröl minden helyi Leyumi-adatot.';
+
+  @override
+  String get privacySecurityTitle => 'Biztonság';
+
+  @override
+  String get privacySecurityBody =>
+      'A Leyumi az Android alkalmazás-sandboxára és az eszköz zárolására támaszkodik a helyi adatok védelmében. Tartsd naprakészen az eszközt, és védd PIN-kóddal, jelszóval vagy biometrikus zárral.';
+
+  @override
+  String get privacyContactTitle => 'Kapcsolat';
+
+  @override
+  String get privacyContactBody =>
+      'Adatvédelmi kérdésekhez használd a Leyumi Google Play-oldalán megadott fejlesztői elérhetőséget.';
+
+  @override
+  String get privacyPolicyEffectiveDate => 'Hatálybalépés: 2026. július 11.';
+
+  @override
   String get feedingAnalytics => 'Etetési elemzések';
 
   @override

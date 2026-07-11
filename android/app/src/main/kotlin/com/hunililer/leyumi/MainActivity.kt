@@ -1,4 +1,4 @@
-package com.mjkostokdarksun.leyumi
+package com.hunililer.leyumi
 
 import io.flutter.embedding.android.FlutterActivity
 

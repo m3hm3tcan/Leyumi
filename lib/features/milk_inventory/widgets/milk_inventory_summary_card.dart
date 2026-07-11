@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../l10n/app_localizations.dart';
-import '../milk_batch.dart';
 
 class MilkInventorySummaryCard extends StatelessWidget {
   const MilkInventorySummaryCard({
