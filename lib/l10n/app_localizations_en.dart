@@ -34,7 +34,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get freePlanFeatures =>
-      'Feeding, diaper and growth records\nCare calendar and upcoming events\nComplete history, dark mode and 3 languages';
+      'Feeding, diaper and growth records\nCare calendar and upcoming events\nComplete history, dark mode and multilingual support';
 
   @override
   String get premiumPlanFeatures =>
@@ -1155,6 +1155,82 @@ class AppLocalizationsEn extends AppLocalizations {
   String feedingSideProgress(String side, String duration) {
     return '$side side - $duration';
   }
+
+  @override
+  String get feedingAnalytics => 'Feeding Analytics';
+
+  @override
+  String get noFeedingData => 'No feeding data';
+
+  @override
+  String get noDataInRange => 'No data in this range';
+
+  @override
+  String get widerRangeFeedingHint =>
+      'Choose a wider time range to see feeding trends.';
+
+  @override
+  String get dailyFeedingTime => 'Daily feeding time';
+
+  @override
+  String get dailyFeedingTimeSubtitle => 'Total active feeding minutes per day';
+
+  @override
+  String get sideBalance => 'Left & right balance';
+
+  @override
+  String get sideBalanceSubtitle => 'Daily feeding duration on each side';
+
+  @override
+  String get milkIntakeSubtitle => 'Recorded intake from weight-based sessions';
+
+  @override
+  String get noMilkIntakeForPeriod =>
+      'No milk intake has been recorded for this period.';
+
+  @override
+  String get diaperAnalytics => 'Diaper Analytics';
+
+  @override
+  String get noDiaperData => 'No diaper data';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get dailyChanges => 'Daily changes';
+
+  @override
+  String get dailyChangesSubtitle =>
+      'Tap a point to see the exact day and total';
+
+  @override
+  String get dailyComposition => 'Daily composition';
+
+  @override
+  String get dailyCompositionSubtitle => 'Pee, poop and mixed changes by day';
+
+  @override
+  String get both => 'Both';
+
+  @override
+  String get peeAmountDistribution => 'Pee amount distribution';
+
+  @override
+  String changesWithAmount(int count) {
+    return '$count changes include an amount';
+  }
+
+  @override
+  String get activityByHour => 'Activity by hour';
+
+  @override
+  String get activityByHourSubtitle =>
+      'See when diaper changes happen most often';
+
+  @override
+  String get widerRangeDiaperHint =>
+      'Choose a wider time range to see your diaper trends.';
 
   @override
   String get open => 'Open';

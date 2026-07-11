@@ -9,6 +9,7 @@ import 'package:leyumi/features/history/graphs/graph_style.dart';
 import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/services/diaper_storage.dart';
 import 'package:provider/provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../core/utils/app_date_utils.dart';
 import '../../../core/child/active_child_aware.dart';
 
@@ -308,6 +309,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final premium = context.watch<PremiumProvider>();
     if (!premium.isLoaded) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -323,20 +325,20 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Diaper Analytics')),
+      appBar: AppBar(title: Text(l10n.diaperAnalytics)),
       body: entries.isEmpty
-          ? const Center(child: Text('No diaper data'))
+          ? Center(child: Text(l10n.noDiaperData))
           : Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
                   child: GraphFilterBar(
                     value: filter,
-                    options: const [
-                      ('7d', '7'),
-                      ('30d', '30'),
-                      ('90d', '90'),
-                      ('All', 'all'),
+                    options: [
+                      (l10n.filter7d, '7'),
+                      (l10n.filter30d, '30'),
+                      (l10n.filter90d, '90'),
+                      (l10n.filterAll, 'all'),
                     ],
                     onChanged: (value) => setState(() => filter = value),
                   ),
@@ -362,6 +364,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
   }
 
   Widget _tabBar() {
+    final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(4),
@@ -370,7 +373,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
-        children: [_tabButton('Overview', 0), _tabButton('Insights', 1)],
+        children: [_tabButton(l10n.overview, 0), _tabButton(l10n.insights, 1)],
       ),
     );
   }
@@ -415,14 +418,15 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
   }
 
   Widget _buildOverview() {
+    final l10n = AppLocalizations.of(context);
     final interval = niceInterval(_dailyMax);
     return Column(
       children: [
         _summaryStrip(),
         PremiumChartCard(
-          title: 'Daily changes',
-          subtitle: 'Tap a point to see the exact day and total',
-          trailing: _valuePill('${filtered.length} total', graphBlue),
+          title: l10n.dailyChanges,
+          subtitle: l10n.dailyChangesSubtitle,
+          trailing: _valuePill('${filtered.length} ${l10n.totalLabel.toLowerCase()}', graphBlue),
           child: SizedBox(
             height: 230,
             child: LineChart(
@@ -474,13 +478,13 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
           ),
         ),
         PremiumChartCard(
-          title: 'Daily composition',
-          subtitle: 'Pee, poop and mixed changes by day',
-          trailing: const GraphLegend(
+          title: l10n.dailyComposition,
+          subtitle: l10n.dailyCompositionSubtitle,
+          trailing: GraphLegend(
             items: [
-              (_peeColor, 'Pee'),
-              (_poopColor, 'Poop'),
-              (_bothColor, 'Both'),
+              (_peeColor, l10n.pee),
+              (_poopColor, l10n.poop),
+              (_bothColor, l10n.both),
             ],
             alignment: WrapAlignment.end,
           ),
@@ -507,6 +511,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
   }
 
   Widget _buildInsights() {
+    final l10n = AppLocalizations.of(context);
     final totalPeeAmounts = peeAmountTotals.values.fold(
       0,
       (sum, value) => sum + value,
@@ -515,8 +520,8 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
     return Column(
       children: [
         PremiumChartCard(
-          title: 'Pee amount distribution',
-          subtitle: '$totalPeeAmounts changes include an amount',
+          title: l10n.peeAmountDistribution,
+          subtitle: l10n.changesWithAmount(totalPeeAmounts),
           child: Row(
             children: [
               SizedBox(
@@ -558,17 +563,17 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
                   children: [
                     _distributionRow(
                       const Color(0xff8DD7FF),
-                      'Small',
+                      l10n.small,
                       _percentage(PeeAmount.small),
                     ),
                     _distributionRow(
                       graphBlue,
-                      'Medium',
+                      l10n.medium,
                       _percentage(PeeAmount.medium),
                     ),
                     _distributionRow(
                       const Color(0xff3F4FA8),
-                      'Large',
+                      l10n.large,
                       _percentage(PeeAmount.large),
                     ),
                   ],
@@ -578,8 +583,8 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
           ),
         ),
         PremiumChartCard(
-          title: 'Activity by hour',
-          subtitle: 'See when diaper changes happen most often',
+          title: l10n.activityByHour,
+          subtitle: l10n.activityByHourSubtitle,
           child: SizedBox(
             height: 235,
             child: BarChart(
@@ -647,13 +652,14 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
   }
 
   Widget _summaryStrip() {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
       child: Row(
         children: [
           Expanded(
             child: _summaryMetric(
-              'Pee',
+              l10n.pee,
               _typeCount(DiaperType.pee),
               _peeColor,
               Icons.water_drop_rounded,
@@ -662,7 +668,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
           const SizedBox(width: 10),
           Expanded(
             child: _summaryMetric(
-              'Poop',
+              l10n.poop,
               _typeCount(DiaperType.poop),
               _poopColor,
               Icons.circle,
@@ -671,7 +677,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
           const SizedBox(width: 10),
           Expanded(
             child: _summaryMetric(
-              'Both',
+              l10n.both,
               _typeCount(DiaperType.both),
               _bothColor,
               Icons.blur_circular_rounded,
@@ -757,9 +763,10 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
   }
 
   Widget _emptyRange() {
+    final l10n = AppLocalizations.of(context);
     return PremiumChartCard(
-      title: 'No data in this range',
-      subtitle: 'Choose a wider time range to see your diaper trends.',
+      title: l10n.noDataInRange,
+      subtitle: l10n.widerRangeDiaperHint,
       child: const SizedBox(height: 80),
     );
   }

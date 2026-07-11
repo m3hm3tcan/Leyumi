@@ -145,7 +145,7 @@ abstract class AppLocalizations {
   /// No description provided for @freePlanFeatures.
   ///
   /// In en, this message translates to:
-  /// **'Feeding, diaper and growth records\nCare calendar and upcoming events\nComplete history, dark mode and 3 languages'**
+  /// **'Feeding, diaper and growth records\nCare calendar and upcoming events\nComplete history, dark mode and multilingual support'**
   String get freePlanFeatures;
 
   /// No description provided for @premiumPlanFeatures.
@@ -2265,6 +2265,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{side} side - {duration}'**
   String feedingSideProgress(String side, String duration);
+
+  /// No description provided for @feedingAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Feeding Analytics'**
+  String get feedingAnalytics;
+
+  /// No description provided for @noFeedingData.
+  ///
+  /// In en, this message translates to:
+  /// **'No feeding data'**
+  String get noFeedingData;
+
+  /// No description provided for @noDataInRange.
+  ///
+  /// In en, this message translates to:
+  /// **'No data in this range'**
+  String get noDataInRange;
+
+  /// No description provided for @widerRangeFeedingHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a wider time range to see feeding trends.'**
+  String get widerRangeFeedingHint;
+
+  /// No description provided for @dailyFeedingTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily feeding time'**
+  String get dailyFeedingTime;
+
+  /// No description provided for @dailyFeedingTimeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Total active feeding minutes per day'**
+  String get dailyFeedingTimeSubtitle;
+
+  /// No description provided for @sideBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Left & right balance'**
+  String get sideBalance;
+
+  /// No description provided for @sideBalanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily feeding duration on each side'**
+  String get sideBalanceSubtitle;
+
+  /// No description provided for @milkIntakeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded intake from weight-based sessions'**
+  String get milkIntakeSubtitle;
+
+  /// No description provided for @noMilkIntakeForPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'No milk intake has been recorded for this period.'**
+  String get noMilkIntakeForPeriod;
+
+  /// No description provided for @diaperAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Diaper Analytics'**
+  String get diaperAnalytics;
+
+  /// No description provided for @noDiaperData.
+  ///
+  /// In en, this message translates to:
+  /// **'No diaper data'**
+  String get noDiaperData;
+
+  /// No description provided for @overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overview;
+
+  /// No description provided for @dailyChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily changes'**
+  String get dailyChanges;
+
+  /// No description provided for @dailyChangesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a point to see the exact day and total'**
+  String get dailyChangesSubtitle;
+
+  /// No description provided for @dailyComposition.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily composition'**
+  String get dailyComposition;
+
+  /// No description provided for @dailyCompositionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pee, poop and mixed changes by day'**
+  String get dailyCompositionSubtitle;
+
+  /// No description provided for @both.
+  ///
+  /// In en, this message translates to:
+  /// **'Both'**
+  String get both;
+
+  /// No description provided for @peeAmountDistribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Pee amount distribution'**
+  String get peeAmountDistribution;
+
+  /// No description provided for @changesWithAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} changes include an amount'**
+  String changesWithAmount(int count);
+
+  /// No description provided for @activityByHour.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity by hour'**
+  String get activityByHour;
+
+  /// No description provided for @activityByHourSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See when diaper changes happen most often'**
+  String get activityByHourSubtitle;
+
+  /// No description provided for @widerRangeDiaperHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a wider time range to see your diaper trends.'**
+  String get widerRangeDiaperHint;
 
   /// No description provided for @open.
   ///

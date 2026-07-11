@@ -34,7 +34,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get freePlanFeatures =>
-      'Beslenme, bez ve büyüme kayıtları\nBakım takvimi ve yaklaşan etkinlikler\nEksiksiz geçmiş, karanlık mod ve 3 dil';
+      'Beslenme, bez ve büyüme kayıtları\nBakım takvimi ve yaklaşan etkinlikler\nEksiksiz geçmiş, karanlık mod ve çoklu dil desteği';
 
   @override
   String get premiumPlanFeatures =>
@@ -1150,6 +1150,84 @@ class AppLocalizationsTr extends AppLocalizations {
   String feedingSideProgress(String side, String duration) {
     return '$side tarafı - $duration';
   }
+
+  @override
+  String get feedingAnalytics => 'Beslenme Analizleri';
+
+  @override
+  String get noFeedingData => 'Beslenme verisi yok';
+
+  @override
+  String get noDataInRange => 'Bu tarih aralığında veri yok';
+
+  @override
+  String get widerRangeFeedingHint =>
+      'Beslenme eğilimlerini görmek için daha geniş bir tarih aralığı seçin.';
+
+  @override
+  String get dailyFeedingTime => 'Günlük beslenme süresi';
+
+  @override
+  String get dailyFeedingTimeSubtitle =>
+      'Gün başına toplam aktif beslenme dakikası';
+
+  @override
+  String get sideBalance => 'Sol ve sağ dengesi';
+
+  @override
+  String get sideBalanceSubtitle => 'Her iki tarafın günlük beslenme süresi';
+
+  @override
+  String get milkIntakeSubtitle =>
+      'Kilo bazlı seanslardan kaydedilen süt alımı';
+
+  @override
+  String get noMilkIntakeForPeriod => 'Bu dönem için süt alımı kaydedilmemiş.';
+
+  @override
+  String get diaperAnalytics => 'Bez Analizleri';
+
+  @override
+  String get noDiaperData => 'Bez verisi yok';
+
+  @override
+  String get overview => 'Genel bakış';
+
+  @override
+  String get dailyChanges => 'Günlük değişimler';
+
+  @override
+  String get dailyChangesSubtitle =>
+      'Tam günü ve toplamı görmek için bir noktaya dokunun';
+
+  @override
+  String get dailyComposition => 'Günlük dağılım';
+
+  @override
+  String get dailyCompositionSubtitle =>
+      'Güne göre çiş, kaka ve karışık değişimler';
+
+  @override
+  String get both => 'İkisi';
+
+  @override
+  String get peeAmountDistribution => 'Çiş miktarı dağılımı';
+
+  @override
+  String changesWithAmount(int count) {
+    return '$count değişimde miktar bilgisi var';
+  }
+
+  @override
+  String get activityByHour => 'Saatlere göre aktivite';
+
+  @override
+  String get activityByHourSubtitle =>
+      'Bez değişimlerinin en sık ne zaman olduğunu görün';
+
+  @override
+  String get widerRangeDiaperHint =>
+      'Bez eğilimlerini görmek için daha geniş bir tarih aralığı seçin.';
 
   @override
   String get open => 'Aç';

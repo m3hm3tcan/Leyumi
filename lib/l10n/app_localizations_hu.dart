@@ -34,7 +34,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get freePlanFeatures =>
-      'Etetési, pelenka- és növekedési adatok\nGondozási naptár és közelgő események\nTeljes előzmény, sötét mód és 3 nyelv';
+      'Etetési, pelenka- és növekedési adatok\nGondozási naptár és közelgő események\nTeljes előzmény, sötét mód és többnyelvű támogatás';
 
   @override
   String get premiumPlanFeatures =>
@@ -1159,6 +1159,84 @@ class AppLocalizationsHu extends AppLocalizations {
   String feedingSideProgress(String side, String duration) {
     return '$side oldal - $duration';
   }
+
+  @override
+  String get feedingAnalytics => 'Etetési elemzések';
+
+  @override
+  String get noFeedingData => 'Nincs etetési adat';
+
+  @override
+  String get noDataInRange => 'Nincs adat ebben az időszakban';
+
+  @override
+  String get widerRangeFeedingHint =>
+      'Válassz hosszabb időszakot az etetési trendek megtekintéséhez.';
+
+  @override
+  String get dailyFeedingTime => 'Napi etetési idő';
+
+  @override
+  String get dailyFeedingTimeSubtitle => 'Napi összes aktív etetési perc';
+
+  @override
+  String get sideBalance => 'Bal és jobb oldal egyensúlya';
+
+  @override
+  String get sideBalanceSubtitle => 'Napi etetési idő oldalanként';
+
+  @override
+  String get milkIntakeSubtitle =>
+      'Súlyméréses etetésekből rögzített tejbevitel';
+
+  @override
+  String get noMilkIntakeForPeriod =>
+      'Erre az időszakra nincs rögzített tejbevitel.';
+
+  @override
+  String get diaperAnalytics => 'Pelenkaelemzések';
+
+  @override
+  String get noDiaperData => 'Nincs pelenkaadat';
+
+  @override
+  String get overview => 'Áttekintés';
+
+  @override
+  String get dailyChanges => 'Napi cserék';
+
+  @override
+  String get dailyChangesSubtitle =>
+      'Érints meg egy pontot a pontos nap és összeg megtekintéséhez';
+
+  @override
+  String get dailyComposition => 'Napi összetétel';
+
+  @override
+  String get dailyCompositionSubtitle =>
+      'Pisis, kakis és vegyes cserék naponta';
+
+  @override
+  String get both => 'Mindkettő';
+
+  @override
+  String get peeAmountDistribution => 'Pisimennyiség eloszlása';
+
+  @override
+  String changesWithAmount(int count) {
+    return '$count cserénél van mennyiség megadva';
+  }
+
+  @override
+  String get activityByHour => 'Aktivitás óránként';
+
+  @override
+  String get activityByHourSubtitle =>
+      'Nézd meg, mikor történik a legtöbb pelenkacsere';
+
+  @override
+  String get widerRangeDiaperHint =>
+      'Válassz hosszabb időszakot a pelenkatrendek megtekintéséhez.';
 
   @override
   String get open => 'Megnyitás';

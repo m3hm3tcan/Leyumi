@@ -9,6 +9,7 @@ import 'package:leyumi/features/history/graphs/graph_style.dart';
 import 'package:leyumi/features/premium/premium_paywall_screen.dart';
 import 'package:leyumi/services/feeding_storage.dart';
 import 'package:provider/provider.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../core/utils/app_date_utils.dart';
 import '../../../core/child/active_child_aware.dart';
 
@@ -227,6 +228,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final premium = context.watch<PremiumProvider>();
     if (!premium.isLoaded) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -242,20 +244,20 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Feeding Analytics')),
+      appBar: AppBar(title: Text(l10n.feedingAnalytics)),
       body: sessions.isEmpty
-          ? const Center(child: Text('No feeding data'))
+          ? Center(child: Text(l10n.noFeedingData))
           : Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
                   child: GraphFilterBar(
                     value: filter,
-                    options: const [
-                      ('7d', '7'),
-                      ('30d', '30'),
-                      ('90d', '90'),
-                      ('All', 'all'),
+                    options: [
+                      (l10n.filter7d, '7'),
+                      (l10n.filter30d, '30'),
+                      (l10n.filter90d, '90'),
+                      (l10n.filterAll, 'all'),
                     ],
                     onChanged: (value) => setState(() => filter = value),
                   ),
@@ -264,11 +266,10 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
                   child: SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
                     child: filtered.isEmpty
-                        ? const PremiumChartCard(
-                            title: 'No data in this range',
-                            subtitle:
-                                'Choose a wider time range to see feeding trends.',
-                            child: SizedBox(height: 80),
+                        ? PremiumChartCard(
+                            title: l10n.noDataInRange,
+                            subtitle: l10n.widerRangeFeedingHint,
+                            child: const SizedBox(height: 80),
                           )
                         : Column(
                             children: [
@@ -286,6 +287,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
   }
 
   Widget _summaryCard() {
+    final l10n = AppLocalizations.of(context);
     final totalMinutes = filtered.fold<int>(
       0,
       (sum, session) => sum + session.totalDuration.inMinutes,
@@ -318,7 +320,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'TOTAL FEEDING TIME',
+            l10n.totalFeedingTime.toUpperCase(),
             style: TextStyle(
               color: Colors.white.withAlpha(180),
               fontSize: 10,
@@ -338,11 +340,11 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
           const SizedBox(height: 18),
           Row(
             children: [
-              Expanded(child: _summaryValue('${filtered.length}', 'Sessions')),
+              Expanded(child: _summaryValue('${filtered.length}', l10n.sessions)),
               _summaryDivider(),
-              Expanded(child: _summaryValue('$average min', 'Average')),
+              Expanded(child: _summaryValue('$average ${l10n.minutesShort}', l10n.average)),
               _summaryDivider(),
-              Expanded(child: _summaryValue('${totalMilk}g', 'Milk')),
+              Expanded(child: _summaryValue('${totalMilk}g', l10n.milk)),
             ],
           ),
         ],
@@ -395,11 +397,12 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
   }
 
   Widget _dailyTotalChart() {
+    final l10n = AppLocalizations.of(context);
     final maxY = _maxFor([dailyTotals], seconds: true);
     final interval = niceInterval(maxY);
     return PremiumChartCard(
-      title: 'Daily feeding time',
-      subtitle: 'Total active feeding minutes per day',
+      title: l10n.dailyFeedingTime,
+      subtitle: l10n.dailyFeedingTimeSubtitle,
       trailing: _trendPill(_spots(dailyTotals)),
       child: SizedBox(
         height: 230,
@@ -415,7 +418,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
               interval: interval,
               valueLabel: (value) => '${value.round()}m',
             ),
-            lineTouchData: _touchData(unit: 'min', labels: const ['Total']),
+            lineTouchData: _touchData(unit: l10n.minutesShort, labels: [l10n.totalLabel]),
             lineBarsData: [
               _line(spots: _spots(dailyTotals), color: graphBlue, fill: true),
             ],
@@ -428,13 +431,14 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
   }
 
   Widget _sideBalanceChart() {
+    final l10n = AppLocalizations.of(context);
     final maxY = _maxFor([leftTotals, rightTotals], seconds: true);
     final interval = niceInterval(maxY);
     return PremiumChartCard(
-      title: 'Left & right balance',
-      subtitle: 'Daily feeding duration on each side',
-      trailing: const GraphLegend(
-        items: [(graphPink, 'Left'), (graphBlue, 'Right')],
+      title: l10n.sideBalance,
+      subtitle: l10n.sideBalanceSubtitle,
+      trailing: GraphLegend(
+        items: [(graphPink, l10n.leftLabel), (graphBlue, l10n.rightLabel)],
         alignment: WrapAlignment.end,
       ),
       child: SizedBox(
@@ -453,7 +457,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
             ),
             lineTouchData: _touchData(
               unit: 'min',
-              labels: const ['Left', 'Right'],
+              labels: [l10n.leftLabel, l10n.rightLabel],
             ),
             lineBarsData: [
               _line(spots: _spots(leftTotals), color: graphPink),
@@ -468,14 +472,15 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
   }
 
   Widget _milkChart() {
+    final l10n = AppLocalizations.of(context);
     final maxY = _maxFor([milkTotals], seconds: false);
     final interval = niceInterval(maxY);
     final hasMilk = milkTotals.values.any((value) => value > 0);
 
     return PremiumChartCard(
-      title: 'Milk intake',
-      subtitle: 'Recorded intake from weight-based sessions',
-      trailing: _valuePill('${_sum(milkTotals)}g total', graphGreen),
+      title: l10n.milkIntake,
+      subtitle: l10n.milkIntakeSubtitle,
+      trailing: _valuePill('${_sum(milkTotals)}g ${l10n.totalLabel.toLowerCase()}', graphGreen),
       child: hasMilk
           ? SizedBox(
               height: 230,
@@ -491,7 +496,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
                     interval: interval,
                     valueLabel: (value) => '${value.round()}g',
                   ),
-                  lineTouchData: _touchData(unit: 'g', labels: const ['Milk']),
+                  lineTouchData: _touchData(unit: 'g', labels: [l10n.milk]),
                   lineBarsData: [
                     _line(
                       spots: _spots(milkTotals, seconds: false),
@@ -508,7 +513,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
               height: 110,
               child: Center(
                 child: Text(
-                  'No milk intake has been recorded for this period.',
+                  l10n.noMilkIntakeForPeriod,
                   textAlign: TextAlign.center,
                   style: graphAxisStyle(context, fontSize: 12),
                 ),
