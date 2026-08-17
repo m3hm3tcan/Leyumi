@@ -1,5 +1,5 @@
 param(
-    [string]$Publisher = "Hunililer",
+    [string]$Publisher = "Leyumi Studio",
     [string]$Alias = "upload"
 )
 

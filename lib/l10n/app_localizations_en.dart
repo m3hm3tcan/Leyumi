@@ -1206,7 +1206,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyContactBody =>
-      'For privacy questions, use the developer contact shown on Leyumi\'s Google Play listing.';
+      'For privacy questions, contact Leyumi Studio at leyumistudio@gmail.com.';
 
   @override
   String get privacyPolicyEffectiveDate => 'Effective date: July 11, 2026';

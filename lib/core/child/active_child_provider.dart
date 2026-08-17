@@ -2,12 +2,6 @@ import 'package:flutter/foundation.dart';
 
 import '../../models/baby_profile.dart';
 import '../../services/baby_storage.dart';
-import '../../services/child_data_migration_service.dart';
-import '../../services/care_event_storage.dart';
-import '../../services/diaper_storage.dart';
-import '../../services/feeding_storage.dart';
-import '../../services/growth_storage.dart';
-import '../../services/milk_inventory_storage.dart';
 
 class ActiveChildProvider extends ChangeNotifier {
   ActiveChildProvider({BabyStorage? storage})
@@ -28,11 +22,7 @@ class ActiveChildProvider extends ChangeNotifier {
   bool get hasProfiles => _profiles.isNotEmpty;
   Future<void> ensureLoaded() => _initialization;
 
-  Future<void> _initialize() async {
-    await _storage.loadProfiles();
-    await ChildDataMigrationService().migrateIfNeeded();
-    await reload();
-  }
+  Future<void> _initialize() => reload();
 
   Future<void> reload() async {
     _profiles = await _storage.loadProfiles();
@@ -56,13 +46,6 @@ class ActiveChildProvider extends ChangeNotifier {
 
   Future<void> deleteChild(String profileId) async {
     if (_profiles.length <= 1) return;
-    await Future.wait([
-      FeedingStorage().deleteChildData(profileId),
-      DiaperStorage().deleteChildData(profileId),
-      GrowthStorage().deleteChildData(profileId),
-      MilkInventoryStorage().deleteChildData(profileId),
-      CareEventStorage().deleteChildData(profileId),
-    ]);
     await _storage.deleteProfile(profileId);
     await reload();
   }

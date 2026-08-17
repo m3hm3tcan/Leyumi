@@ -1,71 +1,91 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
-import '../features/feeding/feeding_session.dart';
-import '../domain/repositories/feeding_repository.dart';
-import '../core/data/json_record_decoder.dart';
+import '../core/database/app_database.dart';
+import '../core/database/sqlite_records.dart';
 import '../core/logging/app_logger.dart';
+import '../domain/repositories/feeding_repository.dart';
+import '../features/feeding/feeding_session.dart';
 import 'active_child_scope.dart';
 
 class FeedingStorage implements FeedingRepository {
-  static const String key = "feeding_sessions";
-  static const String activeDraftKey = "feeding_active_draft";
-
+  @override
   Future<void> saveSession(FeedingSession session) async {
-    final prefs = await SharedPreferences.getInstance();
-    final list = prefs.getStringList(key) ?? [];
-
-    list.add(jsonEncode(session.toJson()));
-
-    await prefs.setStringList(key, list);
-  }
-
-  Future<List<FeedingSession>> loadSessions() async {
-    final sessions = await _loadAllSessions();
-    return ActiveChildScope.filter(sessions, (session) => session.childId);
-  }
-
-  Future<List<FeedingSession>> _loadAllSessions() async {
-    final prefs = await SharedPreferences.getInstance();
-    final list = prefs.getStringList(key) ?? [];
-
-    return JsonRecordDecoder.decodeStringList(
-      values: list,
-      fromJson: FeedingSession.fromJson,
-      source: 'feeding',
+    final db = await AppDatabase.instance;
+    await SqliteRecords.upsert(
+      db,
+      AppDatabase.feedingTable,
+      id: session.id,
+      childId: session.childId,
+      sortTime: session.startTime,
+      payload: session.toJson(),
     );
   }
 
+  @override
+  Future<List<FeedingSession>> loadSessions() async {
+    final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    return _load(db, childId: childId);
+  }
+
+  Future<List<FeedingSession>> _load(
+    DatabaseExecutor db, {
+    String? childId,
+  }) async {
+    final payloads = await SqliteRecords.readPayloads(
+      db,
+      AppDatabase.feedingTable,
+      childId: childId,
+    );
+    return _decode(payloads);
+  }
+
+  @override
   Future<void> saveAllSessions(List<FeedingSession> sessions) async {
-    final activeId = await ActiveChildScope.id();
-    final allSessions = await _loadAllSessions();
-    final merged = activeId == null
-        ? sessions
-        : [
-            ...allSessions.where((session) => session.childId != activeId),
-            ...sessions,
-          ];
-    final prefs = await SharedPreferences.getInstance();
-    final data = merged.map((e) => jsonEncode(e.toJson())).toList();
-    await prefs.setStringList(key, data);
+    final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    await SqliteRecords.replaceForChild(
+      db,
+      AppDatabase.feedingTable,
+      childId: childId,
+      records: sessions,
+      idOf: (item) => item.id,
+      childIdOf: (item) => item.childId,
+      sortTimeOf: (item) => item.startTime,
+      toJson: (item) => item.toJson(),
+    );
   }
 
+  @override
   Future<void> saveActiveDraft(Map<String, dynamic> draft) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(await _draftKey(), jsonEncode(draft));
+    final childId = await ActiveChildScope.id();
+    if (childId == null) return;
+    final db = await AppDatabase.instance;
+    await db.insert(AppDatabase.feedingDraftsTable, {
+      'child_id': childId,
+      'payload': jsonEncode(draft),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  @override
   Future<Map<String, dynamic>?> loadActiveDraft() async {
-    final prefs = await SharedPreferences.getInstance();
-    final scopedKey = await _draftKey();
-    var raw = prefs.getString(scopedKey);
-    if (raw == null && scopedKey != activeDraftKey) {
-      raw = prefs.getString(activeDraftKey);
-    }
-    if (raw == null || raw.isEmpty) return null;
+    final childId = await ActiveChildScope.id();
+    if (childId == null) return null;
+    final db = await AppDatabase.instance;
+    final rows = await db.query(
+      AppDatabase.feedingDraftsTable,
+      columns: const ['payload'],
+      where: 'child_id = ?',
+      whereArgs: [childId],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
     try {
-      return Map<String, dynamic>.from(jsonDecode(raw) as Map);
+      return Map<String, dynamic>.from(
+        jsonDecode(rows.first['payload']! as String) as Map,
+      );
     } catch (error, stackTrace) {
       AppLogger.warning(
         'The active feeding draft could not be read.',
@@ -76,36 +96,31 @@ class FeedingStorage implements FeedingRepository {
     }
   }
 
+  @override
   Future<void> clearActiveDraft() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(await _draftKey());
-  }
-
-  Future<void> deleteChildData(String childId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final sessions = await _loadAllSessions();
-    final remaining = sessions
-        .where((session) => session.childId != childId)
-        .map((session) => jsonEncode(session.toJson()))
-        .toList();
-    await prefs.setStringList(key, remaining);
-    await prefs.remove('${activeDraftKey}_$childId');
-
-    final legacyDraft = prefs.getString(activeDraftKey);
-    if (legacyDraft == null || legacyDraft.isEmpty) return;
-    try {
-      final draft = Map<String, dynamic>.from(jsonDecode(legacyDraft) as Map);
-      final session = draft['session'];
-      if (session is Map && session['childId'] == childId) {
-        await prefs.remove(activeDraftKey);
-      }
-    } catch (_) {
-      // Keep malformed legacy data untouched; normal decoder logging handles it.
-    }
-  }
-
-  Future<String> _draftKey() async {
     final childId = await ActiveChildScope.id();
-    return childId == null ? activeDraftKey : '${activeDraftKey}_$childId';
+    if (childId == null) return;
+    final db = await AppDatabase.instance;
+    await db.delete(
+      AppDatabase.feedingDraftsTable,
+      where: 'child_id = ?',
+      whereArgs: [childId],
+    );
+  }
+
+  List<FeedingSession> _decode(List<Map<String, dynamic>> payloads) {
+    final result = <FeedingSession>[];
+    for (final payload in payloads) {
+      try {
+        result.add(FeedingSession.fromJson(payload));
+      } catch (error, stackTrace) {
+        AppLogger.warning(
+          'A malformed feeding record was skipped.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+    return result;
   }
 }

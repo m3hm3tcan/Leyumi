@@ -26,8 +26,8 @@ Leyumi relies on Android's application sandbox and the user's device lock to pro
 
 ## Contact
 
-Privacy contact: **tarkanandthewolf@outlook.com**
+Privacy contact: **leyumistudio@gmail.com**
 
-Developer/publisher: **Hunililer**
+Developer/publisher: **Leyumi Studio**
 
 Before publication, publish this policy at a public, non-editable, non-geofenced HTTPS webpage. The published developer identity must match the Google Play listing.

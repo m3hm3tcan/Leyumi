@@ -1,31 +1,33 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
+import '../core/database/app_database.dart';
+import '../core/database/sqlite_records.dart';
 import '../core/logging/app_logger.dart';
 import '../domain/repositories/baby_repository.dart';
 import '../models/baby_profile.dart';
 
 class BabyStorage implements BabyRepository {
-  static const legacyKey = 'baby_profile';
-  static const profilesKey = 'baby_profiles_v2';
-  static const activeProfileKey = 'active_baby_profile_id';
+  static const _activeProfileKey = 'active_baby_profile_id';
 
   @override
   Future<void> saveProfile(BabyProfile profile) async {
-    final profiles = await loadProfiles();
-    final index = profiles.indexWhere((item) => item.id == profile.id);
-    if (index < 0) {
-      profiles.add(profile);
-    } else {
-      profiles[index] = profile;
-    }
-    await _saveProfiles(profiles);
-
-    final activeId = await loadActiveProfileId();
-    if (activeId == null || profiles.length == 1) {
-      await setActiveProfile(profile.id);
-    }
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      await SqliteRecords.upsert(
+        txn,
+        AppDatabase.profilesTable,
+        id: profile.id,
+        childId: null,
+        sortTime: profile.createdAt,
+        payload: profile.toJson(),
+      );
+      final active = await _loadMetadata(txn, _activeProfileKey);
+      if (active == null) {
+        await _saveMetadata(txn, _activeProfileKey, profile.id);
+      }
+    });
   }
 
   @override
@@ -33,92 +35,124 @@ class BabyStorage implements BabyRepository {
     final profiles = await loadProfiles();
     if (profiles.isEmpty) return null;
     final activeId = await loadActiveProfileId();
-    for (final profile in profiles) {
-      if (profile.id == activeId) return profile;
-    }
-    return profiles.first;
+    return profiles.where((profile) => profile.id == activeId).firstOrNull ??
+        profiles.first;
   }
 
   @override
   Future<List<BabyProfile>> loadProfiles() async {
-    final preferences = await SharedPreferences.getInstance();
-    final raw = preferences.getString(profilesKey);
-    if (raw != null && raw.isNotEmpty) {
+    final db = await AppDatabase.instance;
+    final rows = await db.query(
+      AppDatabase.profilesTable,
+      columns: const ['payload'],
+      orderBy: 'sort_time ASC, rowid ASC',
+    );
+    final profiles = <BabyProfile>[];
+    for (final row in rows) {
       try {
-        final decoded = jsonDecode(raw) as List<dynamic>;
-        return decoded
-            .map(
-              (item) =>
-                  BabyProfile.fromJson(Map<String, dynamic>.from(item as Map)),
-            )
-            .toList();
+        profiles.add(
+          BabyProfile.fromJson(
+            Map<String, dynamic>.from(
+              jsonDecode(row['payload']! as String) as Map,
+            ),
+          ),
+        );
       } catch (error, stackTrace) {
         AppLogger.warning(
-          'Baby profiles could not be read.',
+          'A malformed baby profile was skipped.',
           error: error,
           stackTrace: stackTrace,
         );
       }
     }
-
-    final legacy = await _loadLegacyProfile(preferences);
-    if (legacy == null) return [];
-    await _saveProfiles([legacy]);
-    await setActiveProfile(legacy.id);
-    return [legacy];
+    return profiles;
   }
 
   @override
   Future<void> setActiveProfile(String profileId) async {
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(activeProfileKey, profileId);
+    final db = await AppDatabase.instance;
+    final exists =
+        Sqflite.firstIntValue(
+          await db.rawQuery(
+            'SELECT COUNT(*) FROM ${AppDatabase.profilesTable} WHERE id = ?',
+            [profileId],
+          ),
+        ) ==
+        1;
+    if (!exists) return;
+    await _saveMetadata(db, _activeProfileKey, profileId);
   }
 
   @override
   Future<String?> loadActiveProfileId() async {
-    final preferences = await SharedPreferences.getInstance();
-    return preferences.getString(activeProfileKey);
+    final db = await AppDatabase.instance;
+    return _loadMetadata(db, _activeProfileKey);
   }
 
   @override
   Future<void> deleteProfile(String profileId) async {
-    final profiles = await loadProfiles();
-    profiles.removeWhere((profile) => profile.id == profileId);
-    await _saveProfiles(profiles);
-
-    final activeId = await loadActiveProfileId();
-    if (activeId == profileId) {
-      final preferences = await SharedPreferences.getInstance();
-      if (profiles.isEmpty) {
-        await preferences.remove(activeProfileKey);
-      } else {
-        await setActiveProfile(profiles.first.id);
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      for (final table in AppDatabase.recordTables) {
+        await txn.delete(table, where: 'child_id = ?', whereArgs: [profileId]);
       }
-    }
+      await txn.delete(
+        AppDatabase.feedingDraftsTable,
+        where: 'child_id = ?',
+        whereArgs: [profileId],
+      );
+      await txn.delete(
+        AppDatabase.profilesTable,
+        where: 'id = ?',
+        whereArgs: [profileId],
+      );
+      final active = await _loadMetadata(txn, _activeProfileKey);
+      if (active != profileId) return;
+      final remaining = await txn.query(
+        AppDatabase.profilesTable,
+        columns: const ['id'],
+        orderBy: 'sort_time ASC, rowid ASC',
+        limit: 1,
+      );
+      if (remaining.isEmpty) {
+        await txn.delete(
+          AppDatabase.metadataTable,
+          where: 'key = ?',
+          whereArgs: [_activeProfileKey],
+        );
+      } else {
+        await _saveMetadata(
+          txn,
+          _activeProfileKey,
+          remaining.first['id']! as String,
+        );
+      }
+    });
   }
 
-  Future<void> _saveProfiles(List<BabyProfile> profiles) async {
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(
-      profilesKey,
-      jsonEncode(profiles.map((profile) => profile.toJson()).toList()),
+  static Future<String?> _loadMetadata(DatabaseExecutor db, String key) async {
+    final rows = await db.query(
+      AppDatabase.metadataTable,
+      columns: const ['value'],
+      where: 'key = ?',
+      whereArgs: [key],
+      limit: 1,
     );
+    return rows.isEmpty ? null : rows.first['value']! as String;
   }
 
-  Future<BabyProfile?> _loadLegacyProfile(SharedPreferences preferences) async {
-    final raw = preferences.getString(legacyKey);
-    if (raw == null || raw.isEmpty) return null;
-    try {
-      return BabyProfile.fromJson(
-        Map<String, dynamic>.from(jsonDecode(raw) as Map),
-      );
-    } catch (error, stackTrace) {
-      AppLogger.warning(
-        'The legacy baby profile could not be read.',
-        error: error,
-        stackTrace: stackTrace,
-      );
-      return null;
-    }
+  static Future<void> _saveMetadata(
+    DatabaseExecutor db,
+    String key,
+    String value,
+  ) async {
+    await db.insert(AppDatabase.metadataTable, {
+      'key': key,
+      'value': value,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
+}
+
+extension<T> on Iterable<T> {
+  T? get firstOrNull => isEmpty ? null : first;
 }

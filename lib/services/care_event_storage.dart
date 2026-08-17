@@ -1,63 +1,51 @@
-import 'dart:convert';
-
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../core/data/json_record_decoder.dart';
+import '../core/database/app_database.dart';
+import '../core/database/sqlite_records.dart';
+import '../core/logging/app_logger.dart';
 import '../features/care_calendar/care_event.dart';
 import 'active_child_scope.dart';
 
 class CareEventStorage {
-  static const key = 'care_calendar_events_v1';
-
   Future<List<CareEvent>> loadEvents() async {
-    final events = await _loadAll();
-    final filtered = await ActiveChildScope.filter(
-      events,
-      (event) => event.childId,
+    final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    final payloads = await SqliteRecords.readPayloads(
+      db,
+      AppDatabase.careEventsTable,
+      childId: childId,
     );
-    filtered.sort((a, b) => a.scheduledAt.compareTo(b.scheduledAt));
-    return filtered;
+    final events = <CareEvent>[];
+    for (final payload in payloads) {
+      try {
+        events.add(CareEvent.fromJson(payload));
+      } catch (error, stackTrace) {
+        AppLogger.warning(
+          'A malformed care event was skipped.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+    return events;
   }
 
   Future<void> save(CareEvent event) async {
-    final events = await _loadAll();
-    final index = events.indexWhere((item) => item.id == event.id);
-    if (index < 0) {
-      events.add(event);
-    } else {
-      events[index] = event;
-    }
-    await _saveAll(events);
-  }
-
-  Future<void> delete(String eventId) async {
-    final events = await _loadAll();
-    events.removeWhere((event) => event.id == eventId);
-    await _saveAll(events);
-  }
-
-  Future<void> deleteChildData(String childId) async {
-    final events = await _loadAll();
-    events.removeWhere((event) => event.childId == childId);
-    await _saveAll(events);
-  }
-
-  Future<List<CareEvent>> _loadAll() async {
-    final preferences = await SharedPreferences.getInstance();
-    final raw = preferences.getString(key);
-    if (raw == null || raw.isEmpty) return [];
-    return JsonRecordDecoder.decodeArray(
-      value: raw,
-      fromJson: CareEvent.fromJson,
-      source: 'care calendar',
+    final db = await AppDatabase.instance;
+    await SqliteRecords.upsert(
+      db,
+      AppDatabase.careEventsTable,
+      id: event.id,
+      childId: event.childId,
+      sortTime: event.scheduledAt,
+      payload: event.toJson(),
     );
   }
 
-  Future<void> _saveAll(List<CareEvent> events) async {
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(
-      key,
-      jsonEncode(events.map((event) => event.toJson()).toList()),
+  Future<void> delete(String eventId) async {
+    final db = await AppDatabase.instance;
+    await db.delete(
+      AppDatabase.careEventsTable,
+      where: 'id = ?',
+      whereArgs: [eventId],
     );
   }
 }

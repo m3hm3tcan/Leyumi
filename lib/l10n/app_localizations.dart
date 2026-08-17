@@ -2353,7 +2353,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyContactBody.
   ///
   /// In en, this message translates to:
-  /// **'For privacy questions, use the developer contact shown on Leyumi\'s Google Play listing.'**
+  /// **'For privacy questions, contact Leyumi Studio at leyumistudio@gmail.com.'**
   String get privacyContactBody;
 
   /// No description provided for @privacyPolicyEffectiveDate.

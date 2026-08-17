@@ -1,66 +1,62 @@
-import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../features/diaper/diaper_entry.dart';
+import '../core/database/app_database.dart';
+import '../core/database/sqlite_records.dart';
+import '../core/logging/app_logger.dart';
 import '../domain/repositories/diaper_repository.dart';
-import '../core/data/json_record_decoder.dart';
+import '../features/diaper/diaper_entry.dart';
 import 'active_child_scope.dart';
 
 class DiaperStorage implements DiaperRepository {
-  static const String key = "diaper_history";
-
+  @override
   Future<void> addEntry(DiaperEntry entry) async {
-    final prefs = await SharedPreferences.getInstance();
-    final list = prefs.getStringList(key) ?? [];
-
-    list.add(jsonEncode(entry.toJson()));
-
-    await prefs.setStringList(key, list);
+    final db = await AppDatabase.instance;
+    await SqliteRecords.upsert(
+      db,
+      AppDatabase.diaperTable,
+      id: entry.id,
+      childId: entry.childId,
+      sortTime: entry.timestamp,
+      payload: entry.toJson(),
+    );
   }
 
+  @override
   Future<List<DiaperEntry>> loadEntries() async {
-    final entries = await _loadAllEntries();
-    final filtered = await ActiveChildScope.filter(
-      entries,
-      (entry) => entry.childId,
+    final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    final payloads = await SqliteRecords.readPayloads(
+      db,
+      AppDatabase.diaperTable,
+      childId: childId,
+      descending: true,
     );
-    return filtered.reversed.toList();
+    final entries = <DiaperEntry>[];
+    for (final payload in payloads) {
+      try {
+        entries.add(DiaperEntry.fromJson(payload));
+      } catch (error, stackTrace) {
+        AppLogger.warning(
+          'A malformed diaper record was skipped.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+    return entries;
   }
 
-  Future<List<DiaperEntry>> _loadAllEntries() async {
-    final prefs = await SharedPreferences.getInstance();
-    final list = prefs.getStringList(key) ?? [];
-
-    return JsonRecordDecoder.decodeStringList(
-      values: list,
-      fromJson: DiaperEntry.fromJson,
-      source: 'diaper',
-    );
-  }
-
+  @override
   Future<void> saveAllEntries(List<DiaperEntry> entries) async {
-    final activeId = await ActiveChildScope.id();
-    final allEntries = await _loadAllEntries();
-    final normalized = entries.reversed.toList();
-    final merged = activeId == null
-        ? normalized
-        : [
-            ...allEntries.where((entry) => entry.childId != activeId),
-            ...normalized,
-          ];
-    final prefs = await SharedPreferences.getInstance();
-
-    final data = merged.map((e) => jsonEncode(e.toJson())).toList();
-
-    await prefs.setStringList(key, data);
-  }
-
-  Future<void> deleteChildData(String childId) async {
-    final prefs = await SharedPreferences.getInstance();
-    final entries = await _loadAllEntries();
-    final remaining = entries
-        .where((entry) => entry.childId != childId)
-        .map((entry) => jsonEncode(entry.toJson()))
-        .toList();
-    await prefs.setStringList(key, remaining);
+    final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    await SqliteRecords.replaceForChild(
+      db,
+      AppDatabase.diaperTable,
+      childId: childId,
+      records: entries,
+      idOf: (item) => item.id,
+      childIdOf: (item) => item.childId,
+      sortTimeOf: (item) => item.timestamp,
+      toJson: (item) => item.toJson(),
+    );
   }
 }

@@ -1210,7 +1210,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get privacyContactBody =>
-      'Adatvédelmi kérdésekhez használd a Leyumi Google Play-oldalán megadott fejlesztői elérhetőséget.';
+      'Adatvédelmi kérdésekkel fordulj a Leyumi Studio csapatához a leyumistudio@gmail.com címen.';
 
   @override
   String get privacyPolicyEffectiveDate => 'Hatálybalépés: 2026. július 11.';

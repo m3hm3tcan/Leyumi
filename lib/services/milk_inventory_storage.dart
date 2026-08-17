@@ -1,284 +1,103 @@
 import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sqflite/sqflite.dart';
 
+import '../core/database/app_database.dart';
+import '../core/database/sqlite_records.dart';
+import '../core/logging/app_logger.dart';
+import '../domain/repositories/milk_inventory_repository.dart';
 import '../features/milk_inventory/milk_batch.dart';
 import '../features/milk_inventory/milk_inventory_event.dart';
-import '../domain/repositories/milk_inventory_repository.dart';
-import '../core/data/json_record_decoder.dart';
 import 'active_child_scope.dart';
 
 class MilkInventoryStorage implements MilkInventoryRepository {
-  static const key = 'milk_inventory_batches';
-  static const eventKey = 'milk_inventory_events';
-  static const migrationKey = 'milk_inventory_events_migrated_v1';
-
+  @override
   Future<List<MilkBatch>> loadBatches() async {
-    final batches = await _loadAllBatches();
-    return ActiveChildScope.filter(batches, (batch) => batch.childId);
+    final db = await AppDatabase.instance;
+    return _loadBatches(db, childId: await ActiveChildScope.id());
   }
 
-  Future<List<MilkBatch>> _loadAllBatches() async {
-    final preferences = await SharedPreferences.getInstance();
-    final raw = preferences.getString(key);
-    if (raw == null || raw.isEmpty) return [];
-
-    return JsonRecordDecoder.decodeArray(
-      value: raw,
-      fromJson: MilkBatch.fromJson,
-      source: 'milk inventory',
-    );
-  }
-
-  Future<List<MilkInventoryEvent>> loadEvents() async {
-    await _migrateExistingBatchesToEvents();
-    final events = await _loadAllEvents();
-    return ActiveChildScope.filter(events, (event) => event.childId);
-  }
-
-  Future<List<MilkInventoryEvent>> _loadAllEvents() async {
-    final preferences = await SharedPreferences.getInstance();
-    final raw = preferences.getString(eventKey);
-    if (raw == null || raw.isEmpty) return [];
-
-    return JsonRecordDecoder.decodeArray(
-      value: raw,
-      fromJson: MilkInventoryEvent.fromJson,
-      source: 'milk inventory event',
-    );
-  }
-
-  Future<void> saveAll(List<MilkBatch> batches) async {
-    final activeId = await ActiveChildScope.id();
-    final allBatches = await _loadAllBatches();
-    final merged = activeId == null
-        ? batches
-        : [
-            ...allBatches.where((batch) => batch.childId != activeId),
-            ...batches,
-          ];
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(
-      key,
-      jsonEncode(merged.map((batch) => batch.toJson()).toList()),
-    );
-  }
-
-  Future<void> saveEvents(List<MilkInventoryEvent> events) async {
-    final activeId = await ActiveChildScope.id();
-    final allEvents = await _loadAllEvents();
-    final merged = activeId == null
-        ? events
-        : [...allEvents.where((event) => event.childId != activeId), ...events];
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(
-      eventKey,
-      jsonEncode(merged.map((event) => event.toJson()).toList()),
-    );
-  }
-
-  Future<void> addBatch(MilkBatch batch) async {
-    final batches = await _loadAllBatches();
-    final events = await _loadAllEvents();
-
-    batches.add(batch);
-    events.add(
-      MilkInventoryEvent(
-        id: _newId(),
-        childId: batch.childId,
-        batchId: batch.id,
-        labelNumber: batch.labelNumber,
-        type: MilkInventoryEventType.created,
-        amountMl: batch.initialAmountMl,
-        remainingAfterMl: batch.remainingAmountMl,
-        eventAt: batch.createdAt,
-        storageLocation: batch.storageLocation,
-      ),
-    );
-
-    await _saveState(batches: batches, events: events);
-  }
-
-  Future<void> useMilk({
-    required MilkBatch batch,
-    required int amountMl,
-    DateTime? usedAt,
+  Future<List<MilkBatch>> _loadBatches(
+    DatabaseExecutor db, {
+    String? childId,
   }) async {
-    final batches = await _loadAllBatches();
-    final events = await _loadAllEvents();
-    final index = batches.indexWhere((item) => item.id == batch.id);
-    if (index < 0) return;
-
-    final safeAmount = amountMl.clamp(1, batch.remainingAmountMl).toInt();
-    final remaining = batch.remainingAmountMl - safeAmount;
-    final updated = batch.copyWith(
-      remainingAmountMl: remaining,
-      status: remaining == 0
-          ? MilkBatchStatus.depleted
-          : MilkBatchStatus.active,
+    final payloads = await SqliteRecords.readPayloads(
+      db,
+      AppDatabase.milkBatchesTable,
+      childId: childId,
     );
-
-    batches[index] = updated;
-    events.add(
-      MilkInventoryEvent(
-        id: _newId(),
-        childId: batch.childId,
-        batchId: batch.id,
-        labelNumber: batch.labelNumber,
-        type: MilkInventoryEventType.used,
-        amountMl: safeAmount,
-        remainingAfterMl: remaining,
-        eventAt: usedAt ?? DateTime.now(),
-        storageLocation: batch.storageLocation,
-      ),
-    );
-
-    await _saveState(batches: batches, events: events);
-  }
-
-  Future<void> discardMilk({
-    required MilkBatch batch,
-    required int amountMl,
-    String? note,
-  }) async {
-    final batches = await _loadAllBatches();
-    final events = await _loadAllEvents();
-    final index = batches.indexWhere((item) => item.id == batch.id);
-    if (index < 0) return;
-
-    final safeAmount = amountMl.clamp(1, batch.remainingAmountMl).toInt();
-    final remaining = batch.remainingAmountMl - safeAmount;
-    batches[index] = batch.copyWith(
-      remainingAmountMl: remaining,
-      status: remaining == 0
-          ? MilkBatchStatus.discarded
-          : MilkBatchStatus.active,
-    );
-    events.add(
-      MilkInventoryEvent(
-        id: _newId(),
-        childId: batch.childId,
-        batchId: batch.id,
-        labelNumber: batch.labelNumber,
-        type: MilkInventoryEventType.discarded,
-        amountMl: safeAmount,
-        remainingAfterMl: remaining,
-        eventAt: DateTime.now(),
-        storageLocation: batch.storageLocation,
-        note: note,
-      ),
-    );
-
-    await _saveState(batches: batches, events: events);
-  }
-
-  Future<void> moveToFreezer(MilkBatch batch) async {
-    final batches = await _loadAllBatches();
-    final events = await _loadAllEvents();
-    final index = batches.indexWhere((item) => item.id == batch.id);
-    if (index < 0) return;
-
-    final movedAt = DateTime.now();
-    batches[index] = batch.copyWith(
-      storageLocation: MilkStorageLocation.freezer,
-      frozenAt: movedAt,
-    );
-    events.add(
-      MilkInventoryEvent(
-        id: _newId(),
-        childId: batch.childId,
-        batchId: batch.id,
-        labelNumber: batch.labelNumber,
-        type: MilkInventoryEventType.movedToFreezer,
-        amountMl: 0,
-        remainingAfterMl: batch.remainingAmountMl,
-        eventAt: movedAt,
-        storageLocation: MilkStorageLocation.freezer,
-      ),
-    );
-
-    await _saveState(batches: batches, events: events);
-  }
-
-  Future<void> updateBatch({
-    required MilkBatch previous,
-    required MilkBatch updated,
-  }) async {
-    final batches = await _loadAllBatches();
-    final events = await _loadAllEvents();
-    final index = batches.indexWhere((item) => item.id == previous.id);
-    if (index < 0) return;
-
-    batches[index] = updated;
-    if (updated.labelNumber != previous.labelNumber) {
-      for (var eventIndex = 0; eventIndex < events.length; eventIndex++) {
-        final event = events[eventIndex];
-        if (event.batchId == updated.id) {
-          events[eventIndex] = event.copyWith(labelNumber: updated.labelNumber);
-        }
+    final batches = <MilkBatch>[];
+    for (final payload in payloads) {
+      try {
+        batches.add(MilkBatch.fromJson(payload));
+      } catch (error, stackTrace) {
+        AppLogger.warning(
+          'A malformed milk batch was skipped.',
+          error: error,
+          stackTrace: stackTrace,
+        );
       }
     }
-    events.add(
-      MilkInventoryEvent(
-        id: _newId(),
-        childId: updated.childId,
-        batchId: updated.id,
-        labelNumber: updated.labelNumber,
-        type: MilkInventoryEventType.corrected,
-        amountMl: updated.remainingAmountMl - previous.remainingAmountMl,
-        remainingAfterMl: updated.remainingAmountMl,
-        eventAt: DateTime.now(),
-        storageLocation: updated.storageLocation,
-      ),
-    );
-
-    await _saveState(batches: batches, events: events);
+    return batches;
   }
 
-  /// Removes an incorrectly entered batch and all events linked to it.
-  Future<void> deleteIncorrectBatch(String batchId) async {
-    final batches = await _loadAllBatches();
-    final events = await _loadAllEvents();
-    batches.removeWhere((batch) => batch.id == batchId);
-    events.removeWhere((event) => event.batchId == batchId);
-    await _saveState(batches: batches, events: events);
+  @override
+  Future<List<MilkInventoryEvent>> loadEvents() async {
+    final db = await AppDatabase.instance;
+    return _loadEvents(db, childId: await ActiveChildScope.id());
   }
 
-  Future<void> deleteChildData(String childId) async {
-    final batches = await _loadAllBatches();
-    final events = await _loadAllEvents();
-    batches.removeWhere((batch) => batch.childId == childId);
-    events.removeWhere((event) => event.childId == childId);
-    await _saveState(batches: batches, events: events);
-  }
-
-  Future<void> _saveState({
-    required List<MilkBatch> batches,
-    required List<MilkInventoryEvent> events,
+  Future<List<MilkInventoryEvent>> _loadEvents(
+    DatabaseExecutor db, {
+    String? childId,
   }) async {
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setString(
-      key,
-      jsonEncode(batches.map((batch) => batch.toJson()).toList()),
+    final payloads = await SqliteRecords.readPayloads(
+      db,
+      AppDatabase.milkEventsTable,
+      childId: childId,
     );
-    await preferences.setString(
-      eventKey,
-      jsonEncode(events.map((event) => event.toJson()).toList()),
+    final events = <MilkInventoryEvent>[];
+    for (final payload in payloads) {
+      try {
+        events.add(MilkInventoryEvent.fromJson(payload));
+      } catch (error, stackTrace) {
+        AppLogger.warning(
+          'A malformed milk inventory event was skipped.',
+          error: error,
+          stackTrace: stackTrace,
+        );
+      }
+    }
+    return events;
+  }
+
+  @override
+  Future<void> saveAll(List<MilkBatch> batches) async {
+    final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    await db.transaction(
+      (txn) => _replaceBatches(txn, batches, childId: childId),
     );
   }
 
-  Future<void> _migrateExistingBatchesToEvents() async {
-    final preferences = await SharedPreferences.getInstance();
-    if (preferences.getBool(migrationKey) ?? false) return;
+  @override
+  Future<void> saveEvents(List<MilkInventoryEvent> events) async {
+    final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    await db.transaction(
+      (txn) => _replaceEvents(txn, events, childId: childId),
+    );
+  }
 
-    final batches = await _loadAllBatches();
-    final rawEvents = preferences.getString(eventKey);
-    final hasEvents = rawEvents != null && rawEvents.isNotEmpty;
-
-    if (!hasEvents && batches.isNotEmpty) {
-      final events = batches.map((batch) {
-        return MilkInventoryEvent(
-          id: 'migrated-${batch.id}',
+  @override
+  Future<void> addBatch(MilkBatch batch) async {
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      await _upsertBatch(txn, batch);
+      await _upsertEvent(
+        txn,
+        MilkInventoryEvent(
+          id: _newId(),
           childId: batch.childId,
           batchId: batch.id,
           labelNumber: batch.labelNumber,
@@ -287,19 +106,238 @@ class MilkInventoryStorage implements MilkInventoryRepository {
           remainingAfterMl: batch.remainingAmountMl,
           eventAt: batch.createdAt,
           storageLocation: batch.storageLocation,
-          note: 'migrated',
-        );
-      }).toList();
-      await saveEvents(events);
-    }
-
-    if (batches.isNotEmpty) {
-      await preferences.setString(
-        key,
-        jsonEncode(batches.map((batch) => batch.toJson()).toList()),
+        ),
       );
+    });
+  }
+
+  @override
+  Future<void> useMilk({
+    required MilkBatch batch,
+    required int amountMl,
+    DateTime? usedAt,
+  }) async {
+    await _changeAmount(
+      batch: batch,
+      amountMl: amountMl,
+      eventAt: usedAt ?? DateTime.now(),
+      eventType: MilkInventoryEventType.used,
+      depletedStatus: MilkBatchStatus.depleted,
+    );
+  }
+
+  @override
+  Future<void> discardMilk({
+    required MilkBatch batch,
+    required int amountMl,
+    String? note,
+  }) async {
+    await _changeAmount(
+      batch: batch,
+      amountMl: amountMl,
+      eventAt: DateTime.now(),
+      eventType: MilkInventoryEventType.discarded,
+      depletedStatus: MilkBatchStatus.discarded,
+      note: note,
+    );
+  }
+
+  Future<void> _changeAmount({
+    required MilkBatch batch,
+    required int amountMl,
+    required DateTime eventAt,
+    required MilkInventoryEventType eventType,
+    required MilkBatchStatus depletedStatus,
+    String? note,
+  }) async {
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      final current = await _findBatch(txn, batch.id);
+      if (current == null || current.remainingAmountMl <= 0) return;
+      final safeAmount = amountMl.clamp(1, current.remainingAmountMl).toInt();
+      final remaining = current.remainingAmountMl - safeAmount;
+      final updated = current.copyWith(
+        remainingAmountMl: remaining,
+        status: remaining == 0 ? depletedStatus : MilkBatchStatus.active,
+      );
+      await _upsertBatch(txn, updated);
+      await _upsertEvent(
+        txn,
+        MilkInventoryEvent(
+          id: _newId(),
+          childId: current.childId,
+          batchId: current.id,
+          labelNumber: current.labelNumber,
+          type: eventType,
+          amountMl: safeAmount,
+          remainingAfterMl: remaining,
+          eventAt: eventAt,
+          storageLocation: current.storageLocation,
+          note: note,
+        ),
+      );
+    });
+  }
+
+  @override
+  Future<void> moveToFreezer(MilkBatch batch) async {
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      final current = await _findBatch(txn, batch.id);
+      if (current == null) return;
+      final movedAt = DateTime.now();
+      final updated = current.copyWith(
+        storageLocation: MilkStorageLocation.freezer,
+        frozenAt: movedAt,
+      );
+      await _upsertBatch(txn, updated);
+      await _upsertEvent(
+        txn,
+        MilkInventoryEvent(
+          id: _newId(),
+          childId: current.childId,
+          batchId: current.id,
+          labelNumber: current.labelNumber,
+          type: MilkInventoryEventType.movedToFreezer,
+          amountMl: 0,
+          remainingAfterMl: current.remainingAmountMl,
+          eventAt: movedAt,
+          storageLocation: MilkStorageLocation.freezer,
+        ),
+      );
+    });
+  }
+
+  @override
+  Future<void> updateBatch({
+    required MilkBatch previous,
+    required MilkBatch updated,
+  }) async {
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      final current = await _findBatch(txn, previous.id);
+      if (current == null) return;
+      await _upsertBatch(txn, updated);
+      if (updated.labelNumber != current.labelNumber) {
+        final linkedEvents = await _loadEventsForBatch(txn, updated.id);
+        for (final event in linkedEvents) {
+          await _upsertEvent(
+            txn,
+            event.copyWith(labelNumber: updated.labelNumber),
+          );
+        }
+      }
+      await _upsertEvent(
+        txn,
+        MilkInventoryEvent(
+          id: _newId(),
+          childId: updated.childId,
+          batchId: updated.id,
+          labelNumber: updated.labelNumber,
+          type: MilkInventoryEventType.corrected,
+          amountMl: updated.remainingAmountMl - current.remainingAmountMl,
+          remainingAfterMl: updated.remainingAmountMl,
+          eventAt: DateTime.now(),
+          storageLocation: updated.storageLocation,
+        ),
+      );
+    });
+  }
+
+  @override
+  Future<void> deleteIncorrectBatch(String batchId) async {
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      final linkedEvents = await _loadEventsForBatch(txn, batchId);
+      for (final event in linkedEvents) {
+        await txn.delete(
+          AppDatabase.milkEventsTable,
+          where: 'id = ?',
+          whereArgs: [event.id],
+        );
+      }
+      await txn.delete(
+        AppDatabase.milkBatchesTable,
+        where: 'id = ?',
+        whereArgs: [batchId],
+      );
+    });
+  }
+
+  Future<MilkBatch?> _findBatch(DatabaseExecutor db, String id) async {
+    final rows = await db.query(
+      AppDatabase.milkBatchesTable,
+      columns: const ['payload'],
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return MilkBatch.fromJson(
+      Map<String, dynamic>.from(
+        jsonDecode(rows.first['payload']! as String) as Map,
+      ),
+    );
+  }
+
+  Future<List<MilkInventoryEvent>> _loadEventsForBatch(
+    DatabaseExecutor db,
+    String batchId,
+  ) async {
+    final events = await _loadEvents(db);
+    return events.where((event) => event.batchId == batchId).toList();
+  }
+
+  Future<void> _replaceBatches(
+    DatabaseExecutor db,
+    List<MilkBatch> batches, {
+    required String? childId,
+  }) async {
+    await db.delete(
+      AppDatabase.milkBatchesTable,
+      where: childId == null ? null : 'child_id = ?',
+      whereArgs: childId == null ? null : [childId],
+    );
+    for (final batch in batches) {
+      await _upsertBatch(db, batch);
     }
-    await preferences.setBool(migrationKey, true);
+  }
+
+  Future<void> _replaceEvents(
+    DatabaseExecutor db,
+    List<MilkInventoryEvent> events, {
+    required String? childId,
+  }) async {
+    await db.delete(
+      AppDatabase.milkEventsTable,
+      where: childId == null ? null : 'child_id = ?',
+      whereArgs: childId == null ? null : [childId],
+    );
+    for (final event in events) {
+      await _upsertEvent(db, event);
+    }
+  }
+
+  Future<void> _upsertBatch(DatabaseExecutor db, MilkBatch batch) {
+    return SqliteRecords.upsert(
+      db,
+      AppDatabase.milkBatchesTable,
+      id: batch.id,
+      childId: batch.childId,
+      sortTime: batch.createdAt,
+      payload: batch.toJson(),
+    );
+  }
+
+  Future<void> _upsertEvent(DatabaseExecutor db, MilkInventoryEvent event) {
+    return SqliteRecords.upsert(
+      db,
+      AppDatabase.milkEventsTable,
+      id: event.id,
+      childId: event.childId,
+      sortTime: event.eventAt,
+      payload: event.toJson(),
+    );
   }
 
   static String _newId() => DateTime.now().microsecondsSinceEpoch.toString();

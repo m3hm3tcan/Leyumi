@@ -23,7 +23,7 @@ if (releaseTaskRequested && !keystorePropertiesFile.exists()) {
 }
 
 android {
-    namespace = "com.hunililer.leyumi"
+    namespace = "com.leyumistudio.leyumi"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -34,7 +34,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.hunililer.leyumi"
+        applicationId = "com.leyumistudio.leyumi"
         multiDexEnabled = true
         minSdk = flutter.minSdkVersion
         targetSdk = 35

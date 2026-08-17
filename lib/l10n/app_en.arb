@@ -383,7 +383,7 @@
   "privacySecurityTitle": "Security",
   "privacySecurityBody": "Leyumi relies on Android's application sandbox and your device lock to protect local records. Keep your device updated and protected with a PIN, password or biometric lock.",
   "privacyContactTitle": "Contact",
-  "privacyContactBody": "For privacy questions, use the developer contact shown on Leyumi's Google Play listing.",
+  "privacyContactBody": "For privacy questions, contact Leyumi Studio at leyumistudio@gmail.com.",
   "privacyPolicyEffectiveDate": "Effective date: July 11, 2026",
   "feedingAnalytics": "Feeding Analytics",
   "noFeedingData": "No feeding data",
