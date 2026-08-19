@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../feeding_entry.dart';
@@ -42,10 +41,7 @@ class FeedingSummaryCard extends StatelessWidget {
         children: [
           Text(
             l10n.feedingSummary,
-            style: GoogleFonts.poppins(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 14),
           ClipRRect(
@@ -87,7 +83,7 @@ class FeedingSummaryCard extends StatelessWidget {
           Center(
             child: Text(
               '${l10n.totalLabel}: ${_format(total)}',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.w600),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
         ],
@@ -124,15 +120,15 @@ class _SideValue extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(fontWeight: FontWeight.w600, color: color),
+          style: TextStyle(fontWeight: FontWeight.w600, color: color),
         ),
         Text(
           '${(ratio * 100).toStringAsFixed(0)}%',
-          style: GoogleFonts.poppins(fontSize: 13),
+          style: const TextStyle(fontSize: 13),
         ),
         Text(
           FeedingSummaryCard._format(duration),
-          style: GoogleFonts.poppins(fontSize: 12),
+          style: const TextStyle(fontSize: 12),
         ),
       ],
     );

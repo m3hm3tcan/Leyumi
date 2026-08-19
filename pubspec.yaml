@@ -41,7 +41,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.5.5
-  google_fonts: ^8.1.0
   pdf: ^3.13.0
   printing: ^5.15.0
   flutter_local_notifications: ^18.0.1
@@ -76,6 +75,7 @@ flutter:
     - assets/lottie/
     - assets/icon/
     - assets/fonts/
+    - assets/fonts/OFL.txt
   
 flutter_launcher_icons:
   android: true

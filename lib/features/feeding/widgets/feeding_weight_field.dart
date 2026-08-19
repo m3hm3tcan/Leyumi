@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../l10n/app_localizations.dart';
 
@@ -27,7 +26,7 @@ class FeedingWeightField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             decoration: TextDecoration.none,

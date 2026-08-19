@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../feeding_entry.dart';
@@ -153,7 +152,7 @@ class _SideCardState extends State<_SideCard>
                         isLeft ? l10n.leftSide : l10n.rightSide,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: GoogleFonts.poppins(
+                        style: const TextStyle(
                           fontWeight: FontWeight.w700,
                           fontSize: 12,
                         ),
@@ -161,7 +160,8 @@ class _SideCardState extends State<_SideCard>
                       const SizedBox(height: 3),
                       Text(
                         _format(widget.duration),
-                        style: GoogleFonts.robotoMono(
+                        style: TextStyle(
+                          fontFamily: 'monospace',
                           color: accent,
                           fontSize: 18,
                           fontWeight: FontWeight.w700,

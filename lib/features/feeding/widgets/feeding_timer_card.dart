@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../feeding_entry.dart';
@@ -80,7 +79,8 @@ class FeedingTimerCard extends StatelessWidget {
                     opacity: isActive && elapsed.inSeconds.isOdd ? .35 : 1,
                     child: Text(
                       ':',
-                      style: GoogleFonts.robotoMono(
+                      style: TextStyle(
+                        fontFamily: 'monospace',
                         fontSize: 35,
                         height: 1,
                         fontWeight: FontWeight.w700,
@@ -153,7 +153,8 @@ class _DigitalPair extends StatelessWidget {
       alignment: Alignment.center,
       child: Text(
         value,
-        style: GoogleFonts.robotoMono(
+        style: TextStyle(
+          fontFamily: 'monospace',
           fontSize: 34,
           height: 1,
           fontWeight: FontWeight.w700,

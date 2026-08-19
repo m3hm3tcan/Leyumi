@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/data/record_identity.dart';
 import '../../../l10n/app_localizations.dart';
@@ -226,10 +225,7 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
             const SizedBox(height: 20),
             Text(
               l10n.manualFeedingEntry,
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-              ),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 20),
             _dateRow(l10n),
@@ -306,7 +302,7 @@ class _ManualFeedingSheetState extends State<ManualFeedingSheet> {
               ),
               child: Text(
                 l10n.save,
-                style: GoogleFonts.poppins(
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                   color: Colors.white,
                 ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/child/active_child_app_bar_title.dart';
 import '../../l10n/app_localizations.dart';
@@ -330,7 +329,7 @@ class _FeedingScreenState extends State<FeedingScreen>
       ),
       child: Text(
         l10n.stop,
-        style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.w600),
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
       ),
     );
   }
@@ -362,10 +361,7 @@ class _FeedingScreenState extends State<FeedingScreen>
           ),
           child: Text(
             l10n.save,
-            style: GoogleFonts.poppins(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
         ),
       ],
