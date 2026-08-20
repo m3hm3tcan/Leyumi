@@ -38,7 +38,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get premiumPlanFeatures =>
-      'Fejlett grafikonok és gondozási tervek\nTejkészlet\nPDF orvosi jelentések\nTöbb gyermekprofil';
+      'Fejlett grafikonok és gondozási tervek\nTejkészlet\nPDF gondozási jelentések\nTöbb gyermekprofil';
 
   @override
   String get onboardingPrivacyTitle => 'A családi adataid a tieid maradnak';
@@ -168,7 +168,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get careTypeVaccine => 'Oltás';
 
   @override
-  String get careTypeDoctor => 'Orvos';
+  String get careTypeAppointment => 'Időpont';
 
   @override
   String get careTypeMedicine => 'Gyógyszer';
@@ -186,7 +186,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get careTypeCustom => 'Egyéb';
 
   @override
-  String get doctorOrLocation => 'Orvos vagy helyszín';
+  String get contactOrLocation => 'Kapcsolattartó vagy helyszín';
 
   @override
   String get medicineDosage => 'Gyógyszeradag';
@@ -455,17 +455,17 @@ class AppLocalizationsHu extends AppLocalizations {
       'Fejlett etetési, pelenka- és növekedési elemzések';
 
   @override
-  String get premiumPdfReports => 'PDF orvosi jelentések';
+  String get premiumPdfReports => 'PDF gondozási jelentések';
 
   @override
-  String get doctorReport => 'Orvosi jelentés';
+  String get careReport => 'Gondozási jelentés';
 
   @override
-  String get doctorReportDescription =>
-      'Készíts áttekinthető összefoglalót az etetési, pelenka- és növekedési adatokról az orvos számára.';
+  String get careReportDescription =>
+      'Készíts áttekinthető összefoglalót az etetési, pelenka- és növekedési adatokról.';
 
   @override
-  String get createShareableReport => 'Megosztható egészségügyi összefoglaló';
+  String get createShareableReport => 'Megosztható gondozási összefoglaló';
 
   @override
   String get selectReportPeriod => 'Jelentési időszak kiválasztása';
@@ -533,8 +533,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get duration => 'Időtartam';
 
   @override
-  String get reportMedicalDisclaimer =>
-      'Ez a jelentés a gondozó által rögzített adatokat foglalja össze. Nem minősül orvosi tanácsnak vagy diagnózisnak. Az adatokat szakképzett egészségügyi szakemberrel értékelje.';
+  String get reportDisclaimer =>
+      'Ez a jelentés a gondozó által rögzített adatok általános összefoglalója, és nem helyettesíti a szakértői értékelést vagy tanácsadást.';
 
   @override
   String get createAndSharePdf => 'PDF létrehozása és megosztása';
@@ -923,6 +923,22 @@ class AppLocalizationsHu extends AppLocalizations {
   String get save => 'Mentés';
 
   @override
+  String get saving => 'Mentés...';
+
+  @override
+  String get saveFailed => 'A bejegyzést nem sikerült menteni. Próbáld újra.';
+
+  @override
+  String get operationFailed =>
+      'A műveletet nem sikerült befejezni. Próbáld újra.';
+
+  @override
+  String get loadFailed => 'A bejegyzéseket nem sikerült betölteni.';
+
+  @override
+  String get retry => 'Próbáld újra';
+
+  @override
   String get currentLabel => 'Jelenlegi';
 
   @override
@@ -974,7 +990,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get reportsHubSubtitle =>
-      'Készíts tiszta összefoglalókat orvosi látogatásokhoz és kontrollokhoz.';
+      'Készíts áttekinthető összefoglalókat az etetési, pelenka- és növekedési adatokról.';
 
   @override
   String get diaperPatterns => 'Pelenka minták';
@@ -1167,29 +1183,50 @@ class AppLocalizationsHu extends AppLocalizations {
   String get privacyPolicySubtitle => 'Hogyan védi a Leyumi a helyi adataidat';
 
   @override
+  String get aboutLeyumiTitle => 'A Leyumi névjegye';
+
+  @override
+  String get aboutLeyumiBody =>
+      'A Leyumi a gondozó által megadott babaápolási feljegyzések rendszerezésére szolgáló offline nyilvántartási eszköz. Nem orvostechnikai eszköz és nem egészségügyi szolgáltatás; nem diagnosztizál, kezel, gyógyít vagy előz meg semmilyen betegséget. Egészségügyi tanácsért, diagnózisért vagy kezelésért forduljon szakképzett egészségügyi szakemberhez.';
+
+  @override
   String get privacyPolicyIntro =>
-      'A Leyumi offline babaápolási alkalmazásként készült. Ez a verzió nem igényel fiókot, és nem küldi el a gondozási adatokat Leyumi-szerverekre.';
+      'A Leyumi internetkapcsolat nélkül működő babaápolási nyilvántartó eszköz. Ez a verzió nem igényel fiókot, és nem küldi el a gondozási adatokat a Leyumi Studio részére vagy semmilyen szerverre.';
+
+  @override
+  String get privacyPurposeTitle => 'A Leyumi célja';
+
+  @override
+  String get privacyPurposeBody =>
+      'A Leyumi egy offline nyilvántartási eszköz, amely kizárólag a gondozó által megadott babaápolási feljegyzések rendszerezését segíti. Nem orvostechnikai eszköz és nem egészségügyi szolgáltatás; nem nyújt egészségügyi tanácsot, diagnózist, kezelést, sürgősségi útmutatást vagy szakmai értékelést, továbbá nem gyógyít és nem előz meg semmilyen betegséget. Egészségügyi tanácsért, diagnózisért vagy kezelésért forduljon szakképzett egészségügyi szakemberhez.';
 
   @override
   String get privacyDataTitle => 'Az alkalmazás által használt adatok';
 
   @override
   String get privacyDataBody =>
-      'A Leyumi tárolja az általad megadott gyermekprofilokat, születési dátumokat, növekedési méréseket, etetési és pelenkaadatokat, tejkészletet, gondozási terveket és alkalmazásbeállításokat.';
+      'A Leyumi kizárólag az eszközödön dolgozza fel az önként megadott gyermekprofilokat, születési dátumokat, növekedési méréseket, etetési és pelenkaadatokat, tejkészletet, gondozási terveket, gyógyszer- és oltási emlékeztetőket, valamint alkalmazásbeállításokat.';
 
   @override
   String get privacyStorageTitle => 'Helyi tárolás';
 
   @override
   String get privacyStorageBody =>
-      'Az adataid kizárólag ezen az eszközön, a Leyumi privát alkalmazástárhelyén vannak. Ebben a verzióban a felhőmentés és az eszközátvitel ki van kapcsolva. Az alkalmazás eltávolítása vagy az eszköz elvesztése véglegesen törölheti ezeket az adatokat.';
+      'Az adataid helyi SQLite-adatbázisban, kizárólag a Leyumi privát alkalmazásterületén vannak ezen az eszközön. A felhő- és Android-rendszermentés ki van kapcsolva. Az alkalmazás eltávolítása vagy az eszköz elvesztése véglegesen törölheti ezeket az adatokat.';
+
+  @override
+  String get privacyBackupTitle => 'Felhasználó által vezérelt mentés';
+
+  @override
+  String get privacyBackupBody =>
+      'Jelszóval védett, titkosított .leyumi fájlt hozhatsz létre, és egy másik eszközön visszaállíthatod. Te választod ki a mentés vagy megnyitás helyét. A Leyumi Studio nem kapja meg a fájlt vagy a jelszót, és az elfelejtett jelszót nem tudja helyreállítani.';
 
   @override
   String get privacySharingTitle => 'Adatgyűjtés és megosztás';
 
   @override
   String get privacySharingBody =>
-      'A Leyumi nem továbbítja, nem értékesíti és nem osztja meg gondozási adataidat a fejlesztővel vagy harmadik felekkel. Jelentés csak akkor kerül megosztásra, amikor kifejezetten használod az eszköz megosztási vagy nyomtatási funkcióját.';
+      'A Leyumi Studio nem gyűjt személyes adatokat vagy gondozási feljegyzéseket, nem továbbítja azokat saját szervereire, nem értékesíti, nem használja reklámhoz vagy elemzéshez, és nem osztja meg harmadik féllel. Ha kifejezetten megosztasz vagy kinyomtatsz egy jelentést, az csak az általad választott célhoz kerül.';
 
   @override
   String get privacyRetentionTitle => 'Megőrzés és törlés';
@@ -1213,7 +1250,90 @@ class AppLocalizationsHu extends AppLocalizations {
       'Adatvédelmi kérdésekkel fordulj a Leyumi Studio csapatához a leyumistudio@gmail.com címen.';
 
   @override
-  String get privacyPolicyEffectiveDate => 'Hatálybalépés: 2026. július 11.';
+  String get privacyPolicyEffectiveDate => 'Hatálybalépés: 2026. augusztus 20.';
+
+  @override
+  String get dataManagement => 'Adatmentés';
+
+  @override
+  String get dataManagementSubtitle =>
+      'Titkosított exportálás és visszaállítás';
+
+  @override
+  String get backupData => 'Adataim biztonsági mentése';
+
+  @override
+  String get backupDataDescription =>
+      'Jelszóval védett Leyumi biztonsági mentés létrehozása.';
+
+  @override
+  String get restoreData => 'Visszaállítás mentésből';
+
+  @override
+  String get restoreDataDescription =>
+      'Az eszköz adatainak lecserélése egy Leyumi mentéssel.';
+
+  @override
+  String get createBackupPassword => 'Védd a biztonsági mentést';
+
+  @override
+  String get restoreBackupPassword => 'Add meg a mentés jelszavát';
+
+  @override
+  String get backupPassword => 'Biztonsági mentés jelszava';
+
+  @override
+  String get confirmBackupPassword => 'Jelszó megerősítése';
+
+  @override
+  String get backupPasswordRequirement =>
+      'Használj 8–128 karaktert. A Leyumi Studio nem tudja visszaállítani ezt a jelszót.';
+
+  @override
+  String get backupPasswordsDoNotMatch => 'A jelszavak nem egyeznek.';
+
+  @override
+  String get backupSaved => 'A titkosított mentés elkészült.';
+
+  @override
+  String get restoreBackupTitle => 'Visszaállítod ezt a mentést?';
+
+  @override
+  String restoreBackupSummary(String date, int profileCount, int recordCount) {
+    return 'Létrehozva: $date · $profileCount profil · $recordCount bejegyzés';
+  }
+
+  @override
+  String get restoreBackupWarning =>
+      'Az eszközön lévő összes jelenlegi Leyumi-adat lecserélődik. A művelet nem vonható vissza, ha nincs másik biztonsági mentésed.';
+
+  @override
+  String get restoreNow => 'Visszaállítás most';
+
+  @override
+  String get restoreComplete => 'A biztonsági mentés sikeresen visszaállítva.';
+
+  @override
+  String get backupNoData =>
+      'Biztonsági mentés előtt hozz létre egy gyermekprofilt.';
+
+  @override
+  String get backupInvalidPassword =>
+      'A jelszó hibás, vagy a mentés megváltozott.';
+
+  @override
+  String get backupInvalidFile => 'Ez nem érvényes Leyumi biztonsági mentés.';
+
+  @override
+  String get backupUnsupportedVersion =>
+      'A mentést a Leyumi egy újabb, nem támogatott verziója készítette.';
+
+  @override
+  String get backupTooLarge => 'A biztonsági mentés túl nagy.';
+
+  @override
+  String get backupOperationFailed =>
+      'A biztonsági mentési művelet nem fejezhető be.';
 
   @override
   String get feedingAnalytics => 'Etetési elemzések';

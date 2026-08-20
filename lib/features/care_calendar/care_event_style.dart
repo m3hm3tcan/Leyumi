@@ -5,7 +5,7 @@ import 'care_event.dart';
 abstract final class CareEventStyle {
   static Color color(CareEventType type) => switch (type) {
     CareEventType.vaccine => const Color(0xff8B5CF6),
-    CareEventType.doctor => const Color(0xff3B82F6),
+    CareEventType.appointment => const Color(0xff3B82F6),
     CareEventType.medicine => const Color(0xffEC668B),
     CareEventType.checkup => const Color(0xff22A879),
     CareEventType.laboratory => const Color(0xffF59E0B),
@@ -15,7 +15,7 @@ abstract final class CareEventStyle {
 
   static IconData icon(CareEventType type) => switch (type) {
     CareEventType.vaccine => Icons.local_hospital,
-    CareEventType.doctor => Icons.healing,
+    CareEventType.appointment => Icons.event_available,
     CareEventType.medicine => Icons.local_pharmacy,
     CareEventType.checkup => Icons.favorite,
     CareEventType.laboratory => Icons.science,

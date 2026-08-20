@@ -38,7 +38,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get premiumPlanFeatures =>
-      'Advanced charts and care plans\nMilk inventory\nPDF doctor reports\nMultiple child profiles';
+      'Advanced charts and care plans\nMilk inventory\nPDF care reports\nMultiple child profiles';
 
   @override
   String get onboardingPrivacyTitle => 'Your family data stays yours';
@@ -165,7 +165,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careTypeVaccine => 'Vaccine';
 
   @override
-  String get careTypeDoctor => 'Doctor';
+  String get careTypeAppointment => 'Appointment';
 
   @override
   String get careTypeMedicine => 'Medicine';
@@ -183,7 +183,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careTypeCustom => 'Other';
 
   @override
-  String get doctorOrLocation => 'Doctor or location';
+  String get contactOrLocation => 'Contact or location';
 
   @override
   String get medicineDosage => 'Medicine dose';
@@ -453,17 +453,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Advanced feeding, diaper and growth analytics';
 
   @override
-  String get premiumPdfReports => 'PDF doctor reports';
+  String get premiumPdfReports => 'PDF care reports';
 
   @override
-  String get doctorReport => 'Doctor Report';
+  String get careReport => 'Care Report';
 
   @override
-  String get doctorReportDescription =>
-      'Create a clear summary of feeding, diaper and growth records for your doctor.';
+  String get careReportDescription =>
+      'Create a clear summary of feeding, diaper and growth records.';
 
   @override
-  String get createShareableReport => 'Create and share a health summary';
+  String get createShareableReport => 'Create and share a care summary';
 
   @override
   String get selectReportPeriod => 'Select report period';
@@ -531,8 +531,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duration => 'Duration';
 
   @override
-  String get reportMedicalDisclaimer =>
-      'This report summarizes records entered by the caregiver. It is not medical advice or a diagnosis. Please review the information with a qualified healthcare professional.';
+  String get reportDisclaimer =>
+      'This report is a general summary of records entered by the caregiver and does not replace professional evaluation or advice.';
 
   @override
   String get createAndSharePdf => 'Create and Share PDF';
@@ -919,6 +919,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
+  String get saving => 'Saving...';
+
+  @override
+  String get saveFailed => 'The record could not be saved. Please try again.';
+
+  @override
+  String get operationFailed =>
+      'The operation could not be completed. Please try again.';
+
+  @override
+  String get loadFailed => 'Your records could not be loaded.';
+
+  @override
+  String get retry => 'Try again';
+
+  @override
   String get currentLabel => 'Current';
 
   @override
@@ -970,7 +986,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportsHubSubtitle =>
-      'Create clean summaries for doctor visits and checkups.';
+      'Create clear summaries of feeding, diaper and growth records.';
 
   @override
   String get diaperPatterns => 'Diaper patterns';
@@ -1163,29 +1179,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicySubtitle => 'How Leyumi protects your local data';
 
   @override
+  String get aboutLeyumiTitle => 'About Leyumi';
+
+  @override
+  String get aboutLeyumiBody =>
+      'Leyumi is an offline record-keeping tool for organizing baby-care records entered by a caregiver. It is not a medical device or healthcare service and does not diagnose, treat, cure, or prevent any medical condition. Consult a qualified healthcare professional for medical advice, diagnosis, or treatment.';
+
+  @override
   String get privacyPolicyIntro =>
-      'Leyumi is designed as an offline baby-care application. This version does not require an account and does not send your care records to Leyumi servers.';
+      'Leyumi is an offline baby-care record-keeping tool. This version requires no account and does not send care records to Leyumi Studio or any server.';
+
+  @override
+  String get privacyPurposeTitle => 'Purpose of Leyumi';
+
+  @override
+  String get privacyPurposeBody =>
+      'Leyumi is an offline record-keeping tool that only helps organize baby-care records entered by a caregiver. It is not a medical device or healthcare service; it does not provide health recommendations, diagnosis, treatment, emergency guidance, or professional assessment, and it does not cure or prevent any medical condition. Consult a qualified healthcare professional for medical advice, diagnosis, or treatment.';
 
   @override
   String get privacyDataTitle => 'Data used by the app';
 
   @override
   String get privacyDataBody =>
-      'Leyumi stores the child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans and app preferences that you enter.';
+      'Leyumi processes only on your device the optional child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans, medicine and vaccination reminders, and app preferences that you enter.';
 
   @override
   String get privacyStorageTitle => 'Local storage';
 
   @override
   String get privacyStorageBody =>
-      'Your records are stored only in Leyumi\'s private app storage on this device. Cloud backup and device transfer are disabled for this version. Removing the app or losing the device can permanently remove these records.';
+      'Your records are stored in a local SQLite database only in Leyumi\'s private app area on this device. Cloud and Android system backup are disabled. Removing the app or losing the device can permanently remove these records.';
+
+  @override
+  String get privacyBackupTitle => 'User-controlled backups';
+
+  @override
+  String get privacyBackupBody =>
+      'You can create a password-protected encrypted .leyumi file and restore it on another device. You choose where the file is saved or opened. Leyumi Studio does not receive the file or password and cannot recover a forgotten password.';
 
   @override
   String get privacySharingTitle => 'Collection and sharing';
 
   @override
   String get privacySharingBody =>
-      'Leyumi does not transmit, sell or share your care records with the developer or third parties. Reports are shared only when you explicitly use your device\'s share or print controls.';
+      'Leyumi Studio does not collect personal data or care records, transmit them to its servers, sell them, use them for advertising or analytics, or share them with third parties. If you explicitly share or print a report, it is transferred only to the destination you choose.';
 
   @override
   String get privacyRetentionTitle => 'Retention and deletion';
@@ -1209,7 +1246,88 @@ class AppLocalizationsEn extends AppLocalizations {
       'For privacy questions, contact Leyumi Studio at leyumistudio@gmail.com.';
 
   @override
-  String get privacyPolicyEffectiveDate => 'Effective date: July 11, 2026';
+  String get privacyPolicyEffectiveDate => 'Effective date: August 20, 2026';
+
+  @override
+  String get dataManagement => 'Data backup';
+
+  @override
+  String get dataManagementSubtitle => 'Encrypted export and restore';
+
+  @override
+  String get backupData => 'Back up my data';
+
+  @override
+  String get backupDataDescription =>
+      'Create a password-protected Leyumi backup file.';
+
+  @override
+  String get restoreData => 'Restore from backup';
+
+  @override
+  String get restoreDataDescription =>
+      'Replace this device\'s records with a Leyumi backup.';
+
+  @override
+  String get createBackupPassword => 'Protect your backup';
+
+  @override
+  String get restoreBackupPassword => 'Enter backup password';
+
+  @override
+  String get backupPassword => 'Backup password';
+
+  @override
+  String get confirmBackupPassword => 'Confirm password';
+
+  @override
+  String get backupPasswordRequirement =>
+      'Use 8–128 characters. This password cannot be recovered by Leyumi Studio.';
+
+  @override
+  String get backupPasswordsDoNotMatch => 'Passwords do not match.';
+
+  @override
+  String get backupSaved => 'Encrypted backup saved.';
+
+  @override
+  String get restoreBackupTitle => 'Restore this backup?';
+
+  @override
+  String restoreBackupSummary(String date, int profileCount, int recordCount) {
+    return 'Created $date · $profileCount profiles · $recordCount records';
+  }
+
+  @override
+  String get restoreBackupWarning =>
+      'All current Leyumi records on this device will be replaced. This cannot be undone unless you already have another backup.';
+
+  @override
+  String get restoreNow => 'Restore now';
+
+  @override
+  String get restoreComplete => 'Backup restored successfully.';
+
+  @override
+  String get backupNoData => 'Create a child profile before making a backup.';
+
+  @override
+  String get backupInvalidPassword =>
+      'The password is incorrect or the backup was changed.';
+
+  @override
+  String get backupInvalidFile => 'This is not a valid Leyumi backup file.';
+
+  @override
+  String get backupUnsupportedVersion =>
+      'This backup was created by a newer, unsupported Leyumi version.';
+
+  @override
+  String get backupTooLarge => 'The backup file is too large.';
+
+  @override
+  String get backupOperationFailed =>
+      'The backup operation could not be completed.';
 
   @override
   String get feedingAnalytics => 'Feeding Analytics';

@@ -34,15 +34,13 @@ class FeedingController {
   void startSide(FeedingSide side, {DateTime? startedAt}) {
     final now = startedAt ?? DateTime.now();
 
-    if (currentSession == null) {
-      currentSession = FeedingSession(
-        childId: childId,
-        startTime: now,
-        endTime: now,
-        entries: [],
-        startWeightGr: startWeightGr,
-      );
-    }
+    currentSession ??= FeedingSession(
+      childId: childId,
+      startTime: now,
+      endTime: now,
+      entries: [],
+      startWeightGr: startWeightGr,
+    );
 
     activeSide = side;
     activeSideStartedAt = now;
@@ -74,11 +72,17 @@ class FeedingController {
   }
 
   FeedingSession finishSession() {
+    final session = createFinishedSession();
+    clearSession();
+    return session;
+  }
+
+  FeedingSession createFinishedSession() {
     _timer?.cancel();
 
     final now = DateTime.now();
 
-    final session = FeedingSession(
+    return FeedingSession(
       id: currentSession!.id,
       childId: currentSession!.childId,
       startTime: currentSession!.startTime,
@@ -93,13 +97,13 @@ class FeedingController {
       createdAt: currentSession!.createdAt,
       updatedAt: now,
     );
+  }
 
+  void clearSession() {
     currentSession = null;
     activeSide = null;
     activeSideStartedAt = null;
     _elapsed = Duration.zero;
-
-    return session;
   }
 
   void restoreDraft({

@@ -426,7 +426,10 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
         PremiumChartCard(
           title: l10n.dailyChanges,
           subtitle: l10n.dailyChangesSubtitle,
-          trailing: _valuePill('${filtered.length} ${l10n.totalLabel.toLowerCase()}', graphBlue),
+          trailing: _valuePill(
+            '${filtered.length} ${l10n.totalLabel.toLowerCase()}',
+            graphBlue,
+          ),
           child: SizedBox(
             height: 230,
             child: LineChart(

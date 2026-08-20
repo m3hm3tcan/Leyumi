@@ -151,7 +151,7 @@ abstract class AppLocalizations {
   /// No description provided for @premiumPlanFeatures.
   ///
   /// In en, this message translates to:
-  /// **'Advanced charts and care plans\nMilk inventory\nPDF doctor reports\nMultiple child profiles'**
+  /// **'Advanced charts and care plans\nMilk inventory\nPDF care reports\nMultiple child profiles'**
   String get premiumPlanFeatures;
 
   /// No description provided for @onboardingPrivacyTitle.
@@ -376,11 +376,11 @@ abstract class AppLocalizations {
   /// **'Vaccine'**
   String get careTypeVaccine;
 
-  /// No description provided for @careTypeDoctor.
+  /// No description provided for @careTypeAppointment.
   ///
   /// In en, this message translates to:
-  /// **'Doctor'**
-  String get careTypeDoctor;
+  /// **'Appointment'**
+  String get careTypeAppointment;
 
   /// No description provided for @careTypeMedicine.
   ///
@@ -412,11 +412,11 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get careTypeCustom;
 
-  /// No description provided for @doctorOrLocation.
+  /// No description provided for @contactOrLocation.
   ///
   /// In en, this message translates to:
-  /// **'Doctor or location'**
-  String get doctorOrLocation;
+  /// **'Contact or location'**
+  String get contactOrLocation;
 
   /// No description provided for @medicineDosage.
   ///
@@ -931,25 +931,25 @@ abstract class AppLocalizations {
   /// No description provided for @premiumPdfReports.
   ///
   /// In en, this message translates to:
-  /// **'PDF doctor reports'**
+  /// **'PDF care reports'**
   String get premiumPdfReports;
 
-  /// No description provided for @doctorReport.
+  /// No description provided for @careReport.
   ///
   /// In en, this message translates to:
-  /// **'Doctor Report'**
-  String get doctorReport;
+  /// **'Care Report'**
+  String get careReport;
 
-  /// No description provided for @doctorReportDescription.
+  /// No description provided for @careReportDescription.
   ///
   /// In en, this message translates to:
-  /// **'Create a clear summary of feeding, diaper and growth records for your doctor.'**
-  String get doctorReportDescription;
+  /// **'Create a clear summary of feeding, diaper and growth records.'**
+  String get careReportDescription;
 
   /// No description provided for @createShareableReport.
   ///
   /// In en, this message translates to:
-  /// **'Create and share a health summary'**
+  /// **'Create and share a care summary'**
   String get createShareableReport;
 
   /// No description provided for @selectReportPeriod.
@@ -1078,11 +1078,11 @@ abstract class AppLocalizations {
   /// **'Duration'**
   String get duration;
 
-  /// No description provided for @reportMedicalDisclaimer.
+  /// No description provided for @reportDisclaimer.
   ///
   /// In en, this message translates to:
-  /// **'This report summarizes records entered by the caregiver. It is not medical advice or a diagnosis. Please review the information with a qualified healthcare professional.'**
-  String get reportMedicalDisclaimer;
+  /// **'This report is a general summary of records entered by the caregiver and does not replace professional evaluation or advice.'**
+  String get reportDisclaimer;
 
   /// No description provided for @createAndSharePdf.
   ///
@@ -1822,6 +1822,36 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The record could not be saved. Please try again.'**
+  String get saveFailed;
+
+  /// No description provided for @operationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The operation could not be completed. Please try again.'**
+  String get operationFailed;
+
+  /// No description provided for @loadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your records could not be loaded.'**
+  String get loadFailed;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get retry;
+
   /// No description provided for @currentLabel.
   ///
   /// In en, this message translates to:
@@ -1921,7 +1951,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportsHubSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Create clean summaries for doctor visits and checkups.'**
+  /// **'Create clear summaries of feeding, diaper and growth records.'**
   String get reportsHubSubtitle;
 
   /// No description provided for @diaperPatterns.
@@ -2278,11 +2308,35 @@ abstract class AppLocalizations {
   /// **'How Leyumi protects your local data'**
   String get privacyPolicySubtitle;
 
+  /// No description provided for @aboutLeyumiTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'About Leyumi'**
+  String get aboutLeyumiTitle;
+
+  /// No description provided for @aboutLeyumiBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi is an offline record-keeping tool for organizing baby-care records entered by a caregiver. It is not a medical device or healthcare service and does not diagnose, treat, cure, or prevent any medical condition. Consult a qualified healthcare professional for medical advice, diagnosis, or treatment.'**
+  String get aboutLeyumiBody;
+
   /// No description provided for @privacyPolicyIntro.
   ///
   /// In en, this message translates to:
-  /// **'Leyumi is designed as an offline baby-care application. This version does not require an account and does not send your care records to Leyumi servers.'**
+  /// **'Leyumi is an offline baby-care record-keeping tool. This version requires no account and does not send care records to Leyumi Studio or any server.'**
   String get privacyPolicyIntro;
+
+  /// No description provided for @privacyPurposeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Purpose of Leyumi'**
+  String get privacyPurposeTitle;
+
+  /// No description provided for @privacyPurposeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Leyumi is an offline record-keeping tool that only helps organize baby-care records entered by a caregiver. It is not a medical device or healthcare service; it does not provide health recommendations, diagnosis, treatment, emergency guidance, or professional assessment, and it does not cure or prevent any medical condition. Consult a qualified healthcare professional for medical advice, diagnosis, or treatment.'**
+  String get privacyPurposeBody;
 
   /// No description provided for @privacyDataTitle.
   ///
@@ -2293,7 +2347,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyDataBody.
   ///
   /// In en, this message translates to:
-  /// **'Leyumi stores the child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans and app preferences that you enter.'**
+  /// **'Leyumi processes only on your device the optional child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans, medicine and vaccination reminders, and app preferences that you enter.'**
   String get privacyDataBody;
 
   /// No description provided for @privacyStorageTitle.
@@ -2305,8 +2359,20 @@ abstract class AppLocalizations {
   /// No description provided for @privacyStorageBody.
   ///
   /// In en, this message translates to:
-  /// **'Your records are stored only in Leyumi\'s private app storage on this device. Cloud backup and device transfer are disabled for this version. Removing the app or losing the device can permanently remove these records.'**
+  /// **'Your records are stored in a local SQLite database only in Leyumi\'s private app area on this device. Cloud and Android system backup are disabled. Removing the app or losing the device can permanently remove these records.'**
   String get privacyStorageBody;
+
+  /// No description provided for @privacyBackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User-controlled backups'**
+  String get privacyBackupTitle;
+
+  /// No description provided for @privacyBackupBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can create a password-protected encrypted .leyumi file and restore it on another device. You choose where the file is saved or opened. Leyumi Studio does not receive the file or password and cannot recover a forgotten password.'**
+  String get privacyBackupBody;
 
   /// No description provided for @privacySharingTitle.
   ///
@@ -2317,7 +2383,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacySharingBody.
   ///
   /// In en, this message translates to:
-  /// **'Leyumi does not transmit, sell or share your care records with the developer or third parties. Reports are shared only when you explicitly use your device\'s share or print controls.'**
+  /// **'Leyumi Studio does not collect personal data or care records, transmit them to its servers, sell them, use them for advertising or analytics, or share them with third parties. If you explicitly share or print a report, it is transferred only to the destination you choose.'**
   String get privacySharingBody;
 
   /// No description provided for @privacyRetentionTitle.
@@ -2359,8 +2425,152 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyEffectiveDate.
   ///
   /// In en, this message translates to:
-  /// **'Effective date: July 11, 2026'**
+  /// **'Effective date: August 20, 2026'**
   String get privacyPolicyEffectiveDate;
+
+  /// No description provided for @dataManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Data backup'**
+  String get dataManagement;
+
+  /// No description provided for @dataManagementSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted export and restore'**
+  String get dataManagementSubtitle;
+
+  /// No description provided for @backupData.
+  ///
+  /// In en, this message translates to:
+  /// **'Back up my data'**
+  String get backupData;
+
+  /// No description provided for @backupDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a password-protected Leyumi backup file.'**
+  String get backupDataDescription;
+
+  /// No description provided for @restoreData.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from backup'**
+  String get restoreData;
+
+  /// No description provided for @restoreDataDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace this device\'s records with a Leyumi backup.'**
+  String get restoreDataDescription;
+
+  /// No description provided for @createBackupPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect your backup'**
+  String get createBackupPassword;
+
+  /// No description provided for @restoreBackupPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter backup password'**
+  String get restoreBackupPassword;
+
+  /// No description provided for @backupPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup password'**
+  String get backupPassword;
+
+  /// No description provided for @confirmBackupPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get confirmBackupPassword;
+
+  /// No description provided for @backupPasswordRequirement.
+  ///
+  /// In en, this message translates to:
+  /// **'Use 8–128 characters. This password cannot be recovered by Leyumi Studio.'**
+  String get backupPasswordRequirement;
+
+  /// No description provided for @backupPasswordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match.'**
+  String get backupPasswordsDoNotMatch;
+
+  /// No description provided for @backupSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Encrypted backup saved.'**
+  String get backupSaved;
+
+  /// No description provided for @restoreBackupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore this backup?'**
+  String get restoreBackupTitle;
+
+  /// No description provided for @restoreBackupSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Created {date} · {profileCount} profiles · {recordCount} records'**
+  String restoreBackupSummary(String date, int profileCount, int recordCount);
+
+  /// No description provided for @restoreBackupWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'All current Leyumi records on this device will be replaced. This cannot be undone unless you already have another backup.'**
+  String get restoreBackupWarning;
+
+  /// No description provided for @restoreNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore now'**
+  String get restoreNow;
+
+  /// No description provided for @restoreComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup restored successfully.'**
+  String get restoreComplete;
+
+  /// No description provided for @backupNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a child profile before making a backup.'**
+  String get backupNoData;
+
+  /// No description provided for @backupInvalidPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'The password is incorrect or the backup was changed.'**
+  String get backupInvalidPassword;
+
+  /// No description provided for @backupInvalidFile.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a valid Leyumi backup file.'**
+  String get backupInvalidFile;
+
+  /// No description provided for @backupUnsupportedVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup was created by a newer, unsupported Leyumi version.'**
+  String get backupUnsupportedVersion;
+
+  /// No description provided for @backupTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'The backup file is too large.'**
+  String get backupTooLarge;
+
+  /// No description provided for @backupOperationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The backup operation could not be completed.'**
+  String get backupOperationFailed;
 
   /// No description provided for @feedingAnalytics.
   ///

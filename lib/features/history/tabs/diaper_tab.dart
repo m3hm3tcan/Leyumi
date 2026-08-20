@@ -60,6 +60,7 @@ class _DiaperTabState extends State<DiaperTab>
   Future<void> deleteEntry(DiaperEntry entry) async {
     final l10n = AppLocalizations.of(context);
     final index = entries.indexOf(entry);
+    final messenger = ScaffoldMessenger.of(context);
 
     setState(() {
       recentlyDeleted = entry;
@@ -67,9 +68,19 @@ class _DiaperTabState extends State<DiaperTab>
       entries.removeAt(index);
     });
 
-    await DiaperStorage().saveAllEntries(entries.reversed.toList());
+    try {
+      await DiaperStorage().saveAllEntries(entries.reversed.toList());
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        entries.insert(index, entry);
+        recentlyDeleted = null;
+        recentlyDeletedIndex = null;
+      });
+      messenger.showSnackBar(SnackBar(content: Text(l10n.operationFailed)));
+      return;
+    }
 
-    final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
 
     final controller = messenger.showSnackBar(
@@ -81,12 +92,22 @@ class _DiaperTabState extends State<DiaperTab>
           onPressed: () async {
             if (!mounted) return;
             if (recentlyDeleted != null && recentlyDeletedIndex != null) {
+              final restored = recentlyDeleted!;
+              final restoredIndex = recentlyDeletedIndex!;
               setState(() {
-                entries.insert(recentlyDeletedIndex!, recentlyDeleted!);
+                entries.insert(restoredIndex, restored);
                 recentlyDeleted = null;
                 recentlyDeletedIndex = null;
               });
-              await DiaperStorage().saveAllEntries(entries.reversed.toList());
+              try {
+                await DiaperStorage().saveAllEntries(entries.reversed.toList());
+              } catch (_) {
+                if (!mounted) return;
+                setState(() => entries.remove(restored));
+                messenger.showSnackBar(
+                  SnackBar(content: Text(l10n.operationFailed)),
+                );
+              }
             }
           },
         ),

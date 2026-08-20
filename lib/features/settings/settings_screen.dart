@@ -9,6 +9,7 @@ import '../../core/theme_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/reset_service.dart';
 import '../children/child_management_screen.dart';
+import 'data_backup_screen.dart';
 import 'privacy_policy_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -19,7 +20,10 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  bool _isResetting = false;
+
   Future<void> _handleReset(AppLocalizations l10n) async {
+    if (_isResetting) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -39,9 +43,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (confirmed != true) return;
-    await ResetService.clearAll();
-    if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(context, '/onboarding', (_) => false);
+    setState(() => _isResetting = true);
+    try {
+      await ResetService.clearAll();
+      if (!mounted) return;
+      Navigator.pushNamedAndRemoveUntil(context, '/onboarding', (_) => false);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.operationFailed)));
+    } finally {
+      if (mounted) setState(() => _isResetting = false);
+    }
   }
 
   @override
@@ -62,11 +76,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 leading: const Icon(Icons.workspace_premium),
                 title: Text(l10n.premiumTitle),
                 subtitle: Text(
-                  premium.isPremium ? l10n.premiumActive : l10n.premiumInactive,
+                  premium.isPremium ? l10n.premiumActive : l10n.comingSoon,
                 ),
                 trailing: premium.isPremium
                     ? const Icon(Icons.check_circle, color: Colors.green)
-                    : const Icon(Icons.lock),
+                    : const Icon(Icons.hourglass_top_rounded),
                 onTap: premium.isPremium
                     ? null
                     : () => PremiumAccess.open(
@@ -90,6 +104,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   MaterialPageRoute(
                     builder: (_) => const PrivacyPolicyScreen(),
                   ),
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: Text(l10n.aboutLeyumiTitle),
+                subtitle: Text(l10n.aboutLeyumiBody),
+              ),
+              const Divider(height: 1),
+              ListTile(
+                leading: const Icon(Icons.backup_outlined),
+                title: Text(l10n.dataManagement),
+                subtitle: Text(l10n.dataManagementSubtitle),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const DataBackupScreen()),
                 ),
               ),
               const Divider(height: 1),
@@ -131,6 +162,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 title: Text(l10n.resetApp),
                 subtitle: Text(l10n.resetAppDescription),
+                enabled: !_isResetting,
+                trailing: _isResetting
+                    ? const SizedBox.square(
+                        dimension: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : null,
                 onTap: () => _handleReset(l10n),
               ),
             ],

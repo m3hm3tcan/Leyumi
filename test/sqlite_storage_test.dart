@@ -2,8 +2,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:leyumi/features/diaper/diaper_entry.dart';
 import 'package:leyumi/features/milk_inventory/milk_batch.dart';
 import 'package:leyumi/models/baby_profile.dart';
+import 'package:leyumi/models/growth_entry.dart';
 import 'package:leyumi/services/baby_storage.dart';
 import 'package:leyumi/services/diaper_storage.dart';
+import 'package:leyumi/services/growth_storage.dart';
 import 'package:leyumi/services/milk_inventory_storage.dart';
 
 import 'sqlite_test_support.dart';
@@ -82,6 +84,29 @@ void main() {
     final events = await storage.loadEvents();
     expect(events.length, 2);
     expect(events.last.remainingAfterMl, 80);
+  });
+
+  test('stores a growth entry and profile update in one transaction', () async {
+    final now = DateTime.utc(2026, 8, 20);
+    final babies = BabyStorage();
+    final original = _profile('child-1', 'Ada', now);
+    await babies.saveProfile(original);
+    final updated = original.copyWith(weight: 6400, height: 64);
+    final entry = GrowthEntry(
+      id: 'growth-1',
+      childId: original.id,
+      date: now,
+      weight: updated.weight,
+      height: updated.height,
+      createdAt: now,
+      updatedAt: now,
+    );
+
+    await GrowthStorage().addEntryAndUpdateProfile(entry, updated);
+
+    expect((await GrowthStorage().loadEntries()).single.id, entry.id);
+    expect((await babies.loadProfile())!.weight, 6400);
+    expect((await babies.loadProfile())!.height, 64);
   });
 }
 

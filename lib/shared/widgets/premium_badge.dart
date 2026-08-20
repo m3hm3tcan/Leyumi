@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+
 class PremiumBadge extends StatelessWidget {
   const PremiumBadge({
     super.key,
@@ -33,12 +35,11 @@ class PremiumBadge extends StatelessWidget {
           ),
           const SizedBox(width: 3),
           Text(
-            'PRO',
+            AppLocalizations.of(context).comingSoon,
             style: TextStyle(
               color: foregroundColor,
-              fontSize: compact ? 8 : 9,
+              fontSize: compact ? 7 : 8,
               fontWeight: FontWeight.w900,
-              letterSpacing: .5,
             ),
           ),
         ],

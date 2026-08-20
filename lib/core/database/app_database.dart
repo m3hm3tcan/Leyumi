@@ -10,7 +10,7 @@ class AppDatabase {
   AppDatabase._();
 
   static const fileName = 'leyumi.db';
-  static const schemaVersion = 1;
+  static const schemaVersion = 2;
 
   static const profilesTable = 'baby_profiles';
   static const feedingTable = 'feeding_sessions';
@@ -40,6 +40,7 @@ class AppDatabase {
           await db.execute('PRAGMA foreign_keys = ON');
         },
         onCreate: _createSchema,
+        onUpgrade: _upgradeSchema,
       ),
     );
     _database = opened;
@@ -54,6 +55,7 @@ class AppDatabase {
         payload TEXT NOT NULL
       )
     ''');
+    await _createProfileSortIndex(db);
     for (final table in recordTables) {
       await db.execute('''
         CREATE TABLE $table (
@@ -81,6 +83,27 @@ class AppDatabase {
       )
     ''');
   }
+
+  static Future<void> _upgradeSchema(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    for (var version = oldVersion + 1; version <= newVersion; version++) {
+      switch (version) {
+        case 2:
+          await _createProfileSortIndex(db);
+        default:
+          throw StateError('Missing database migration for version $version.');
+      }
+    }
+  }
+
+  static Future<void> _createProfileSortIndex(DatabaseExecutor db) =>
+      db.execute(
+        'CREATE INDEX IF NOT EXISTS ${profilesTable}_sort_idx '
+        'ON $profilesTable(sort_time)',
+      );
 
   static const recordTables = <String>[
     feedingTable,

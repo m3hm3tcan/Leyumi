@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/child/active_child_provider.dart';
 import '../../core/premium/premium_access.dart';
 import '../../core/premium/premium_feature.dart';
-import '../../features/doctor_report/doctor_report_screen.dart';
+import '../../features/care_report/care_report_screen.dart';
 import '../../features/milk_inventory/milk_history_screen.dart';
 import '../../l10n/app_localizations.dart';
 import 'graphs/diaper_graph.dart';
@@ -156,7 +156,7 @@ class HistoryHubScreen extends StatelessWidget {
                       },
                     ),
                     HubCard(
-                      title: l10n.doctorReport,
+                      title: l10n.careReport,
                       icon: Icons.picture_as_pdf,
                       color: const Color(0xffE05273),
                       subtitle: l10n.createShareableReport,
@@ -165,7 +165,7 @@ class HistoryHubScreen extends StatelessWidget {
                         PremiumAccess.open(
                           context,
                           feature: PremiumFeature.pdfReports,
-                          builder: (_) => const DoctorReportScreen(),
+                          builder: (_) => const CareReportScreen(),
                         );
                       },
                     ),

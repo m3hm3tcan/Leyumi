@@ -340,9 +340,16 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
           const SizedBox(height: 18),
           Row(
             children: [
-              Expanded(child: _summaryValue('${filtered.length}', l10n.sessions)),
+              Expanded(
+                child: _summaryValue('${filtered.length}', l10n.sessions),
+              ),
               _summaryDivider(),
-              Expanded(child: _summaryValue('$average ${l10n.minutesShort}', l10n.average)),
+              Expanded(
+                child: _summaryValue(
+                  '$average ${l10n.minutesShort}',
+                  l10n.average,
+                ),
+              ),
               _summaryDivider(),
               Expanded(child: _summaryValue('${totalMilk}g', l10n.milk)),
             ],
@@ -418,7 +425,10 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
               interval: interval,
               valueLabel: (value) => '${value.round()}m',
             ),
-            lineTouchData: _touchData(unit: l10n.minutesShort, labels: [l10n.totalLabel]),
+            lineTouchData: _touchData(
+              unit: l10n.minutesShort,
+              labels: [l10n.totalLabel],
+            ),
             lineBarsData: [
               _line(spots: _spots(dailyTotals), color: graphBlue, fill: true),
             ],
@@ -480,7 +490,10 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
     return PremiumChartCard(
       title: l10n.milkIntake,
       subtitle: l10n.milkIntakeSubtitle,
-      trailing: _valuePill('${_sum(milkTotals)}g ${l10n.totalLabel.toLowerCase()}', graphGreen),
+      trailing: _valuePill(
+        '${_sum(milkTotals)}g ${l10n.totalLabel.toLowerCase()}',
+        graphGreen,
+      ),
       child: hasMilk
           ? SizedBox(
               height: 230,

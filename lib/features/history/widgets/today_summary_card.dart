@@ -49,7 +49,7 @@ class TodaySummaryCard extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xff6C63FF).withOpacity(.25),
+            color: const Color(0xff6C63FF).withValues(alpha: .25),
             blurRadius: 30,
             offset: const Offset(0, 12),
           ),
@@ -78,7 +78,7 @@ class TodaySummaryCard extends StatelessWidget {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(.15),
+                  color: Colors.white.withValues(alpha: .15),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
@@ -114,7 +114,7 @@ class TodaySummaryCard extends StatelessWidget {
           Text(
             l10n.totalFeedingDuration,
             style: TextStyle(
-              color: Colors.white.withOpacity(.85),
+              color: Colors.white.withValues(alpha: .85),
               fontSize: 14,
               decoration: TextDecoration.none,
             ),
@@ -163,9 +163,9 @@ class TodaySummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(.12),
+        color: Colors.white.withValues(alpha: .12),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: Colors.white.withOpacity(.12)),
+        border: Border.all(color: Colors.white.withValues(alpha: .12)),
       ),
       child: Column(
         children: [
@@ -186,7 +186,7 @@ class TodaySummaryCard extends StatelessWidget {
           Text(
             label,
             style: TextStyle(
-              color: Colors.white.withOpacity(.7),
+              color: Colors.white.withValues(alpha: .7),
               fontSize: 11,
               decoration: TextDecoration.none,
             ),

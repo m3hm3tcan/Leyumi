@@ -31,7 +31,7 @@ class TimelineSection extends StatelessWidget {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemCount: sessions.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 2),
+          separatorBuilder: (_, _) => const SizedBox(height: 2),
           itemBuilder: (context, index) {
             final session = sessions[index];
 

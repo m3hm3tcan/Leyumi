@@ -16,6 +16,7 @@ class GrowthUpdateScreen extends StatefulWidget {
 class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   BabyProfile? profile;
   GrowthEntry? previousEntry;
+  bool _isSaving = false;
 
   final weightCtrl = TextEditingController();
   final heightCtrl = TextEditingController();
@@ -53,7 +54,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   }
 
   Future<void> save() async {
-    if (profile == null) return;
+    if (profile == null || _isSaving) return;
 
     final l10n = AppLocalizations.of(context);
     final weight = int.tryParse(weightCtrl.text);
@@ -102,8 +103,6 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
       waistCircumference: waist,
     );
 
-    await GrowthStorage().addEntry(entry);
-
     final updated = profile!.copyWith(
       weight: entry.weight,
       height: entry.height,
@@ -113,15 +112,22 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
       clearWaistCircumference: entry.waistCircumference == null,
     );
 
-    await BabyStorage().saveProfile(updated);
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.growthRecordSaved)));
-
-    Navigator.pop(context);
+    setState(() => _isSaving = true);
+    try {
+      await GrowthStorage().addEntryAndUpdateProfile(entry, updated);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.growthRecordSaved)));
+      Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
@@ -347,10 +353,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: save,
+                onPressed: _isSaving ? null : save,
                 icon: const Icon(Icons.favorite),
                 label: Text(
-                  l10n.saveGrowthRecord,
+                  _isSaving ? l10n.saving : l10n.saveGrowthRecord,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,

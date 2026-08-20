@@ -33,6 +33,7 @@ class _GrowthTabState extends State<GrowthTab>
   Future<void> deleteEntry(GrowthEntry entry) async {
     final l10n = AppLocalizations.of(context);
     final index = entries.indexOf(entry);
+    final messenger = ScaffoldMessenger.of(context);
 
     setState(() {
       recentlyDeleted = entry;
@@ -40,9 +41,19 @@ class _GrowthTabState extends State<GrowthTab>
       entries.removeAt(index);
     });
 
-    await GrowthStorage().saveAllEntries(entries);
+    try {
+      await GrowthStorage().saveAllEntries(entries);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        entries.insert(index, entry);
+        recentlyDeleted = null;
+        recentlyDeletedIndex = null;
+      });
+      messenger.showSnackBar(SnackBar(content: Text(l10n.operationFailed)));
+      return;
+    }
 
-    final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
 
     final controller = messenger.showSnackBar(
@@ -54,12 +65,22 @@ class _GrowthTabState extends State<GrowthTab>
           onPressed: () async {
             if (!mounted) return;
             if (recentlyDeleted != null && recentlyDeletedIndex != null) {
+              final restored = recentlyDeleted!;
+              final restoredIndex = recentlyDeletedIndex!;
               setState(() {
-                entries.insert(recentlyDeletedIndex!, recentlyDeleted!);
+                entries.insert(restoredIndex, restored);
                 recentlyDeleted = null;
                 recentlyDeletedIndex = null;
               });
-              await GrowthStorage().saveAllEntries(entries);
+              try {
+                await GrowthStorage().saveAllEntries(entries);
+              } catch (_) {
+                if (!mounted) return;
+                setState(() => entries.remove(restored));
+                messenger.showSnackBar(
+                  SnackBar(content: Text(l10n.operationFailed)),
+                );
+              }
             }
           },
         ),

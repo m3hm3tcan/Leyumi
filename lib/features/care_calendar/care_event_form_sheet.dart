@@ -36,7 +36,7 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
   void initState() {
     super.initState();
     final event = widget.initialEvent;
-    _type = event?.type ?? CareEventType.doctor;
+    _type = event?.type ?? CareEventType.appointment;
     _dateTime =
         event?.scheduledAt ?? DateTime.now().add(const Duration(days: 1));
     _recurrence = event?.recurrence ?? CareEventRecurrence.none;
@@ -277,7 +277,7 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
             TextField(
               controller: _locationController,
               maxLength: 80,
-              decoration: _decoration(l10n.doctorOrLocation, Icons.place),
+              decoration: _decoration(l10n.contactOrLocation, Icons.place),
             ),
             if (_type == CareEventType.medicine) ...[
               const SizedBox(height: 12),
@@ -348,18 +348,20 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
       builder: (context) {
         final l10n = AppLocalizations.of(context);
         return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: CareEventRecurrence.values
-                .map(
-                  (value) => RadioListTile<CareEventRecurrence>(
-                    value: value,
-                    groupValue: _recurrence,
-                    title: Text(_recurrenceLabel(value, l10n)),
-                    onChanged: (choice) => Navigator.pop(context, choice),
-                  ),
-                )
-                .toList(),
+          child: RadioGroup<CareEventRecurrence>(
+            groupValue: _recurrence,
+            onChanged: (choice) => Navigator.pop(context, choice),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: CareEventRecurrence.values
+                  .map(
+                    (value) => RadioListTile<CareEventRecurrence>(
+                      value: value,
+                      title: Text(_recurrenceLabel(value, l10n)),
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         );
       },
@@ -444,7 +446,7 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
   String _typeLabel(CareEventType type, AppLocalizations l10n) =>
       switch (type) {
         CareEventType.vaccine => l10n.careTypeVaccine,
-        CareEventType.doctor => l10n.careTypeDoctor,
+        CareEventType.appointment => l10n.careTypeAppointment,
         CareEventType.medicine => l10n.careTypeMedicine,
         CareEventType.checkup => l10n.careTypeCheckup,
         CareEventType.laboratory => l10n.careTypeLaboratory,

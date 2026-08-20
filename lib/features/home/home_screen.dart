@@ -29,6 +29,7 @@ class _HomeScreenState extends State<HomeScreen>
     with WidgetsBindingObserver, ActiveChildAware<HomeScreen> {
   BabyProfile? _profile;
   bool _loading = true;
+  Object? _loadError;
   double _opacity = 0;
   int _dashboardRefreshVersion = 0;
 
@@ -53,22 +54,36 @@ class _HomeScreenState extends State<HomeScreen>
     if (state == AppLifecycleState.resumed) _refreshDashboard();
   }
 
-  Future<void> _loadProfile() async {
-    final children = context.read<ActiveChildProvider>();
-    await children.ensureLoaded();
-    final profile = children.activeChild;
-    if (!mounted) return;
+  Future<void> _loadProfile({bool retry = false}) async {
+    if (mounted) setState(() => _loadError = null);
+    try {
+      final children = context.read<ActiveChildProvider>();
+      if (retry) {
+        await children.reload();
+      } else {
+        await children.ensureLoaded();
+      }
+      if (children.loadError case final error?) throw error;
+      final profile = children.activeChild;
+      if (!mounted) return;
 
-    if (profile == null) {
-      Navigator.pushReplacementNamed(context, '/onboarding');
-      return;
+      if (profile == null) {
+        Navigator.pushReplacementNamed(context, '/onboarding');
+        return;
+      }
+
+      setState(() {
+        _profile = profile;
+        _loading = false;
+        _dashboardRefreshVersion++;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loadError = error;
+        _loading = false;
+      });
     }
-
-    setState(() {
-      _profile = profile;
-      _loading = false;
-      _dashboardRefreshVersion++;
-    });
   }
 
   @override
@@ -82,6 +97,38 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    if (_loadError != null) {
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 52,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(l10n.loadFailed, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: () {
+                      setState(() => _loading = true);
+                      _loadProfile(retry: true);
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(l10n.retry),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
@@ -243,6 +290,7 @@ class _HomeScreenState extends State<HomeScreen>
                 colors: const [Color(0xffED8A52), Color(0xffF6BD60)],
                 onTap: () async {
                   await Navigator.pushNamed(context, '/growth_update');
+                  if (!context.mounted) return;
                   await context.read<ActiveChildProvider>().reload();
                   await _loadProfile();
                 },

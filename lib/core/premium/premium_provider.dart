@@ -5,6 +5,9 @@ import 'premium_feature.dart';
 
 class PremiumProvider extends ChangeNotifier {
   static const entitlementKey = 'premium_entitlement_active';
+  static const _debugPremiumEnabled = bool.fromEnvironment(
+    'LEYUMI_PREMIUM_DEBUG',
+  );
 
   PremiumProvider() {
     _initialization = _loadEntitlement();
@@ -21,11 +24,7 @@ class PremiumProvider extends ChangeNotifier {
   bool hasAccess(PremiumFeature feature) => _isPremium;
 
   Future<void> _loadEntitlement() async {
-    final preferences = await SharedPreferences.getInstance();
-    _isPremium = kDebugMode
-        ? true
-        : preferences.getBool(entitlementKey) ?? false;
-    // _isPremium = true;
+    _isPremium = kDebugMode && _debugPremiumEnabled;
     _isLoaded = true;
     notifyListeners();
   }

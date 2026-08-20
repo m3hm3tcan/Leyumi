@@ -20,6 +20,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
   PoopAmount? poopAmount = PoopAmount.medium;
   PoopColor? poopColor = PoopColor.mustardYellow;
   DateTime selectedDateTime = DateTime.now();
+  bool _isSaving = false;
 
   final noteCtrl = TextEditingController();
 
@@ -30,33 +31,41 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
   }
 
   Future<void> save() async {
-    final profile = await BabyStorage().loadProfile();
-    final entry = DiaperEntry(
-      childId: profile?.id ?? RecordIdentity.legacyChildId,
-      timestamp: selectedDateTime,
-      type: type,
-      peeAmount: type == DiaperType.pee || type == DiaperType.both
-          ? peeAmount
-          : null,
-      poopAmount: type == DiaperType.poop || type == DiaperType.both
-          ? poopAmount
-          : null,
-      poopColor: type == DiaperType.poop || type == DiaperType.both
-          ? poopColor
-          : null,
-      note: noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim(),
-    );
-
-    await DiaperStorage().addEntry(entry);
-
-    if (!mounted) return;
-
     final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.diaperRecordSaved)));
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
+    try {
+      final profile = await BabyStorage().loadProfile();
+      final entry = DiaperEntry(
+        childId: profile?.id ?? RecordIdentity.legacyChildId,
+        timestamp: selectedDateTime,
+        type: type,
+        peeAmount: type == DiaperType.pee || type == DiaperType.both
+            ? peeAmount
+            : null,
+        poopAmount: type == DiaperType.poop || type == DiaperType.both
+            ? poopAmount
+            : null,
+        poopColor: type == DiaperType.poop || type == DiaperType.both
+            ? poopColor
+            : null,
+        note: noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim(),
+      );
 
-    Navigator.pop(context);
+      await DiaperStorage().addEntry(entry);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.diaperRecordSaved)));
+      Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   Future<void> pickDateTime() async {
@@ -68,6 +77,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
     );
 
     if (date == null) return;
+    if (!mounted) return;
 
     final time = await showTimePicker(
       context: context,
@@ -164,7 +174,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                         color: selected
                             ? Theme.of(
                                 context,
-                              ).colorScheme.primary.withOpacity(0.1)
+                              ).colorScheme.primary.withValues(alpha: 0.1)
                             : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
@@ -224,7 +234,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           color: sel
-                              ? Colors.green.withOpacity(0.15)
+                              ? Colors.green.withValues(alpha: 0.15)
                               : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -260,7 +270,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           color: selected
-                              ? Colors.orange.withOpacity(0.15)
+                              ? Colors.orange.withValues(alpha: 0.15)
                               : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -310,7 +320,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                         color: selected
                             ? Theme.of(
                                 context,
-                              ).colorScheme.primary.withOpacity(0.12)
+                              ).colorScheme.primary.withValues(alpha: 0.12)
                             : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
@@ -389,9 +399,9 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: save,
+                onPressed: _isSaving ? null : save,
                 child: Text(
-                  l10n.saveDiaperRecord,
+                  _isSaving ? l10n.saving : l10n.saveDiaperRecord,
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),

@@ -13,7 +13,7 @@ class ChildProfileForm extends StatefulWidget {
   });
 
   final BabyProfile? initialProfile;
-  final ValueChanged<BabyProfile> onSaved;
+  final Future<void> Function(BabyProfile) onSaved;
   final String? submitLabel;
 
   @override
@@ -36,6 +36,7 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
   late String _gender;
   DateTime? _birthDate;
   bool _birthDateHasError = false;
+  bool _isSaving = false;
 
   @override
   void initState() {
@@ -85,7 +86,8 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
     }
   }
 
-  void _save() {
+  Future<void> _save() async {
+    if (_isSaving) return;
     final valid = _formKey.currentState!.validate();
     if (!valid) {
       _focusFirstInvalidField();
@@ -105,19 +107,30 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
     }
 
     final existing = widget.initialProfile;
-    widget.onSaved(
-      BabyProfile(
-        id: existing?.id,
-        name: _name.text.trim(),
-        gender: _gender,
-        birthDate: _birthDate!,
-        weight: int.parse(_weight.text),
-        height: int.parse(_height.text),
-        headCircumference: int.tryParse(_head.text),
-        waistCircumference: int.tryParse(_waist.text),
-        createdAt: existing?.createdAt,
-      ),
-    );
+    final l10n = AppLocalizations.of(context);
+    setState(() => _isSaving = true);
+    try {
+      await widget.onSaved(
+        BabyProfile(
+          id: existing?.id,
+          name: _name.text.trim(),
+          gender: _gender,
+          birthDate: _birthDate!,
+          weight: int.parse(_weight.text),
+          height: int.parse(_height.text),
+          headCircumference: int.tryParse(_head.text),
+          waistCircumference: int.tryParse(_waist.text),
+          createdAt: existing?.createdAt,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
@@ -254,14 +267,18 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
           SizedBox(
             width: double.infinity,
             child: FilledButton(
-              onPressed: _save,
+              onPressed: _isSaving ? null : _save,
               style: FilledButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              child: Text(widget.submitLabel ?? l10n.saveContinue),
+              child: Text(
+                _isSaving
+                    ? l10n.saving
+                    : widget.submitLabel ?? l10n.saveContinue,
+              ),
             ),
           ),
         ],

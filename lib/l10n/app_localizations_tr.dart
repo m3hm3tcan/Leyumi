@@ -38,7 +38,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get premiumPlanFeatures =>
-      'Gelişmiş grafikler ve bakım planları\nSüt stoğu\nPDF doktor raporları\nÇoklu çocuk profili';
+      'Gelişmiş grafikler ve bakım planları\nSüt stoğu\nPDF bakım raporları\nÇoklu çocuk profili';
 
   @override
   String get onboardingPrivacyTitle => 'Aile verileriniz size aittir';
@@ -163,7 +163,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get careTypeVaccine => 'Aşı';
 
   @override
-  String get careTypeDoctor => 'Doktor';
+  String get careTypeAppointment => 'Randevu';
 
   @override
   String get careTypeMedicine => 'İlaç';
@@ -181,7 +181,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get careTypeCustom => 'Diğer';
 
   @override
-  String get doctorOrLocation => 'Doktor veya konum';
+  String get contactOrLocation => 'Kişi veya konum';
 
   @override
   String get medicineDosage => 'İlaç dozu';
@@ -449,17 +449,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get premiumAnalytics => 'Gelişmiş beslenme, bez ve büyüme analizleri';
 
   @override
-  String get premiumPdfReports => 'PDF doktor raporları';
+  String get premiumPdfReports => 'PDF bakım raporları';
 
   @override
-  String get doctorReport => 'Doktor Raporu';
+  String get careReport => 'Bakım Raporu';
 
   @override
-  String get doctorReportDescription =>
-      'Beslenme, bez ve büyüme kayıtlarını doktorunuz için anlaşılır bir özette birleştirin.';
+  String get careReportDescription =>
+      'Beslenme, bez ve büyüme kayıtlarını anlaşılır bir özette birleştirin.';
 
   @override
-  String get createShareableReport => 'Paylaşılabilir sağlık özeti oluştur';
+  String get createShareableReport => 'Paylaşılabilir bakım özeti oluştur';
 
   @override
   String get selectReportPeriod => 'Rapor dönemini seçin';
@@ -527,8 +527,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get duration => 'Süre';
 
   @override
-  String get reportMedicalDisclaimer =>
-      'Bu rapor, bakım veren tarafından girilen kayıtları özetler. Tıbbi tavsiye veya teşhis değildir. Bilgileri yetkili bir sağlık uzmanıyla değerlendiriniz.';
+  String get reportDisclaimer =>
+      'Bu rapor, bakım veren tarafından girilen kayıtların genel bir özetidir ve profesyonel değerlendirme veya önerinin yerine geçmez.';
 
   @override
   String get createAndSharePdf => 'PDF Oluştur ve Paylaş';
@@ -914,6 +914,21 @@ class AppLocalizationsTr extends AppLocalizations {
   String get save => 'Kaydet';
 
   @override
+  String get saving => 'Kaydediliyor...';
+
+  @override
+  String get saveFailed => 'Kayıt kaydedilemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get operationFailed => 'İşlem tamamlanamadı. Lütfen tekrar deneyin.';
+
+  @override
+  String get loadFailed => 'Kayıtlarınız yüklenemedi.';
+
+  @override
+  String get retry => 'Tekrar dene';
+
+  @override
   String get currentLabel => 'Mevcut';
 
   @override
@@ -965,7 +980,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get reportsHubSubtitle =>
-      'Doktor ziyaretleri ve kontroller için temiz özetler oluşturun.';
+      'Beslenme, bez ve büyüme kayıtlarının anlaşılır özetlerini oluşturun.';
 
   @override
   String get diaperPatterns => 'Bez düzeni';
@@ -1158,29 +1173,50 @@ class AppLocalizationsTr extends AppLocalizations {
   String get privacyPolicySubtitle => 'Leyumi yerel verilerinizi nasıl korur';
 
   @override
+  String get aboutLeyumiTitle => 'Leyumi Hakkında';
+
+  @override
+  String get aboutLeyumiBody =>
+      'Leyumi, bakıcı tarafından girilen bebek bakım kayıtlarını düzenlemek için kullanılan çevrimdışı bir kayıt aracıdır. Tıbbi cihaz veya sağlık hizmeti değildir; tanı koymaz, herhangi bir hastalığı tedavi etmez, iyileştirmez ya da önlemez. Sağlıkla ilgili kararlar için yetkili bir sağlık profesyoneline danışılmalıdır.';
+
+  @override
   String get privacyPolicyIntro =>
-      'Leyumi çevrimdışı çalışan bir bebek bakım uygulaması olarak tasarlanmıştır. Bu sürüm hesap gerektirmez ve bakım kayıtlarınızı Leyumi sunucularına göndermez.';
+      'Leyumi çevrimdışı çalışan bir bebek bakım kayıt aracıdır. Bu sürüm hesap gerektirmez ve bakım kayıtlarınızı Leyumi Studio\'ya veya herhangi bir sunucuya göndermez.';
+
+  @override
+  String get privacyPurposeTitle => 'Leyumi\'nin amacı';
+
+  @override
+  String get privacyPurposeBody =>
+      'Leyumi, yalnızca bakıcı tarafından girilen bebek bakım kayıtlarını düzenlemeye yardımcı olan çevrimdışı bir kayıt aracıdır. Tıbbi cihaz veya sağlık hizmeti değildir; sağlık önerisi, tanı, tedavi, acil durum yönlendirmesi ya da profesyonel değerlendirme sunmaz ve herhangi bir hastalığı iyileştirmez veya önlemez. Sağlıkla ilgili kararlar için yetkili bir sağlık profesyoneline danışılmalıdır.';
 
   @override
   String get privacyDataTitle => 'Uygulamanın kullandığı veriler';
 
   @override
   String get privacyDataBody =>
-      'Leyumi; girdiğiniz çocuk profillerini, doğum tarihlerini, büyüme ölçümlerini, beslenme ve bez kayıtlarını, süt stoğunu, bakım planlarını ve uygulama tercihlerini saklar.';
+      'Leyumi; isteğe bağlı olarak girdiğiniz çocuk profillerini, doğum tarihlerini, büyüme ölçümlerini, beslenme ve bez kayıtlarını, süt stoğunu, bakım planlarını, ilaç ve aşı hatırlatma kayıtlarını ve uygulama tercihlerini yalnızca cihazınızda işler.';
 
   @override
   String get privacyStorageTitle => 'Yerel saklama';
 
   @override
   String get privacyStorageBody =>
-      'Kayıtlarınız yalnızca bu cihazdaki Leyumi\'ye özel uygulama alanında saklanır. Bu sürümde bulut yedekleme ve cihaz aktarımı kapalıdır. Uygulamayı kaldırmak veya cihazı kaybetmek bu kayıtları kalıcı olarak kaybetmenize neden olabilir.';
+      'Kayıtlarınız yalnızca bu cihazdaki Leyumi\'ye özel uygulama alanında yerel SQLite veritabanında saklanır. Bulut ve Android sistem yedeklemesi kapalıdır. Uygulamayı kaldırmak veya cihazı kaybetmek bu kayıtları kalıcı olarak kaybetmenize neden olabilir.';
+
+  @override
+  String get privacyBackupTitle => 'Kullanıcı kontrollü yedekleme';
+
+  @override
+  String get privacyBackupBody =>
+      'Parolayla korunan şifreli bir .leyumi dosyası oluşturabilir ve başka bir cihazda geri yükleyebilirsiniz. Dosyanın kaydedileceği veya açılacağı yeri siz seçersiniz. Leyumi Studio dosyayı ya da parolayı almaz ve unutulan parolayı kurtaramaz.';
 
   @override
   String get privacySharingTitle => 'Veri toplama ve paylaşma';
 
   @override
   String get privacySharingBody =>
-      'Leyumi bakım kayıtlarınızı geliştiriciye veya üçüncü taraflara iletmez, satmaz ya da paylaşmaz. Raporlar yalnızca cihazınızdaki paylaşma veya yazdırma kontrollerini açıkça kullandığınızda paylaşılır.';
+      'Leyumi Studio kişisel verilerinizi veya bakım kayıtlarınızı toplamaz, kendi sunucularına iletmez, satmaz, reklam ya da analiz için kullanmaz ve üçüncü taraflarla paylaşmaz. Bir raporu paylaşmayı veya yazdırmayı açıkça seçerseniz içerik yalnızca sizin seçtiğiniz hedefe aktarılır.';
 
   @override
   String get privacyRetentionTitle => 'Saklama ve silme';
@@ -1204,7 +1240,88 @@ class AppLocalizationsTr extends AppLocalizations {
       'Gizlilikle ilgili sorular için Leyumi Studio ile leyumistudio@gmail.com adresinden iletişime geçin.';
 
   @override
-  String get privacyPolicyEffectiveDate => 'Yürürlük tarihi: 11 Temmuz 2026';
+  String get privacyPolicyEffectiveDate => 'Yürürlük tarihi: 20 Ağustos 2026';
+
+  @override
+  String get dataManagement => 'Veri yedekleme';
+
+  @override
+  String get dataManagementSubtitle => 'Şifreli dışa aktarma ve geri yükleme';
+
+  @override
+  String get backupData => 'Verilerimi yedekle';
+
+  @override
+  String get backupDataDescription =>
+      'Parolayla korunan bir Leyumi yedek dosyası oluştur.';
+
+  @override
+  String get restoreData => 'Yedekten geri yükle';
+
+  @override
+  String get restoreDataDescription =>
+      'Bu cihazdaki kayıtları bir Leyumi yedeğiyle değiştir.';
+
+  @override
+  String get createBackupPassword => 'Yedeğinizi koruyun';
+
+  @override
+  String get restoreBackupPassword => 'Yedek parolasını girin';
+
+  @override
+  String get backupPassword => 'Yedek parolası';
+
+  @override
+  String get confirmBackupPassword => 'Parolayı doğrula';
+
+  @override
+  String get backupPasswordRequirement =>
+      '8–128 karakter kullanın. Bu parola Leyumi Studio tarafından kurtarılamaz.';
+
+  @override
+  String get backupPasswordsDoNotMatch => 'Parolalar eşleşmiyor.';
+
+  @override
+  String get backupSaved => 'Şifreli yedek kaydedildi.';
+
+  @override
+  String get restoreBackupTitle => 'Bu yedek geri yüklensin mi?';
+
+  @override
+  String restoreBackupSummary(String date, int profileCount, int recordCount) {
+    return 'Oluşturma: $date · $profileCount profil · $recordCount kayıt';
+  }
+
+  @override
+  String get restoreBackupWarning =>
+      'Bu cihazdaki mevcut tüm Leyumi kayıtları değiştirilecek. Önceden alınmış başka bir yedeğiniz yoksa bu işlem geri alınamaz.';
+
+  @override
+  String get restoreNow => 'Şimdi geri yükle';
+
+  @override
+  String get restoreComplete => 'Yedek başarıyla geri yüklendi.';
+
+  @override
+  String get backupNoData =>
+      'Yedek oluşturmadan önce bir çocuk profili ekleyin.';
+
+  @override
+  String get backupInvalidPassword =>
+      'Parola yanlış veya yedek dosyası değiştirilmiş.';
+
+  @override
+  String get backupInvalidFile => 'Bu dosya geçerli bir Leyumi yedeği değil.';
+
+  @override
+  String get backupUnsupportedVersion =>
+      'Bu yedek daha yeni ve desteklenmeyen bir Leyumi sürümüyle oluşturulmuş.';
+
+  @override
+  String get backupTooLarge => 'Yedek dosyası çok büyük.';
+
+  @override
+  String get backupOperationFailed => 'Yedekleme işlemi tamamlanamadı.';
 
   @override
   String get feedingAnalytics => 'Beslenme Analizleri';

@@ -210,7 +210,7 @@ class _PlanPage extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _PlanCard(
-            title: l10n.premiumPlan,
+            title: '${l10n.premiumPlan} · ${l10n.comingSoon}',
             features: l10n.premiumPlanFeatures,
             color: const Color(0xff725DE2),
             premium: true,
@@ -287,7 +287,7 @@ class _PlanCard extends StatelessWidget {
 class _ProfilePage extends StatelessWidget {
   const _ProfilePage({required this.onSaved});
 
-  final ValueChanged<BabyProfile> onSaved;
+  final Future<void> Function(BabyProfile) onSaved;
 
   @override
   Widget build(BuildContext context) {

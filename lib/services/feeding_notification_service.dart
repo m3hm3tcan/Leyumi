@@ -1,5 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../core/logging/app_logger.dart';
+
 class FeedingNotificationService {
   FeedingNotificationService._();
 
@@ -22,35 +24,30 @@ class FeedingNotificationService {
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
-    const darwinSettings = DarwinInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-    );
-    const settings = InitializationSettings(
-      android: androidSettings,
-      iOS: darwinSettings,
-    );
+    const settings = InitializationSettings(android: androidSettings);
 
-    await _plugin.initialize(settings);
+    await _plugin.initialize(settings: settings);
     _initialized = true;
   }
 
   Future<bool> requestPermissions() async {
-    await initialize();
+    try {
+      await initialize();
 
-    final androidGranted = await _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
-    final iosGranted = await _plugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
-
-    return androidGranted ?? iosGranted ?? true;
+      final androidGranted = await _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.requestNotificationsPermission();
+      return androidGranted ?? true;
+    } catch (error, stackTrace) {
+      AppLogger.warning(
+        'Notification permission could not be requested.',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      return false;
+    }
   }
 
   Future<void> showActiveFeeding({
@@ -58,22 +55,37 @@ class FeedingNotificationService {
     required String body,
     required DateTime startedAt,
   }) async {
-    await initialize();
-    final granted = await requestPermissions();
-    if (!granted) return;
+    try {
+      final granted = await requestPermissions();
+      if (!granted) return;
 
-    await _plugin.show(
-      _notificationId,
-      title,
-      body,
-      _notificationDetails(startedAt),
-      payload: 'active_feeding',
-    );
+      await _plugin.show(
+        id: _notificationId,
+        title: title,
+        body: body,
+        notificationDetails: _notificationDetails(startedAt),
+        payload: 'active_feeding',
+      );
+    } catch (error, stackTrace) {
+      AppLogger.warning(
+        'The active feeding notification could not be shown.',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   Future<void> cancelActiveFeeding() async {
-    await initialize();
-    await _plugin.cancel(_notificationId);
+    try {
+      await initialize();
+      await _plugin.cancel(id: _notificationId);
+    } catch (error, stackTrace) {
+      AppLogger.warning(
+        'The active feeding notification could not be cancelled.',
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   NotificationDetails _notificationDetails(DateTime startedAt) {
@@ -91,11 +103,6 @@ class FeedingNotificationService {
       when: startedAt.millisecondsSinceEpoch,
       usesChronometer: true,
     );
-    const ios = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: false,
-      presentSound: false,
-    );
-    return NotificationDetails(android: android, iOS: ios);
+    return NotificationDetails(android: android);
   }
 }

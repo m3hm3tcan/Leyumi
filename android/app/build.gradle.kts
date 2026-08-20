@@ -36,8 +36,8 @@ android {
     defaultConfig {
         applicationId = "com.leyumistudio.leyumi"
         multiDexEnabled = true
-        minSdk = flutter.minSdkVersion
-        targetSdk = 35
+        minSdk = 24
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

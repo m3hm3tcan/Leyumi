@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../core/child/active_child_app_bar_title.dart';
@@ -38,6 +40,7 @@ class _FeedingScreenState extends State<FeedingScreen>
   String? _startWeightError;
   String? _endWeightError;
   bool _longFeedingWarningShown = false;
+  bool _isSaving = false;
   static const _longFeedingWarningAfter = Duration(minutes: 45);
 
   @override
@@ -135,8 +138,30 @@ class _FeedingScreenState extends State<FeedingScreen>
       builder: (_) => const ManualFeedingSheet(),
     );
     if (session == null) return;
-    await _storage.saveSession(session);
-    if (mounted) Navigator.pop(context);
+    await _saveManualSession(session);
+  }
+
+  Future<void> _saveManualSession(FeedingSession session) async {
+    if (_isSaving) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _isSaving = true);
+    try {
+      await _storage.saveSession(session);
+      if (mounted) Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.saveFailed),
+          action: SnackBarAction(
+            label: l10n.retry,
+            onPressed: () => unawaited(_saveManualSession(session)),
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   Future<void> _startFeeding(FeedingSide side) async {
@@ -156,8 +181,8 @@ class _FeedingScreenState extends State<FeedingScreen>
       _longFeedingWarningShown = false;
     });
     _controller.startSide(side);
-    await _syncActiveFeedingNotification();
     await _draftService.persist(_controller);
+    unawaited(_syncActiveFeedingNotification());
   }
 
   Future<void> _stopFeeding() async {
@@ -168,42 +193,53 @@ class _FeedingScreenState extends State<FeedingScreen>
       _currentTimer = Duration.zero;
       _longFeedingWarningShown = false;
     });
-    await FeedingNotificationService.instance.cancelActiveFeeding();
     await _draftService.persist(_controller);
+    _cancelActiveFeedingNotification();
   }
 
   Future<void> _finishSession() async {
+    if (_isSaving) return;
     final endWeight = _validatedWeight(_endWeightController, isStart: false);
     if (_endWeightController.text.trim().isNotEmpty && endWeight == null) {
       _endWeightFocus.requestFocus();
       return;
     }
 
-    final decision = await showFeedingSaveDialog(context);
-    if (!mounted || decision == null) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _isSaving = true);
+    try {
+      final decision = await showFeedingSaveDialog(context);
+      if (!mounted || decision == null) return;
 
-    if (decision == FeedingSaveDecision.discard) {
+      if (decision == FeedingSaveDecision.discard) {
+        await _draftService.clear();
+        _cancelActiveFeedingNotification();
+        if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
+        return;
+      }
+
+      _controller.setEndWeight(endWeight);
+      final session = _controller.createFinishedSession();
+      await _storage.saveSession(session);
       await _draftService.clear();
+      _controller.clearSession();
       _cancelActiveFeedingNotification();
-      if (mounted) Navigator.of(context).popUntil((route) => route.isFirst);
-      return;
-    }
-
-    _controller.setEndWeight(endWeight);
-    final session = _controller.finishSession();
-    await _storage.saveSession(session);
-    await _draftService.clear();
-    _cancelActiveFeedingNotification();
-    if (mounted) {
-      setState(() => _longFeedingWarningShown = false);
-      Navigator.pop(context);
+      if (mounted) {
+        setState(() => _longFeedingWarningShown = false);
+        Navigator.pop(context);
+      }
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
   void _cancelActiveFeedingNotification() {
-    FeedingNotificationService.instance.cancelActiveFeeding().catchError(
-      (_) {},
-    );
+    unawaited(FeedingNotificationService.instance.cancelActiveFeeding());
   }
 
   Future<void> _syncActiveFeedingNotification() async {
@@ -262,7 +298,8 @@ class _FeedingScreenState extends State<FeedingScreen>
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
-        if (await _handleBackPress() && mounted) Navigator.pop(context);
+        final shouldPop = await _handleBackPress();
+        if (shouldPop && context.mounted) Navigator.pop(context);
       },
       child: Scaffold(
         appBar: AppBar(
@@ -350,7 +387,7 @@ class _FeedingScreenState extends State<FeedingScreen>
         ),
         const SizedBox(height: 20),
         ElevatedButton(
-          onPressed: _finishSession,
+          onPressed: _isSaving ? null : _finishSession,
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green.shade600,
             foregroundColor: Colors.white,
@@ -360,7 +397,7 @@ class _FeedingScreenState extends State<FeedingScreen>
             ),
           ),
           child: Text(
-            l10n.save,
+            _isSaving ? l10n.saving : l10n.save,
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
           ),
         ),

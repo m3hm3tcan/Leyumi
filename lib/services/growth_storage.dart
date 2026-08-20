@@ -3,6 +3,7 @@ import '../core/database/sqlite_records.dart';
 import '../core/logging/app_logger.dart';
 import '../domain/repositories/growth_repository.dart';
 import '../models/growth_entry.dart';
+import '../models/baby_profile.dart';
 import 'active_child_scope.dart';
 
 class GrowthStorage implements GrowthRepository {
@@ -17,6 +18,31 @@ class GrowthStorage implements GrowthRepository {
       sortTime: entry.date,
       payload: entry.toJson(),
     );
+  }
+
+  Future<void> addEntryAndUpdateProfile(
+    GrowthEntry entry,
+    BabyProfile profile,
+  ) async {
+    final db = await AppDatabase.instance;
+    await db.transaction((txn) async {
+      await SqliteRecords.upsert(
+        txn,
+        AppDatabase.growthTable,
+        id: entry.id,
+        childId: entry.childId,
+        sortTime: entry.date,
+        payload: entry.toJson(),
+      );
+      await SqliteRecords.upsert(
+        txn,
+        AppDatabase.profilesTable,
+        id: profile.id,
+        childId: null,
+        sortTime: profile.createdAt,
+        payload: profile.toJson(),
+      );
+    });
   }
 
   @override

@@ -52,15 +52,26 @@ class _FeedingTabState extends State<FeedingTab>
   }
 
   Future<void> deleteSession(FeedingSession session) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final index = sessions.indexOf(session);
     setState(() {
       sessions.remove(session);
     });
 
-    await FeedingStorage().saveAllSessions(sessions);
+    try {
+      await FeedingStorage().saveAllSessions(sessions);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => sessions.insert(index, session));
+      messenger.showSnackBar(SnackBar(content: Text(l10n.operationFailed)));
+    }
   }
 
   Future<void> editSession(FeedingSession session) async {
     if (!AppDateUtils.isToday(session.startTime)) return;
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
 
     final range = await _showEditDialog(session);
     if (range == null) return;
@@ -71,14 +82,26 @@ class _FeedingTabState extends State<FeedingTab>
       endTime: range.$2,
     );
 
+    final index = sessions.indexWhere((item) => item.id == session.id);
+    if (index == -1) return;
     setState(() {
-      final index = sessions.indexWhere((item) => item.id == session.id);
-      if (index == -1) return;
       sessions[index] = updated;
       sessions.sort((a, b) => b.startTime.compareTo(a.startTime));
     });
 
-    await FeedingStorage().saveAllSessions(sessions);
+    try {
+      await FeedingStorage().saveAllSessions(sessions);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        final updatedIndex = sessions.indexWhere(
+          (item) => item.id == session.id,
+        );
+        if (updatedIndex != -1) sessions[updatedIndex] = session;
+        sessions.sort((a, b) => b.startTime.compareTo(a.startTime));
+      });
+      messenger.showSnackBar(SnackBar(content: Text(l10n.operationFailed)));
+    }
   }
 
   FeedingSession _copyWithTimeRange(

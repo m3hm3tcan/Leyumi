@@ -92,21 +92,21 @@ class PremiumPaywallScreen extends StatelessWidget {
                 icon: Icons.insights_rounded,
                 title: l10n.premiumAnalytics,
                 active: feature == PremiumFeature.advancedAnalytics,
-                available: true,
+                available: false,
               ),
               _featureTile(
                 context,
                 icon: Icons.picture_as_pdf_rounded,
                 title: l10n.premiumPdfReports,
                 active: feature == PremiumFeature.pdfReports,
-                available: true,
+                available: false,
               ),
               _featureTile(
                 context,
                 icon: Icons.child_care_rounded,
                 title: l10n.premiumMultipleChildren,
                 active: feature == PremiumFeature.multipleChildren,
-                available: true,
+                available: false,
               ),
               _featureTile(
                 context,
@@ -127,26 +127,22 @@ class PremiumPaywallScreen extends StatelessWidget {
                 icon: Icons.event_note,
                 title: l10n.premiumCarePlanning,
                 active: feature == PremiumFeature.advancedCarePlanning,
-                available: true,
+                available: false,
               ),
               _featureTile(
                 context,
                 icon: Icons.inventory_2_rounded,
                 title: l10n.premiumMilkInventory,
                 active: feature == PremiumFeature.milkInventory,
-                available: true,
+                available: false,
               ),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.premiumPurchaseComingSoon)),
-                    );
-                  },
+                  onPressed: null,
                   icon: const Icon(Icons.workspace_premium_rounded),
-                  label: Text(l10n.upgradeToPremium),
+                  label: Text(l10n.comingSoon),
                   style: FilledButton.styleFrom(
                     backgroundColor: const Color(0xff6558E8),
                     foregroundColor: Colors.white,

@@ -2,7 +2,7 @@ import '../../core/data/record_identity.dart';
 
 enum CareEventType {
   vaccine,
-  doctor,
+  appointment,
   medicine,
   checkup,
   laboratory,

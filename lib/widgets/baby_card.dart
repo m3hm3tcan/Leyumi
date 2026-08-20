@@ -79,11 +79,11 @@ class _BabyCardState extends State<BabyCard>
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.black.withOpacity(0.25)
-              : Colors.black.withOpacity(0.06),
+                ? Colors.black.withValues(alpha: 0.25)
+                : Colors.black.withValues(alpha: 0.06),
             blurRadius: 16,
             offset: const Offset(0, 7),
-          )
+          ),
         ],
       ),
       child: Stack(
@@ -132,7 +132,8 @@ class _BabyCardState extends State<BabyCard>
                           calculateAge(context, widget.profile.birthDate),
                           style: TextStyle(
                             fontSize: 13,
-                            color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
+                            color: Theme.of(context).textTheme.bodySmall?.color
+                                ?.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -156,7 +157,7 @@ class _BabyCardState extends State<BabyCard>
                     t.height,
                     "${widget.profile.height} ${t.unitCm}",
                   ),
-                                  ],
+                ],
               ),
             ],
           ),
@@ -164,7 +165,7 @@ class _BabyCardState extends State<BabyCard>
       ),
     );
   }
- 
+
   Widget _stat(BuildContext context, String label, String value) {
     return Expanded(
       child: Column(
@@ -174,21 +175,16 @@ class _BabyCardState extends State<BabyCard>
             label.toUpperCase(),
             style: TextStyle(
               fontSize: 10,
-              color: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.color
-                ?.withOpacity(0.6),
+              color: Theme.of(
+                context,
+              ).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
               letterSpacing: 1.2,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
           ),
         ],
       ),

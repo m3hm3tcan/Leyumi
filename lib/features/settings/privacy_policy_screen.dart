@@ -9,8 +9,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final sections = <(String, String)>[
+      (l10n.privacyPurposeTitle, l10n.privacyPurposeBody),
       (l10n.privacyDataTitle, l10n.privacyDataBody),
       (l10n.privacyStorageTitle, l10n.privacyStorageBody),
+      (l10n.privacyBackupTitle, l10n.privacyBackupBody),
       (l10n.privacySharingTitle, l10n.privacySharingBody),
       (l10n.privacyRetentionTitle, l10n.privacyRetentionBody),
       (l10n.privacySecurityTitle, l10n.privacySecurityBody),
