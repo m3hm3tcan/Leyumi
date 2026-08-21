@@ -43,8 +43,12 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
     super.initState();
     final profile = widget.initialProfile;
     _name = TextEditingController(text: profile?.name ?? '');
-    _weight = TextEditingController(text: profile?.weight.toString() ?? '');
-    _height = TextEditingController(text: profile?.height.toString() ?? '');
+    _weight = TextEditingController(
+      text: profile?.birthWeight.toString() ?? '',
+    );
+    _height = TextEditingController(
+      text: profile?.birthHeight.toString() ?? '',
+    );
     _head = TextEditingController(
       text: profile?.headCircumference?.toString() ?? '',
     );
@@ -116,8 +120,10 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
           name: _name.text.trim(),
           gender: _gender,
           birthDate: _birthDate!,
-          weight: int.parse(_weight.text),
-          height: int.parse(_height.text),
+          weight: existing?.weight ?? int.parse(_weight.text),
+          height: existing?.height ?? int.parse(_height.text),
+          birthWeight: int.parse(_weight.text),
+          birthHeight: int.parse(_height.text),
           headCircumference: int.tryParse(_head.text),
           waistCircumference: int.tryParse(_waist.text),
           createdAt: existing?.createdAt,
@@ -219,7 +225,7 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
               Expanded(
                 child: _numberField(
                   _weight,
-                  l10n.weightGr,
+                  l10n.birthWeightGr,
                   isRequired: true,
                   minimum: 500,
                   maximum: 30000,
@@ -232,7 +238,7 @@ class _ChildProfileFormState extends State<ChildProfileForm> {
               Expanded(
                 child: _numberField(
                   _height,
-                  l10n.heightCm,
+                  l10n.birthHeightCm,
                   isRequired: true,
                   minimum: 20,
                   maximum: 100,

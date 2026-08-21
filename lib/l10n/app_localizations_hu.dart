@@ -864,6 +864,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get heightCm => 'Magasság (cm)';
 
   @override
+  String get birthWeightGr => 'Születési súly (g)';
+
+  @override
+  String get birthHeightCm => 'Születési hossz (cm)';
+
+  @override
   String get headCircumferenceOptional => 'Fejkörfogat (opcionális)';
 
   @override
@@ -1006,6 +1012,11 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get diaperChanges => 'Pelenkacserék';
+
+  @override
+  String diaperDaySummary(int count, int peeCount, int poopCount) {
+    return '$count csere · $peeCount pisis · $poopCount kakis';
+  }
 
   @override
   String get sessionDeleted => 'Etetés törölve';

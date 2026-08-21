@@ -1708,6 +1708,18 @@ abstract class AppLocalizations {
   /// **'Height (cm)'**
   String get heightCm;
 
+  /// No description provided for @birthWeightGr.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth weight (g)'**
+  String get birthWeightGr;
+
+  /// No description provided for @birthHeightCm.
+  ///
+  /// In en, this message translates to:
+  /// **'Birth height (cm)'**
+  String get birthHeightCm;
+
   /// No description provided for @headCircumferenceOptional.
   ///
   /// In en, this message translates to:
@@ -1983,6 +1995,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Diaper changes'**
   String get diaperChanges;
+
+  /// No description provided for @diaperDaySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} changes · {peeCount} wet · {poopCount} dirty'**
+  String diaperDaySummary(int count, int peeCount, int poopCount);
 
   /// No description provided for @sessionDeleted.
   ///

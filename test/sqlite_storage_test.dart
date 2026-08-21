@@ -104,10 +104,51 @@ void main() {
 
     await GrowthStorage().addEntryAndUpdateProfile(entry, updated);
 
-    expect((await GrowthStorage().loadEntries()).single.id, entry.id);
+    final entries = await GrowthStorage().loadEntries();
+    expect(entries, hasLength(2));
+    expect(entries.any((item) => item.id == entry.id), isTrue);
     expect((await babies.loadProfile())!.weight, 6400);
     expect((await babies.loadProfile())!.height, 64);
   });
+
+  test(
+    'stores and updates the birth measurement with the child profile',
+    () async {
+      final createdAt = DateTime.utc(2026, 8, 20);
+      final babies = BabyStorage();
+      final profile = BabyProfile(
+        id: 'child-birth',
+        name: 'Ada',
+        gender: 'Female',
+        birthDate: DateTime.utc(2026, 1, 2),
+        weight: 3200,
+        height: 50,
+        birthWeight: 3200,
+        birthHeight: 50,
+        createdAt: createdAt,
+        updatedAt: createdAt,
+      );
+
+      await babies.saveProfile(profile);
+
+      var entries = await GrowthStorage().loadEntries();
+      expect(entries, hasLength(1));
+      expect(entries.single.date, profile.birthDate);
+      expect(entries.single.weight, 3200);
+      expect(entries.single.height, 50);
+
+      await babies.saveProfile(
+        profile.copyWith(birthWeight: 3300, birthHeight: 51),
+      );
+
+      entries = await GrowthStorage().loadEntries();
+      expect(entries, hasLength(1));
+      expect(entries.single.weight, 3300);
+      expect(entries.single.height, 51);
+      expect((await babies.loadProfile())!.weight, 3200);
+      expect((await babies.loadProfile())!.height, 50);
+    },
+  );
 }
 
 BabyProfile _profile(String id, String name, DateTime timestamp) => BabyProfile(

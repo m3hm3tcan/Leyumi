@@ -861,6 +861,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get heightCm => 'Height (cm)';
 
   @override
+  String get birthWeightGr => 'Birth weight (g)';
+
+  @override
+  String get birthHeightCm => 'Birth height (cm)';
+
+  @override
   String get headCircumferenceOptional => 'Head Circumference (optional)';
 
   @override
@@ -1002,6 +1008,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get diaperChanges => 'Diaper changes';
+
+  @override
+  String diaperDaySummary(int count, int peeCount, int poopCount) {
+    return '$count changes · $peeCount wet · $poopCount dirty';
+  }
 
   @override
   String get sessionDeleted => 'Session deleted';

@@ -8,11 +8,15 @@ class BabyProfile {
     required this.birthDate,
     required this.weight,
     required this.height,
+    int? birthWeight,
+    int? birthHeight,
     this.headCircumference,
     this.waistCircumference,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) : id = id ?? RecordIdentity.newId('child'),
+       birthWeight = birthWeight ?? weight,
+       birthHeight = birthHeight ?? height,
        createdAt = createdAt ?? DateTime.now(),
        updatedAt = updatedAt ?? DateTime.now();
 
@@ -22,6 +26,8 @@ class BabyProfile {
   final DateTime birthDate;
   final int weight;
   final int height;
+  final int birthWeight;
+  final int birthHeight;
   final int? headCircumference;
   final int? waistCircumference;
   final DateTime createdAt;
@@ -33,6 +39,8 @@ class BabyProfile {
     DateTime? birthDate,
     int? weight,
     int? height,
+    int? birthWeight,
+    int? birthHeight,
     int? headCircumference,
     int? waistCircumference,
     bool clearHeadCircumference = false,
@@ -45,6 +53,8 @@ class BabyProfile {
       birthDate: birthDate ?? this.birthDate,
       weight: weight ?? this.weight,
       height: height ?? this.height,
+      birthWeight: birthWeight ?? this.birthWeight,
+      birthHeight: birthHeight ?? this.birthHeight,
       headCircumference: clearHeadCircumference
           ? null
           : headCircumference ?? this.headCircumference,
@@ -57,13 +67,15 @@ class BabyProfile {
   }
 
   Map<String, dynamic> toJson() => {
-    'schemaVersion': 2,
+    'schemaVersion': 3,
     'id': id,
     'name': name,
     'gender': gender,
     'birthDate': birthDate.toIso8601String(),
     'weight': weight,
     'height': height,
+    'birthWeight': birthWeight,
+    'birthHeight': birthHeight,
     'headCircumference': headCircumference,
     'waistCircumference': waistCircumference,
     'createdAt': createdAt.toIso8601String(),
@@ -79,6 +91,8 @@ class BabyProfile {
       birthDate: birthDate,
       weight: _readInt(json['weight']),
       height: _readInt(json['height']),
+      birthWeight: _readNullableInt(json['birthWeight']),
+      birthHeight: _readNullableInt(json['birthHeight']),
       headCircumference: _readNullableInt(json['headCircumference']),
       waistCircumference: _readNullableInt(json['waistCircumference']),
       createdAt:

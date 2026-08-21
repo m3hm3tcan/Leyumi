@@ -7,6 +7,7 @@ import '../core/database/sqlite_records.dart';
 import '../core/logging/app_logger.dart';
 import '../domain/repositories/baby_repository.dart';
 import '../models/baby_profile.dart';
+import '../models/growth_entry.dart';
 
 class BabyStorage implements BabyRepository {
   static const _activeProfileKey = 'active_baby_profile_id';
@@ -23,12 +24,31 @@ class BabyStorage implements BabyRepository {
         sortTime: profile.createdAt,
         payload: profile.toJson(),
       );
+      final birthEntry = GrowthEntry(
+        id: _birthGrowthId(profile.id),
+        childId: profile.id,
+        date: profile.birthDate,
+        weight: profile.birthWeight,
+        height: profile.birthHeight,
+        createdAt: profile.createdAt,
+        updatedAt: profile.updatedAt,
+      );
+      await SqliteRecords.upsert(
+        txn,
+        AppDatabase.growthTable,
+        id: birthEntry.id,
+        childId: birthEntry.childId,
+        sortTime: birthEntry.date,
+        payload: birthEntry.toJson(),
+      );
       final active = await _loadMetadata(txn, _activeProfileKey);
       if (active == null) {
         await _saveMetadata(txn, _activeProfileKey, profile.id);
       }
     });
   }
+
+  static String _birthGrowthId(String profileId) => 'growth_birth_$profileId';
 
   @override
   Future<BabyProfile?> loadProfile() async {

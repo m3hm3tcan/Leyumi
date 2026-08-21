@@ -38,7 +38,7 @@ void main() {
     expect(utf8.decode(encrypted), isNot(contains('Ada')));
     final plan = await service.prepareRestore(encrypted, 'strong-password');
     expect(plan.preview.profileCount, 1);
-    expect(plan.preview.recordCount, 1);
+    expect(plan.preview.recordCount, 2);
 
     await ResetService.clearAll();
     await babies.saveProfile(_profile('child-2', 'Mira', now));

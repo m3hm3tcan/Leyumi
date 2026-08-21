@@ -10,6 +10,8 @@ import '../widgets/history_page_shell.dart';
 import '../widgets/timeline_section.dart';
 import '../widgets/today_summary_card.dart';
 
+enum _FeedingHistoryFilter { sevenDays, thirtyDays, all, custom }
+
 class FeedingTab extends StatefulWidget {
   const FeedingTab({super.key});
 
@@ -20,6 +22,8 @@ class FeedingTab extends StatefulWidget {
 class _FeedingTabState extends State<FeedingTab>
     with ActiveChildAware<FeedingTab> {
   List<FeedingSession> sessions = [];
+  _FeedingHistoryFilter _filter = _FeedingHistoryFilter.sevenDays;
+  DateTimeRange? _customRange;
 
   Future<void> load() async {
     final data = await FeedingStorage().loadSessions();
@@ -31,11 +35,38 @@ class _FeedingTabState extends State<FeedingTab>
   @override
   Future<void> onActiveChildChanged() => load();
 
-  Map<String, List<FeedingSession>> group(AppLocalizations l10n) {
-    final map = <String, List<FeedingSession>>{};
+  List<FeedingSession> get _filteredSessions {
+    if (_filter == _FeedingHistoryFilter.all) return sessions;
 
-    for (final session in sessions) {
-      final key = _getSection(session.startTime, l10n);
+    late final DateTime start;
+    late final DateTime endExclusive;
+    if (_filter == _FeedingHistoryFilter.custom && _customRange != null) {
+      start = AppDateUtils.dateOnly(_customRange!.start);
+      endExclusive = AppDateUtils.dateOnly(
+        _customRange!.end,
+      ).add(const Duration(days: 1));
+    } else {
+      final days = _filter == _FeedingHistoryFilter.sevenDays ? 7 : 30;
+      start = AppDateUtils.startOfRange(days);
+      endExclusive = AppDateUtils.dateOnly(
+        DateTime.now(),
+      ).add(const Duration(days: 1));
+    }
+
+    return sessions
+        .where(
+          (session) =>
+              !session.startTime.isBefore(start) &&
+              session.startTime.isBefore(endExclusive),
+        )
+        .toList(growable: false);
+  }
+
+  Map<DateTime, List<FeedingSession>> group(List<FeedingSession> source) {
+    final map = <DateTime, List<FeedingSession>>{};
+
+    for (final session in source) {
+      final key = AppDateUtils.dateOnly(session.startTime);
       map.putIfAbsent(key, () => []);
       map[key]!.add(session);
     }
@@ -43,12 +74,31 @@ class _FeedingTabState extends State<FeedingTab>
     return map;
   }
 
-  String _getSection(DateTime date, AppLocalizations l10n) {
-    if (AppDateUtils.isToday(date)) {
-      return l10n.today;
-    }
+  Future<void> _pickDateRange() async {
+    if (sessions.isEmpty) return;
 
-    return AppDateFormatter.sectionDate(context, date);
+    final today = AppDateUtils.dateOnly(DateTime.now());
+    final oldest = AppDateUtils.dateOnly(sessions.last.startTime);
+    final defaultStart = AppDateUtils.startOfRange(30).isBefore(oldest)
+        ? oldest
+        : AppDateUtils.startOfRange(30);
+    final initialRange =
+        _customRange ?? DateTimeRange(start: defaultStart, end: today);
+    final selected = await showDateRangePicker(
+      context: context,
+      firstDate: oldest,
+      lastDate: today,
+      initialDateRange: initialRange,
+    );
+    if (selected == null || !mounted) return;
+
+    setState(() {
+      _customRange = DateTimeRange(
+        start: AppDateUtils.dateOnly(selected.start),
+        end: AppDateUtils.dateOnly(selected.end),
+      );
+      _filter = _FeedingHistoryFilter.custom;
+    });
   }
 
   Future<void> deleteSession(FeedingSession session) async {
@@ -297,7 +347,9 @@ class _FeedingTabState extends State<FeedingTab>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final grouped = group(l10n);
+    final filtered = _filteredSessions;
+    final grouped = group(filtered);
+    final today = AppDateUtils.dateOnly(DateTime.now());
 
     return HistoryPageShell(
       title: l10n.feeding,
@@ -307,25 +359,143 @@ class _FeedingTabState extends State<FeedingTab>
       showHeader: false,
       child: sessions.isEmpty
           ? _emptyState(l10n)
-          : ListView(
-              padding: const EdgeInsets.only(bottom: 32),
+          : Column(
               children: [
-                if (grouped[l10n.today] != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: TodaySummaryCard(sessions: grouped[l10n.today]!),
-                  ),
-                const SizedBox(height: 10),
-                for (final entry in grouped.entries)
-                  TimelineSection(
-                    title: entry.key,
-                    sessions: entry.value,
-                    onDelete: deleteSession,
-                    onEdit: editSession,
-                  ),
+                _filterBar(l10n),
+                Expanded(
+                  child: filtered.isEmpty
+                      ? HistoryEmptyState(
+                          icon: Icons.event_busy_rounded,
+                          color: const Color(0xff4DA3FF),
+                          title: l10n.noDataInRange,
+                          subtitle: l10n.startFeedingSessionHint,
+                        )
+                      : ListView(
+                          padding: const EdgeInsets.only(bottom: 32),
+                          children: [
+                            if (grouped[today] != null)
+                              TodaySummaryCard(sessions: grouped[today]!),
+                            if (grouped[today] != null)
+                              TimelineSection(
+                                key: const ValueKey('feeding-today'),
+                                title: l10n.today,
+                                sessions: grouped[today]!,
+                                summary: _dailySummary(grouped[today]!, l10n),
+                                onDelete: deleteSession,
+                                onEdit: editSession,
+                              ),
+                            for (final entry in grouped.entries)
+                              if (entry.key != today)
+                                TimelineSection(
+                                  key: ValueKey(
+                                    'feeding-${entry.key.toIso8601String()}',
+                                  ),
+                                  title: AppDateFormatter.sectionDate(
+                                    context,
+                                    entry.key,
+                                  ),
+                                  sessions: entry.value,
+                                  summary: _dailySummary(entry.value, l10n),
+                                  collapsible: true,
+                                  onDelete: deleteSession,
+                                  onEdit: editSession,
+                                ),
+                          ],
+                        ),
+                ),
               ],
             ),
     );
+  }
+
+  Widget _filterBar(AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _filterChip(
+              label: l10n.filter7d,
+              value: _FeedingHistoryFilter.sevenDays,
+            ),
+            const SizedBox(width: 8),
+            _filterChip(
+              label: l10n.filter30d,
+              value: _FeedingHistoryFilter.thirtyDays,
+            ),
+            const SizedBox(width: 8),
+            _filterChip(
+              label: l10n.filterAll,
+              value: _FeedingHistoryFilter.all,
+            ),
+            const SizedBox(width: 8),
+            ChoiceChip(
+              avatar: const Icon(Icons.calendar_month_rounded, size: 18),
+              label: Text(_dateRangeLabel(l10n)),
+              selected: _filter == _FeedingHistoryFilter.custom,
+              onSelected: (_) => _pickDateRange(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _filterChip({
+    required String label,
+    required _FeedingHistoryFilter value,
+  }) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: _filter == value,
+      onSelected: (_) {
+        setState(() {
+          _filter = value;
+          _customRange = null;
+        });
+      },
+    );
+  }
+
+  String _dateRangeLabel(AppLocalizations l10n) {
+    final range = _customRange;
+    if (range == null) return l10n.selectDate;
+
+    final start = AppDateFormatter.shortDate(context, range.start);
+    if (AppDateUtils.isSameDay(range.start, range.end)) return start;
+    return '$start – ${AppDateFormatter.shortDate(context, range.end)}';
+  }
+
+  String _dailySummary(
+    List<FeedingSession> daySessions,
+    AppLocalizations l10n,
+  ) {
+    final duration = daySessions.fold<Duration>(
+      Duration.zero,
+      (total, session) => total + session.totalDuration,
+    );
+    final milk = daySessions.fold<int>(
+      0,
+      (total, session) => total + session.totalMilkIntake,
+    );
+    final durationText = _compactDuration(duration, l10n);
+    final parts = <String>[
+      '${daySessions.length} ${l10n.sessions.toLowerCase()}',
+      durationText,
+      if (milk > 0) '$milk ${l10n.unitGr} ${l10n.milk.toLowerCase()}',
+    ];
+    return parts.join(' · ');
+  }
+
+  String _compactDuration(Duration duration, AppLocalizations l10n) {
+    final hours = duration.inHours;
+    final minutes = duration.inMinutes.remainder(60);
+    if (hours > 0) {
+      return '$hours ${l10n.hoursShort} $minutes ${l10n.minutesShort}';
+    }
+    return '${duration.inMinutes} ${l10n.minutesShort}';
   }
 
   Widget _emptyState(AppLocalizations l10n) {

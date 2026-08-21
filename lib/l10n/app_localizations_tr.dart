@@ -857,6 +857,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get heightCm => 'Boy (cm)';
 
   @override
+  String get birthWeightGr => 'Doğum kilosu (gr)';
+
+  @override
+  String get birthHeightCm => 'Doğum boyu (cm)';
+
+  @override
   String get headCircumferenceOptional => 'Kafa Çevresi (opsiyonel)';
 
   @override
@@ -996,6 +1002,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get diaperChanges => 'Bez değişiklikleri';
+
+  @override
+  String diaperDaySummary(int count, int peeCount, int poopCount) {
+    return '$count değişim · $peeCount çiş · $poopCount kaka';
+  }
 
   @override
   String get sessionDeleted => 'Oturum silindi';
