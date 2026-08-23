@@ -15,6 +15,7 @@ import '../care_calendar/care_calendar_screen.dart';
 import '../settings/settings_screen.dart';
 import 'widgets/home_action_card.dart';
 import 'widgets/live_feeding_home_card.dart';
+import 'widgets/quick_diaper_card.dart';
 import 'widgets/today_summary_card.dart';
 import 'widgets/upcoming_care_card.dart';
 
@@ -149,6 +150,15 @@ class _HomeScreenState extends State<HomeScreen>
               ),
               const SizedBox(height: 12),
               LiveFeedingHomeCard(refreshVersion: _dashboardRefreshVersion),
+              const SizedBox(height: 12),
+              QuickDiaperCard(
+                childId: _profile!.id,
+                onChanged: _refreshDashboard,
+                onOpenDetails: () async {
+                  await Navigator.pushNamed(context, '/diaper');
+                  _refreshDashboard();
+                },
+              ),
               const SizedBox(height: 12),
               UpcomingCareCard(refreshVersion: _dashboardRefreshVersion),
               const SizedBox(height: 16),

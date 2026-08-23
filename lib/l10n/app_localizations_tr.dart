@@ -1215,6 +1215,46 @@ class AppLocalizationsTr extends AppLocalizations {
   String get dashboardLoadFailed => 'Ana ekran özeti yüklenemedi.';
 
   @override
+  String get quickDiaperTitle => 'Hızlı bez kaydı';
+
+  @override
+  String get quickDiaperSubtitle => 'Türü seç, tek dokunuşla kaydet';
+
+  @override
+  String get details => 'Ayrıntılar';
+
+  @override
+  String get quickWet => 'Islak';
+
+  @override
+  String get quickDirty => 'Kirli';
+
+  @override
+  String get quickBoth => 'İkisi';
+
+  @override
+  String get quickPeeSaved => 'Islak bez kaydedildi.';
+
+  @override
+  String get quickPoopSaved => 'Kirli bez kaydedildi.';
+
+  @override
+  String get quickBothSaved => 'Islak ve kirli bez kaydedildi.';
+
+  @override
+  String get quickDiaperSaveFailed =>
+      'Hızlı bez kaydı kaydedilemedi. Tekrar deneyin.';
+
+  @override
+  String get quickDiaperUndone => 'Hızlı bez kaydı geri alındı.';
+
+  @override
+  String get quickDiaperUndoFailed => 'Kayıt geri alınamadı.';
+
+  @override
+  String get suggested => 'Önerilen';
+
+  @override
   String get last => 'Son';
 
   @override

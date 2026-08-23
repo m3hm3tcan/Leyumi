@@ -30,6 +30,20 @@ class FeedingStorage implements FeedingRepository {
     return _load(db, childId: childId);
   }
 
+  @override
+  Future<FeedingSession?> loadLatestSession({String? childId}) async {
+    final db = await AppDatabase.instance;
+    final resolvedChildId = childId ?? await ActiveChildScope.id();
+    final payloads = await SqliteRecords.readPayloads(
+      db,
+      AppDatabase.feedingTable,
+      childId: resolvedChildId,
+      descending: true,
+      limit: 10,
+    );
+    return _decode(payloads).firstOrNull;
+  }
+
   Future<List<FeedingSession>> _load(
     DatabaseExecutor db, {
     String? childId,

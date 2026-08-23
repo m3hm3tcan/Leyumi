@@ -1225,6 +1225,46 @@ class AppLocalizationsHu extends AppLocalizations {
   String get dashboardLoadFailed => 'A főoldali összegzés nem tölthető be.';
 
   @override
+  String get quickDiaperTitle => 'Gyors pelenkabejegyzés';
+
+  @override
+  String get quickDiaperSubtitle => 'Válassz típust, és mentsd egy érintéssel';
+
+  @override
+  String get details => 'Részletek';
+
+  @override
+  String get quickWet => 'Pisis';
+
+  @override
+  String get quickDirty => 'Kakis';
+
+  @override
+  String get quickBoth => 'Mindkettő';
+
+  @override
+  String get quickPeeSaved => 'Pisis pelenka mentve.';
+
+  @override
+  String get quickPoopSaved => 'Kakis pelenka mentve.';
+
+  @override
+  String get quickBothSaved => 'Pisis és kakis pelenka mentve.';
+
+  @override
+  String get quickDiaperSaveFailed =>
+      'A gyors pelenkabejegyzés nem menthető. Próbáld újra.';
+
+  @override
+  String get quickDiaperUndone => 'A gyors pelenkabejegyzés visszavonva.';
+
+  @override
+  String get quickDiaperUndoFailed => 'A bejegyzés nem vonható vissza.';
+
+  @override
+  String get suggested => 'Javasolt';
+
+  @override
   String get last => 'Utolsó';
 
   @override

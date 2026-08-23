@@ -1219,6 +1219,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardLoadFailed => 'The home summary could not be loaded.';
 
   @override
+  String get quickDiaperTitle => 'Quick diaper log';
+
+  @override
+  String get quickDiaperSubtitle => 'Choose a type and save in one tap';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get quickWet => 'Wet';
+
+  @override
+  String get quickDirty => 'Dirty';
+
+  @override
+  String get quickBoth => 'Both';
+
+  @override
+  String get quickPeeSaved => 'Wet diaper saved.';
+
+  @override
+  String get quickPoopSaved => 'Dirty diaper saved.';
+
+  @override
+  String get quickBothSaved => 'Wet and dirty diaper saved.';
+
+  @override
+  String get quickDiaperSaveFailed =>
+      'The quick diaper entry could not be saved. Try again.';
+
+  @override
+  String get quickDiaperUndone => 'Quick diaper entry undone.';
+
+  @override
+  String get quickDiaperUndoFailed => 'The entry could not be undone.';
+
+  @override
+  String get suggested => 'Suggested';
+
+  @override
   String get last => 'Last';
 
   @override

@@ -2374,6 +2374,84 @@ abstract class AppLocalizations {
   /// **'The home summary could not be loaded.'**
   String get dashboardLoadFailed;
 
+  /// No description provided for @quickDiaperTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick diaper log'**
+  String get quickDiaperTitle;
+
+  /// No description provided for @quickDiaperSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a type and save in one tap'**
+  String get quickDiaperSubtitle;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @quickWet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wet'**
+  String get quickWet;
+
+  /// No description provided for @quickDirty.
+  ///
+  /// In en, this message translates to:
+  /// **'Dirty'**
+  String get quickDirty;
+
+  /// No description provided for @quickBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Both'**
+  String get quickBoth;
+
+  /// No description provided for @quickPeeSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Wet diaper saved.'**
+  String get quickPeeSaved;
+
+  /// No description provided for @quickPoopSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Dirty diaper saved.'**
+  String get quickPoopSaved;
+
+  /// No description provided for @quickBothSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Wet and dirty diaper saved.'**
+  String get quickBothSaved;
+
+  /// No description provided for @quickDiaperSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The quick diaper entry could not be saved. Try again.'**
+  String get quickDiaperSaveFailed;
+
+  /// No description provided for @quickDiaperUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick diaper entry undone.'**
+  String get quickDiaperUndone;
+
+  /// No description provided for @quickDiaperUndoFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The entry could not be undone.'**
+  String get quickDiaperUndoFailed;
+
+  /// No description provided for @suggested.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested'**
+  String get suggested;
+
   /// No description provided for @last.
   ///
   /// In en, this message translates to:

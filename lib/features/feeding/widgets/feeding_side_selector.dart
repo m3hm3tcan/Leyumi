@@ -7,12 +7,14 @@ class FeedingSideSelector extends StatelessWidget {
   const FeedingSideSelector({
     super.key,
     required this.activeSide,
+    this.suggestedSide,
     required this.leftDuration,
     required this.rightDuration,
     required this.onSelected,
   });
 
   final FeedingSide? activeSide;
+  final FeedingSide? suggestedSide;
   final Duration leftDuration;
   final Duration rightDuration;
   final ValueChanged<FeedingSide> onSelected;
@@ -25,6 +27,7 @@ class FeedingSideSelector extends StatelessWidget {
           child: _SideCard(
             side: FeedingSide.left,
             activeSide: activeSide,
+            suggestedSide: suggestedSide,
             duration: leftDuration,
             onTap: onSelected,
           ),
@@ -34,6 +37,7 @@ class FeedingSideSelector extends StatelessWidget {
           child: _SideCard(
             side: FeedingSide.right,
             activeSide: activeSide,
+            suggestedSide: suggestedSide,
             duration: rightDuration,
             onTap: onSelected,
           ),
@@ -47,12 +51,14 @@ class _SideCard extends StatefulWidget {
   const _SideCard({
     required this.side,
     required this.activeSide,
+    required this.suggestedSide,
     required this.duration,
     required this.onTap,
   });
 
   final FeedingSide side;
   final FeedingSide? activeSide;
+  final FeedingSide? suggestedSide;
   final Duration duration;
   final ValueChanged<FeedingSide> onTap;
 
@@ -65,6 +71,8 @@ class _SideCardState extends State<_SideCard>
   late final AnimationController _nursingController;
 
   bool get isActive => widget.activeSide == widget.side;
+  bool get isSuggested =>
+      widget.activeSide == null && widget.suggestedSide == widget.side;
   bool get isLeft => widget.side == FeedingSide.left;
   Color get accent =>
       isLeft ? const Color(0xffE96B9B) : const Color(0xff4D8FE8);
@@ -118,11 +126,23 @@ class _SideCardState extends State<_SideCard>
             height: 116,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isActive ? accent.withAlpha(18) : theme.cardColor,
+              color: isActive
+                  ? accent.withAlpha(18)
+                  : isSuggested
+                  ? accent.withAlpha(10)
+                  : theme.cardColor,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isActive ? accent : theme.dividerColor.withAlpha(85),
-                width: isActive ? 1.7 : 1,
+                color: isActive
+                    ? accent
+                    : isSuggested
+                    ? accent.withAlpha(135)
+                    : theme.dividerColor.withAlpha(85),
+                width: isActive
+                    ? 1.7
+                    : isSuggested
+                    ? 1.3
+                    : 1,
               ),
               boxShadow: [
                 BoxShadow(
@@ -171,10 +191,14 @@ class _SideCardState extends State<_SideCard>
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 220),
                         child: Text(
-                          isActive ? l10n.live : l10n.ready.toUpperCase(),
-                          key: ValueKey(isActive),
+                          isActive
+                              ? l10n.live
+                              : isSuggested
+                              ? l10n.suggested.toUpperCase()
+                              : l10n.ready.toUpperCase(),
+                          key: ValueKey((isActive, isSuggested)),
                           style: TextStyle(
-                            color: isActive
+                            color: isActive || isSuggested
                                 ? accent
                                 : theme.textTheme.bodySmall?.color?.withAlpha(
                                     120,

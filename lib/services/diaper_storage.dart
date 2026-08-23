@@ -20,6 +20,19 @@ class DiaperStorage implements DiaperRepository {
   }
 
   @override
+  Future<void> deleteEntry({
+    required String id,
+    required String childId,
+  }) async {
+    final db = await AppDatabase.instance;
+    await db.delete(
+      AppDatabase.diaperTable,
+      where: 'id = ? AND child_id = ?',
+      whereArgs: [id, childId],
+    );
+  }
+
+  @override
   Future<List<DiaperEntry>> loadEntries() async {
     final db = await AppDatabase.instance;
     final childId = await ActiveChildScope.id();

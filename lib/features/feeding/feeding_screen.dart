@@ -11,6 +11,7 @@ import 'feeding_controller.dart';
 import 'feeding_draft_service.dart';
 import 'feeding_entry.dart';
 import 'feeding_session.dart';
+import 'feeding_side_suggestion.dart';
 import 'sheets/manual_feeding_sheet.dart';
 import 'widgets/feeding_save_dialog.dart';
 import 'widgets/feeding_side_selector.dart';
@@ -37,6 +38,7 @@ class _FeedingScreenState extends State<FeedingScreen>
 
   Duration _currentTimer = Duration.zero;
   FeedingSide? _activeSide;
+  FeedingSide? _suggestedSide;
   String? _startWeightError;
   String? _endWeightError;
   bool _longFeedingWarningShown = false;
@@ -54,7 +56,7 @@ class _FeedingScreenState extends State<FeedingScreen>
         _maybeShowLongFeedingWarning(duration);
       },
     );
-    _restoreDraft();
+    _initializeFeeding();
   }
 
   @override
@@ -77,20 +79,30 @@ class _FeedingScreenState extends State<FeedingScreen>
     }
   }
 
-  Future<void> _restoreDraft() async {
+  Future<void> _initializeFeeding() async {
     final draft = await _draftService.restore(_controller);
-    if (draft == null || !mounted) return;
+    if (!mounted) return;
+    if (draft != null) {
+      _startWeightController.text = draft.startWeightGr?.toString() ?? '';
+      _endWeightController.text = draft.endWeightGr?.toString() ?? '';
+      setState(() {
+        _activeSide = draft.activeSide;
+        _suggestedSide = draft.activeSide == null
+            ? FeedingSideSuggestion.nextFor(_controller.currentSession)
+            : null;
+        _currentTimer = draft.activeSideStartedAt == null
+            ? Duration.zero
+            : DateTime.now().difference(draft.activeSideStartedAt!);
+      });
+      _maybeShowLongFeedingWarning(_currentTimer);
+      await _syncActiveFeedingNotification();
+      return;
+    }
 
-    _startWeightController.text = draft.startWeightGr?.toString() ?? '';
-    _endWeightController.text = draft.endWeightGr?.toString() ?? '';
-    setState(() {
-      _activeSide = draft.activeSide;
-      _currentTimer = draft.activeSideStartedAt == null
-          ? Duration.zero
-          : DateTime.now().difference(draft.activeSideStartedAt!);
-    });
-    _maybeShowLongFeedingWarning(_currentTimer);
-    await _syncActiveFeedingNotification();
+    final profile = await BabyStorage().loadProfile();
+    final latest = await _storage.loadLatestSession(childId: profile?.id);
+    if (!mounted) return;
+    setState(() => _suggestedSide = FeedingSideSuggestion.nextFor(latest));
   }
 
   void _maybeShowLongFeedingWarning(Duration duration) {
@@ -177,6 +189,7 @@ class _FeedingScreenState extends State<FeedingScreen>
 
     setState(() {
       _activeSide = side;
+      _suggestedSide = null;
       _currentTimer = Duration.zero;
       _longFeedingWarningShown = false;
     });
@@ -190,6 +203,9 @@ class _FeedingScreenState extends State<FeedingScreen>
     _controller.stopSide(_activeSide!);
     setState(() {
       _activeSide = null;
+      _suggestedSide = FeedingSideSuggestion.nextFor(
+        _controller.currentSession,
+      );
       _currentTimer = Duration.zero;
       _longFeedingWarningShown = false;
     });
@@ -337,6 +353,7 @@ class _FeedingScreenState extends State<FeedingScreen>
               const SizedBox(height: 16),
               FeedingSideSelector(
                 activeSide: _activeSide,
+                suggestedSide: _suggestedSide,
                 leftDuration: session?.leftDuration ?? Duration.zero,
                 rightDuration: session?.rightDuration ?? Duration.zero,
                 onSelected: _startFeeding,
