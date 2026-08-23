@@ -14,7 +14,9 @@ import '../../../core/utils/app_date_utils.dart';
 import '../../../core/child/active_child_aware.dart';
 
 class DiaperGraphScreen extends StatefulWidget {
-  const DiaperGraphScreen({super.key});
+  const DiaperGraphScreen({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<DiaperGraphScreen> createState() => _DiaperGraphScreenState();
@@ -316,7 +318,8 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
     final l10n = AppLocalizations.of(context);
     final premium = context.watch<PremiumProvider>();
     if (!premium.isLoaded) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      const loadingView = Center(child: CircularProgressIndicator());
+      return widget.embedded ? loadingView : const Scaffold(body: loadingView);
     }
     if (!premium.hasAccess(PremiumFeature.advancedAnalytics)) {
       return const PremiumPaywallScreen(
@@ -325,45 +328,48 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
     }
 
     if (loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      const loadingView = Center(child: CircularProgressIndicator());
+      return widget.embedded ? loadingView : const Scaffold(body: loadingView);
     }
 
+    final body = entries.isEmpty
+        ? Center(child: Text(l10n.noDiaperData))
+        : Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
+                child: GraphFilterBar(
+                  value: filter,
+                  options: [
+                    (l10n.filter7d, '7'),
+                    (l10n.filter30d, '30'),
+                    (l10n.filter90d, '90'),
+                    (l10n.filterAll, 'all'),
+                  ],
+                  onChanged: (value) => setState(() => filter = value),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _tabBar(),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+                  child: filtered.isEmpty
+                      ? _emptyRange()
+                      : tabIndex == 0
+                      ? _buildOverview()
+                      : _buildInsights(),
+                ),
+              ),
+            ],
+          );
+    if (widget.embedded) return body;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.diaperAnalytics)),
-      body: entries.isEmpty
-          ? Center(child: Text(l10n.noDiaperData))
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
-                  child: GraphFilterBar(
-                    value: filter,
-                    options: [
-                      (l10n.filter7d, '7'),
-                      (l10n.filter30d, '30'),
-                      (l10n.filter90d, '90'),
-                      (l10n.filterAll, 'all'),
-                    ],
-                    onChanged: (value) => setState(() => filter = value),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: _tabBar(),
-                ),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-                    child: filtered.isEmpty
-                        ? _emptyRange()
-                        : tabIndex == 0
-                        ? _buildOverview()
-                        : _buildInsights(),
-                  ),
-                ),
-              ],
-            ),
+      body: body,
     );
   }
 

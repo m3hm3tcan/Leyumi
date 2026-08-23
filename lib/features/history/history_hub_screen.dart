@@ -7,12 +7,8 @@ import '../../core/premium/premium_feature.dart';
 import '../../features/care_report/care_report_screen.dart';
 import '../../features/milk_inventory/milk_history_screen.dart';
 import '../../l10n/app_localizations.dart';
-import 'graphs/diaper_graph.dart';
-import 'graphs/feeding_graph.dart';
-import 'graphs/growth_graph.dart';
-import 'tabs/diaper_tab.dart';
-import 'tabs/feeding_tab.dart';
-import 'tabs/growth_tab.dart';
+import 'analytics_center_screen.dart';
+import 'records_center_screen.dart';
 import 'widgets/hub_card.dart';
 
 class HistoryHubScreen extends StatelessWidget {
@@ -64,80 +60,30 @@ class HistoryHubScreen extends StatelessWidget {
                   ),
                   children: [
                     HubCard(
-                      title: l10n.feeding,
-                      icon: Icons.local_drink,
+                      title: l10n.history,
+                      icon: Icons.view_timeline_rounded,
                       color: const Color(0xff4DA3FF),
-                      subtitle: l10n.milkTracking,
+                      subtitle: l10n.recordsOverview,
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => const FeedingTab()),
+                          MaterialPageRoute(
+                            builder: (_) => const RecordsCenterScreen(),
+                          ),
                         );
                       },
                     ),
                     HubCard(
-                      title: l10n.feedingGraph,
-                      icon: Icons.show_chart,
-                      color: const Color(0xff3B82F6),
-                      subtitle: l10n.viewCharts,
+                      title: l10n.analytics,
+                      icon: Icons.insights_rounded,
+                      color: const Color(0xff22A987),
+                      subtitle: l10n.premiumAnalytics,
                       isPremium: true,
                       onTap: () {
                         PremiumAccess.open(
                           context,
                           feature: PremiumFeature.advancedAnalytics,
-                          builder: (_) => const FeedingGraphScreen(),
-                        );
-                      },
-                    ),
-                    HubCard(
-                      title: l10n.diaper,
-                      icon: Icons.baby_changing_station,
-                      color: const Color(0xffF59E0B),
-                      subtitle: l10n.diaperChanges,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const DiaperTab()),
-                        );
-                      },
-                    ),
-                    HubCard(
-                      title: l10n.diaperGraph,
-                      icon: Icons.bar_chart,
-                      color: const Color(0xffD97706),
-                      subtitle: l10n.viewCharts,
-                      isPremium: true,
-                      onTap: () {
-                        PremiumAccess.open(
-                          context,
-                          feature: PremiumFeature.advancedAnalytics,
-                          builder: (_) => const DiaperGraphScreen(),
-                        );
-                      },
-                    ),
-                    HubCard(
-                      title: l10n.growth,
-                      icon: Icons.show_chart,
-                      color: const Color(0xff22C55E),
-                      subtitle: l10n.weightAndHeight,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => const GrowthTab()),
-                        );
-                      },
-                    ),
-                    HubCard(
-                      title: l10n.growthGraph,
-                      icon: Icons.area_chart,
-                      color: const Color(0xff16A34A),
-                      subtitle: l10n.viewCharts,
-                      isPremium: true,
-                      onTap: () {
-                        PremiumAccess.open(
-                          context,
-                          feature: PremiumFeature.advancedAnalytics,
-                          builder: (_) => const GrowthGraphScreen(),
+                          builder: (_) => const AnalyticsCenterScreen(),
                         );
                       },
                     ),

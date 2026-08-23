@@ -14,7 +14,9 @@ import '../../../core/utils/app_date_utils.dart';
 import '../../../core/child/active_child_aware.dart';
 
 class FeedingGraphScreen extends StatefulWidget {
-  const FeedingGraphScreen({super.key});
+  const FeedingGraphScreen({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<FeedingGraphScreen> createState() => _FeedingGraphScreenState();
@@ -232,7 +234,8 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
     final l10n = AppLocalizations.of(context);
     final premium = context.watch<PremiumProvider>();
     if (!premium.isLoaded) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      const loadingView = Center(child: CircularProgressIndicator());
+      return widget.embedded ? loadingView : const Scaffold(body: loadingView);
     }
     if (!premium.hasAccess(PremiumFeature.advancedAnalytics)) {
       return const PremiumPaywallScreen(
@@ -241,49 +244,52 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
     }
 
     if (loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      const loadingView = Center(child: CircularProgressIndicator());
+      return widget.embedded ? loadingView : const Scaffold(body: loadingView);
     }
 
+    final body = sessions.isEmpty
+        ? Center(child: Text(l10n.noFeedingData))
+        : Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+                child: GraphFilterBar(
+                  value: filter,
+                  options: [
+                    (l10n.filter7d, '7'),
+                    (l10n.filter30d, '30'),
+                    (l10n.filter90d, '90'),
+                    (l10n.filterAll, 'all'),
+                  ],
+                  onChanged: (value) => setState(() => filter = value),
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+                  child: filtered.isEmpty
+                      ? PremiumChartCard(
+                          title: l10n.noDataInRange,
+                          subtitle: l10n.widerRangeFeedingHint,
+                          child: const SizedBox(height: 80),
+                        )
+                      : Column(
+                          children: [
+                            _summaryCard(),
+                            _dailyTotalChart(),
+                            _sideBalanceChart(),
+                            _milkChart(),
+                          ],
+                        ),
+                ),
+              ),
+            ],
+          );
+    if (widget.embedded) return body;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.feedingAnalytics)),
-      body: sessions.isEmpty
-          ? Center(child: Text(l10n.noFeedingData))
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
-                  child: GraphFilterBar(
-                    value: filter,
-                    options: [
-                      (l10n.filter7d, '7'),
-                      (l10n.filter30d, '30'),
-                      (l10n.filter90d, '90'),
-                      (l10n.filterAll, 'all'),
-                    ],
-                    onChanged: (value) => setState(() => filter = value),
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-                    child: filtered.isEmpty
-                        ? PremiumChartCard(
-                            title: l10n.noDataInRange,
-                            subtitle: l10n.widerRangeFeedingHint,
-                            child: const SizedBox(height: 80),
-                          )
-                        : Column(
-                            children: [
-                              _summaryCard(),
-                              _dailyTotalChart(),
-                              _sideBalanceChart(),
-                              _milkChart(),
-                            ],
-                          ),
-                  ),
-                ),
-              ],
-            ),
+      body: body,
     );
   }
 

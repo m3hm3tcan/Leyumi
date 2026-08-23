@@ -13,7 +13,9 @@ import '../widgets/today_summary_card.dart';
 enum _FeedingHistoryFilter { sevenDays, thirtyDays, all, custom }
 
 class FeedingTab extends StatefulWidget {
-  const FeedingTab({super.key});
+  const FeedingTab({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<FeedingTab> createState() => _FeedingTabState();
@@ -357,6 +359,7 @@ class _FeedingTabState extends State<FeedingTab>
       icon: Icons.local_drink_rounded,
       color: const Color(0xff4DA3FF),
       showHeader: false,
+      embedded: widget.embedded,
       child: sessions.isEmpty
           ? _emptyState(l10n)
           : Column(

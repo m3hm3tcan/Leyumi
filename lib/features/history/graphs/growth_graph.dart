@@ -17,7 +17,9 @@ import '../../premium/premium_paywall_screen.dart';
 import 'graph_style.dart';
 
 class GrowthGraphScreen extends StatefulWidget {
-  const GrowthGraphScreen({super.key});
+  const GrowthGraphScreen({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<GrowthGraphScreen> createState() => _GrowthGraphScreenState();
@@ -93,7 +95,8 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen>
     final premium = context.watch<PremiumProvider>();
 
     if (!premium.isLoaded || loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      const loadingView = Center(child: CircularProgressIndicator());
+      return widget.embedded ? loadingView : const Scaffold(body: loadingView);
     }
     if (!premium.hasAccess(PremiumFeature.advancedAnalytics)) {
       return const PremiumPaywallScreen(
@@ -101,75 +104,76 @@ class _GrowthGraphScreenState extends State<GrowthGraphScreen>
       );
     }
 
+    final body = entries.isEmpty
+        ? Center(child: Text(l10n.noGrowthData))
+        : Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
+                child: GraphFilterBar(
+                  value: filter,
+                  accent: _heightColor,
+                  options: [
+                    (l10n.filter7d, '7'),
+                    (l10n.filter30d, '30'),
+                    (l10n.filter90d, '90'),
+                    (l10n.filterAll, 'all'),
+                  ],
+                  onChanged: (value) => setState(() => filter = value),
+                ),
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
+                  child: filtered.isEmpty
+                      ? PremiumChartCard(
+                          title: l10n.noDataInRange,
+                          child: const SizedBox(height: 80),
+                        )
+                      : Column(
+                          children: [
+                            _summaryCard(l10n),
+                            _metricChart(
+                              title: l10n.weight,
+                              icon: Icons.monitor_weight_rounded,
+                              color: _weightColor,
+                              points: _points((entry) => entry.weight / 1000),
+                              unit: l10n.unitKg,
+                              decimals: 2,
+                              minimumPadding: .25,
+                            ),
+                            _metricChart(
+                              title: l10n.height,
+                              icon: Icons.height_rounded,
+                              color: _heightColor,
+                              points: _points(
+                                (entry) => entry.height.toDouble(),
+                              ),
+                              unit: l10n.unitCm,
+                              decimals: 0,
+                              minimumPadding: 2,
+                            ),
+                            _metricChart(
+                              title: l10n.headCircumference,
+                              icon: Icons.face_retouching_natural_rounded,
+                              color: _headColor,
+                              points: _points(
+                                (entry) => entry.headCircumference?.toDouble(),
+                              ),
+                              unit: l10n.unitCm,
+                              decimals: 0,
+                              minimumPadding: 1,
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+            ],
+          );
+    if (widget.embedded) return body;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.growthCharts)),
-      body: entries.isEmpty
-          ? Center(child: Text(l10n.noGrowthData))
-          : Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
-                  child: GraphFilterBar(
-                    value: filter,
-                    accent: _heightColor,
-                    options: [
-                      (l10n.filter7d, '7'),
-                      (l10n.filter30d, '30'),
-                      (l10n.filter90d, '90'),
-                      (l10n.filterAll, 'all'),
-                    ],
-                    onChanged: (value) => setState(() => filter = value),
-                  ),
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
-                    child: filtered.isEmpty
-                        ? PremiumChartCard(
-                            title: l10n.noDataInRange,
-                            child: const SizedBox(height: 80),
-                          )
-                        : Column(
-                            children: [
-                              _summaryCard(l10n),
-                              _metricChart(
-                                title: l10n.weight,
-                                icon: Icons.monitor_weight_rounded,
-                                color: _weightColor,
-                                points: _points((entry) => entry.weight / 1000),
-                                unit: l10n.unitKg,
-                                decimals: 2,
-                                minimumPadding: .25,
-                              ),
-                              _metricChart(
-                                title: l10n.height,
-                                icon: Icons.height_rounded,
-                                color: _heightColor,
-                                points: _points(
-                                  (entry) => entry.height.toDouble(),
-                                ),
-                                unit: l10n.unitCm,
-                                decimals: 0,
-                                minimumPadding: 2,
-                              ),
-                              _metricChart(
-                                title: l10n.headCircumference,
-                                icon: Icons.face_retouching_natural_rounded,
-                                color: _headColor,
-                                points: _points(
-                                  (entry) =>
-                                      entry.headCircumference?.toDouble(),
-                                ),
-                                unit: l10n.unitCm,
-                                decimals: 0,
-                                minimumPadding: 1,
-                              ),
-                            ],
-                          ),
-                  ),
-                ),
-              ],
-            ),
+      body: body,
     );
   }
 

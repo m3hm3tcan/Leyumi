@@ -8,7 +8,9 @@ import '../../../core/child/active_child_aware.dart';
 import '../widgets/history_page_shell.dart';
 
 class GrowthTab extends StatefulWidget {
-  const GrowthTab({super.key});
+  const GrowthTab({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<GrowthTab> createState() => _GrowthTabState();
@@ -108,6 +110,7 @@ class _GrowthTabState extends State<GrowthTab>
       icon: Icons.monitor_weight_rounded,
       color: const Color(0xff22C55E),
       showHeader: false,
+      embedded: widget.embedded,
       child: entries.isEmpty
           ? _emptyState(context)
           : ListView.builder(

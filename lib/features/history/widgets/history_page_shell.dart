@@ -7,6 +7,7 @@ class HistoryPageShell extends StatelessWidget {
   final Color color;
   final Widget child;
   final bool showHeader;
+  final bool embedded;
 
   const HistoryPageShell({
     super.key,
@@ -16,6 +17,7 @@ class HistoryPageShell extends StatelessWidget {
     required this.color,
     required this.child,
     this.showHeader = true,
+    this.embedded = false,
   });
 
   @override
@@ -23,34 +25,36 @@ class HistoryPageShell extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark
-                ? const [Color(0xff111827), Color(0xff0B1120)]
-                : [color.withAlpha(18), theme.scaffoldBackgroundColor],
-          ),
-        ),
-        child: Column(
-          children: [
-            if (showHeader)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-                child: _PageHero(
-                  title: title,
-                  subtitle: subtitle,
-                  icon: icon,
-                  color: color,
-                ),
-              ),
-            Expanded(child: child),
-          ],
+    final body = DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: isDark
+              ? const [Color(0xff111827), Color(0xff0B1120)]
+              : [color.withAlpha(18), theme.scaffoldBackgroundColor],
         ),
       ),
+      child: Column(
+        children: [
+          if (showHeader)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
+              child: _PageHero(
+                title: title,
+                subtitle: subtitle,
+                icon: icon,
+                color: color,
+              ),
+            ),
+          Expanded(child: child),
+        ],
+      ),
+    );
+    if (embedded) return body;
+    return Scaffold(
+      appBar: AppBar(title: Text(title)),
+      body: body,
     );
   }
 }

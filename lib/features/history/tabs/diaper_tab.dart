@@ -12,7 +12,9 @@ import '../widgets/history_page_shell.dart';
 enum _DiaperHistoryFilter { sevenDays, thirtyDays, all, custom }
 
 class DiaperTab extends StatefulWidget {
-  const DiaperTab({super.key});
+  const DiaperTab({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<DiaperTab> createState() => _DiaperTabState();
@@ -212,6 +214,7 @@ class _DiaperTabState extends State<DiaperTab>
       icon: Icons.baby_changing_station_rounded,
       color: const Color(0xffF59E0B),
       showHeader: false,
+      embedded: widget.embedded,
       child: entries.isEmpty
           ? _emptyState(l10n)
           : Column(
