@@ -53,12 +53,13 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
   DateTime _dateOnly(DateTime date) => AppDateUtils.dateOnly(date);
 
   List<DateTime> get sortedDays {
-    final days = filtered
-        .map((entry) => _dateOnly(entry.timestamp))
-        .toSet()
-        .toList();
-    days.sort();
-    return days;
+    if (filtered.isEmpty) return const [];
+    final first = _dateOnly(filtered.first.timestamp);
+    final last = _dateOnly(filtered.last.timestamp);
+    return List.generate(
+      last.difference(first).inDays + 1,
+      (index) => first.add(Duration(days: index)),
+    );
   }
 
   Map<DateTime, List<DiaperEntry>> get entriesByDay {
@@ -261,6 +262,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
   }
 
   LineTouchData _lineTouchData() {
+    final l10n = AppLocalizations.of(context);
     return LineTouchData(
       touchTooltipData: LineTouchTooltipData(
         getTooltipColor: (_) => const Color(0xff202535),
@@ -271,7 +273,8 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
         getTooltipItems: (spots) => spots.map((spot) {
           final index = spot.x.round();
           return LineTooltipItem(
-            '${compactDate(sortedDays[index], context)}\n${spot.y.toInt()} changes',
+            '${compactDate(sortedDays[index], context)}\n'
+            '${l10n.diaperChangeCount(spot.y.toInt())}',
             const TextStyle(
               color: Colors.white,
               fontSize: 11,
@@ -284,6 +287,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
   }
 
   BarTouchData _barTouchData({required bool hourly}) {
+    final l10n = AppLocalizations.of(context);
     return BarTouchData(
       touchTooltipData: BarTouchTooltipData(
         getTooltipColor: (_) => const Color(0xff202535),
@@ -295,7 +299,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
               ? '${group.x.toString().padLeft(2, '0')}:00'
               : compactDate(sortedDays[group.x], context);
           return BarTooltipItem(
-            '$label\n${rod.toY.toInt()} changes',
+            '$label\n${l10n.diaperChangeCount(rod.toY.toInt())}',
             const TextStyle(
               color: Colors.white,
               fontSize: 11,
@@ -552,7 +556,7 @@ class _DiaperGraphScreenState extends State<DiaperGraphScreen>
                           ),
                         ),
                         Text(
-                          'recorded',
+                          l10n.recordedLabel,
                           style: graphAxisStyle(context, fontSize: 10),
                         ),
                       ],

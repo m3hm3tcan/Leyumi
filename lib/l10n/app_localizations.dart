@@ -1636,12 +1636,6 @@ abstract class AppLocalizations {
   /// **'Coming soon'**
   String get comingSoon;
 
-  /// No description provided for @sleepTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Sleep'**
-  String get sleepTitle;
-
   /// No description provided for @babyInfoTitle.
   ///
   /// In en, this message translates to:
@@ -1996,6 +1990,18 @@ abstract class AppLocalizations {
   /// **'Diaper changes'**
   String get diaperChanges;
 
+  /// No description provided for @diaperChangeCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} changes'**
+  String diaperChangeCount(int count);
+
+  /// No description provided for @recordedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'recorded'**
+  String get recordedLabel;
+
   /// No description provided for @diaperDaySummary.
   ///
   /// In en, this message translates to:
@@ -2092,6 +2098,12 @@ abstract class AppLocalizations {
   /// **'g'**
   String get unitGr;
 
+  /// No description provided for @unitKg.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get unitKg;
+
   /// No description provided for @unitCm.
   ///
   /// In en, this message translates to:
@@ -2169,6 +2181,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Growth Charts'**
   String get growthCharts;
+
+  /// No description provided for @growthJourney.
+  ///
+  /// In en, this message translates to:
+  /// **'Growth journey'**
+  String get growthJourney;
+
+  /// No description provided for @measurementsByActualAge.
+  ///
+  /// In en, this message translates to:
+  /// **'Measurements positioned by the child\'s actual age'**
+  String get measurementsByActualAge;
+
+  /// No description provided for @tapPointForDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a point to see its age, date and value'**
+  String get tapPointForDetails;
+
+  /// No description provided for @tapChartPointForDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a point to see its date and value'**
+  String get tapChartPointForDetails;
+
+  /// No description provided for @ageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Age'**
+  String get ageLabel;
+
+  /// No description provided for @measurementCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} measurements'**
+  String measurementCount(int count);
 
   /// No description provided for @manualFeedingEntry.
   ///

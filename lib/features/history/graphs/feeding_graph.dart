@@ -50,12 +50,13 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
   DateTime _dateOnly(DateTime date) => AppDateUtils.dateOnly(date);
 
   List<DateTime> get sortedDays {
-    final days = filtered
-        .map((session) => _dateOnly(session.startTime))
-        .toSet()
-        .toList();
-    days.sort();
-    return days;
+    if (filtered.isEmpty) return const [];
+    final first = _dateOnly(filtered.first.startTime);
+    final last = _dateOnly(filtered.last.startTime);
+    return List.generate(
+      last.difference(first).inDays + 1,
+      (index) => first.add(Duration(days: index)),
+    );
   }
 
   Map<DateTime, int> _dailySeconds(
@@ -466,7 +467,7 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
               valueLabel: (value) => '${value.round()}m',
             ),
             lineTouchData: _touchData(
-              unit: 'min',
+              unit: l10n.minutesShort,
               labels: [l10n.leftLabel, l10n.rightLabel],
             ),
             lineBarsData: [

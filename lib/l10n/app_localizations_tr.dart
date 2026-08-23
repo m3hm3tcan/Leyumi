@@ -821,9 +821,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get comingSoon => 'Yakında';
 
   @override
-  String get sleepTitle => 'Uyku';
-
-  @override
   String get babyInfoTitle => 'Bebek Bilgileri';
 
   @override
@@ -1004,6 +1001,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get diaperChanges => 'Bez değişiklikleri';
 
   @override
+  String diaperChangeCount(int count) {
+    return '$count değişim';
+  }
+
+  @override
+  String get recordedLabel => 'kaydedildi';
+
+  @override
   String diaperDaySummary(int count, int peeCount, int poopCount) {
     return '$count değişim · $peeCount çiş · $poopCount kaka';
   }
@@ -1055,6 +1060,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get unitGr => 'g';
 
   @override
+  String get unitKg => 'kg';
+
+  @override
   String get unitCm => 'cm';
 
   @override
@@ -1092,6 +1100,29 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get growthCharts => 'Büyüme Grafikleri';
+
+  @override
+  String get growthJourney => 'Büyüme yolculuğu';
+
+  @override
+  String get measurementsByActualAge =>
+      'Ölçümler çocuğun gerçek yaşına göre konumlandırılır';
+
+  @override
+  String get tapPointForDetails =>
+      'Yaş, tarih ve değeri görmek için bir noktaya dokunun';
+
+  @override
+  String get tapChartPointForDetails =>
+      'Tarih ve değeri görmek için bir noktaya dokunun';
+
+  @override
+  String get ageLabel => 'Yaş';
+
+  @override
+  String measurementCount(int count) {
+    return '$count ölçüm';
+  }
 
   @override
   String get manualFeedingEntry => 'Manuel Beslenme Kaydı';

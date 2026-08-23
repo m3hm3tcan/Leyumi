@@ -828,9 +828,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get comingSoon => 'Hamarosan';
 
   @override
-  String get sleepTitle => 'Alvás';
-
-  @override
   String get babyInfoTitle => 'Baba adatai';
 
   @override
@@ -1014,6 +1011,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get diaperChanges => 'Pelenkacserék';
 
   @override
+  String diaperChangeCount(int count) {
+    return '$count csere';
+  }
+
+  @override
+  String get recordedLabel => 'rögzítve';
+
+  @override
   String diaperDaySummary(int count, int peeCount, int poopCount) {
     return '$count csere · $peeCount pisis · $poopCount kakis';
   }
@@ -1065,6 +1070,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get unitGr => 'g';
 
   @override
+  String get unitKg => 'kg';
+
+  @override
   String get unitCm => 'cm';
 
   @override
@@ -1102,6 +1110,29 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get growthCharts => 'Növekedési grafikonok';
+
+  @override
+  String get growthJourney => 'Növekedési út';
+
+  @override
+  String get measurementsByActualAge =>
+      'A mérések a gyermek tényleges életkora szerint jelennek meg';
+
+  @override
+  String get tapPointForDetails =>
+      'Érintsd meg a pontot az életkor, dátum és érték megtekintéséhez';
+
+  @override
+  String get tapChartPointForDetails =>
+      'Érintsd meg a pontot a dátum és érték megtekintéséhez';
+
+  @override
+  String get ageLabel => 'Életkor';
+
+  @override
+  String measurementCount(int count) {
+    return '$count mérés';
+  }
 
   @override
   String get manualFeedingEntry => 'Manuális etetési bejegyzés';

@@ -12,6 +12,7 @@ import 'package:leyumi/services/milk_inventory_storage.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/child/active_child_aware.dart';
+import '../history/graphs/graph_style.dart';
 import '../history/widgets/history_page_shell.dart';
 
 class MilkHistoryScreen extends StatefulWidget {
@@ -23,6 +24,9 @@ class MilkHistoryScreen extends StatefulWidget {
 
 class _MilkHistoryScreenState extends State<MilkHistoryScreen>
     with ActiveChildAware<MilkHistoryScreen> {
+  static const _addedColor = Color(0xff6D63E8);
+  static const _usedColor = Color(0xff45B887);
+
   final _storage = MilkInventoryStorage();
   List<MilkInventoryEvent> _events = [];
   List<MilkBatch> _batches = [];
@@ -390,15 +394,20 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 28),
       children: [
-        _chartCard(
+        PremiumChartCard(
           title: l10n.dailyMilkMovement,
-          subtitle: l10n.last14Days,
+          subtitle: '${l10n.last14Days} · ${l10n.tapChartPointForDetails}',
+          trailing: GraphLegend(
+            items: [(_addedColor, l10n.addedMilk), (_usedColor, l10n.usedMilk)],
+            alignment: WrapAlignment.end,
+          ),
           child: _movementChart(l10n),
         ),
-        _chartCard(
+        PremiumChartCard(
           title: l10n.stockOverTime,
-          subtitle: l10n.last14Days,
-          child: _stockChart(),
+          subtitle: '${l10n.last14Days} · ${l10n.tapChartPointForDetails}',
+          trailing: _valuePill('$_remainingStock ml', _addedColor),
+          child: _stockChart(l10n),
         ),
       ],
     );
@@ -414,66 +423,56 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
         barRods: [
           BarChartRodData(
             toY: (added[day] ?? 0).toDouble(),
-            color: const Color(0xff6D63E8),
-            width: 6,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [_addedColor.withAlpha(190), _addedColor],
+            ),
+            width: 7,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
           ),
           BarChartRodData(
             toY: (used[day] ?? 0).toDouble(),
-            color: const Color(0xff45B887),
-            width: 6,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+            gradient: LinearGradient(
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+              colors: [_usedColor.withAlpha(190), _usedColor],
+            ),
+            width: 7,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(5)),
           ),
         ],
       );
     });
-    final maxY = math
-        .max(50, [...added.values, ...used.values].fold<int>(0, math.max))
-        .toDouble();
+    final maxY = chartMaximum(
+      [...added.values, ...used.values].map((value) => value.toDouble()),
+      minimum: 50,
+    );
+    final interval = niceInterval(maxY);
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 210,
-          child: BarChart(
-            BarChartData(
-              minY: 0,
-              maxY: maxY,
-              barGroups: groups,
-              borderData: FlBorderData(show: false),
-              gridData: FlGridData(
-                drawVerticalLine: false,
-                getDrawingHorizontalLine: (_) => FlLine(
-                  color: Theme.of(context).dividerColor.withAlpha(45),
-                  dashArray: const [4, 5],
-                ),
-              ),
-              titlesData: _titles(),
-            ),
-          ),
+    return SizedBox(
+      height: 230,
+      child: BarChart(
+        BarChartData(
+          minY: 0,
+          maxY: maxY,
+          barGroups: groups,
+          borderData: FlBorderData(show: false),
+          gridData: premiumGrid(context, interval: interval),
+          titlesData: _titles(interval),
+          barTouchData: _movementTouchData(l10n),
         ),
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _legend(const Color(0xff6D63E8), l10n.addedMilk),
-            const SizedBox(width: 18),
-            _legend(const Color(0xff45B887), l10n.usedMilk),
-          ],
-        ),
-      ],
+        duration: const Duration(milliseconds: 380),
+        curve: Curves.easeOutCubic,
+      ),
     );
   }
 
-  Widget _stockChart() {
-    final maxY = math
-        .max(
-          50,
-          _stockSpots.fold<double>(0, (max, spot) => math.max(max, spot.y)),
-        )
-        .toDouble();
+  Widget _stockChart(AppLocalizations l10n) {
+    final maxY = chartMaximum(_stockSpots.map((spot) => spot.y), minimum: 50);
+    final interval = niceInterval(maxY);
     return SizedBox(
-      height: 220,
+      height: 230,
       child: LineChart(
         LineChartData(
           minX: 0,
@@ -481,47 +480,61 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
           minY: 0,
           maxY: maxY,
           borderData: FlBorderData(show: false),
-          gridData: FlGridData(
-            drawVerticalLine: false,
-            getDrawingHorizontalLine: (_) => FlLine(
-              color: Theme.of(context).dividerColor.withAlpha(45),
-              dashArray: const [4, 5],
-            ),
-          ),
-          titlesData: _titles(),
+          gridData: premiumGrid(context, interval: interval),
+          titlesData: _titles(interval),
+          lineTouchData: _stockTouchData(l10n),
           lineBarsData: [
             LineChartBarData(
               spots: _stockSpots,
               isCurved: true,
-              color: const Color(0xff6D63E8),
-              barWidth: 3,
-              dotData: const FlDotData(show: false),
+              curveSmoothness: .2,
+              preventCurveOverShooting: true,
+              color: _addedColor,
+              barWidth: 3.5,
+              isStrokeCapRound: true,
+              dotData: FlDotData(
+                show: true,
+                getDotPainter: (spot, percent, bar, index) =>
+                    FlDotCirclePainter(
+                      radius: index == _stockSpots.length - 1 ? 4.5 : 3,
+                      color: Theme.of(context).cardColor,
+                      strokeWidth: 2.5,
+                      strokeColor: _addedColor,
+                    ),
+              ),
               belowBarData: BarAreaData(
                 show: true,
-                color: const Color(0xff6D63E8).withAlpha(28),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [_addedColor.withAlpha(58), _addedColor.withAlpha(2)],
+                ),
               ),
             ),
           ],
         ),
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutCubic,
       ),
     );
   }
 
-  FlTitlesData _titles() {
+  FlTitlesData _titles(double interval) {
     return FlTitlesData(
       topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
       leftTitles: AxisTitles(
         sideTitles: SideTitles(
           showTitles: true,
-          reservedSize: 38,
+          reservedSize: 42,
+          interval: interval,
           getTitlesWidget: (value, meta) {
             if (value == meta.max) return const SizedBox();
             return SideTitleWidget(
               meta: meta,
               child: Text(
                 value.round().toString(),
-                style: const TextStyle(fontSize: 9),
+                style: graphAxisStyle(context),
               ),
             );
           },
@@ -542,7 +555,7 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
                 MaterialLocalizations.of(
                   context,
                 ).formatShortDate(_chartDays[index]),
-                style: const TextStyle(fontSize: 8),
+                style: graphAxisStyle(context),
               ),
             );
           },
@@ -551,65 +564,72 @@ class _MilkHistoryScreenState extends State<MilkHistoryScreen>
     );
   }
 
-  Widget _chartCard({
-    required String title,
-    required String subtitle,
-    required Widget child,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withAlpha(
-          Theme.of(context).brightness == Brightness.dark ? 220 : 250,
-        ),
-        borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: Theme.of(context).dividerColor.withAlpha(45)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(
-              Theme.of(context).brightness == Brightness.dark ? 34 : 9,
+  BarTouchData _movementTouchData(AppLocalizations l10n) {
+    return BarTouchData(
+      touchTooltipData: BarTouchTooltipData(
+        getTooltipColor: (_) => const Color(0xff202535),
+        tooltipBorderRadius: BorderRadius.circular(12),
+        fitInsideHorizontally: true,
+        fitInsideVertically: true,
+        getTooltipItem: (group, groupIndex, rod, rodIndex) {
+          final label = rodIndex == 0 ? l10n.addedMilk : l10n.usedMilk;
+          return BarTooltipItem(
+            '${compactDate(_chartDays[group.x], context)}\n'
+            '$label: ${rod.toY.round()} ml',
+            TextStyle(
+              color: rodIndex == 0 ? _addedColor : _usedColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              height: 1.4,
             ),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-          ),
-          const SizedBox(height: 3),
-          Text(
-            subtitle,
-            style: TextStyle(
-              color: Theme.of(
-                context,
-              ).textTheme.bodySmall?.color?.withAlpha(150),
-              fontSize: 10,
-            ),
-          ),
-          const SizedBox(height: 18),
-          child,
-        ],
+          );
+        },
       ),
     );
   }
 
-  Widget _legend(Color color, String label) => Row(
-    children: [
-      Container(
-        width: 8,
-        height: 8,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+  LineTouchData _stockTouchData(AppLocalizations l10n) {
+    return LineTouchData(
+      touchSpotThreshold: 24,
+      touchTooltipData: LineTouchTooltipData(
+        getTooltipColor: (_) => const Color(0xff202535),
+        tooltipBorderRadius: BorderRadius.circular(12),
+        fitInsideHorizontally: true,
+        fitInsideVertically: true,
+        getTooltipItems: (spots) => spots.map((spot) {
+          final index = spot.x.round();
+          return LineTooltipItem(
+            '${compactDate(_chartDays[index], context)}\n'
+            '${spot.y.round()} ml ${l10n.remaining.toLowerCase()}',
+            const TextStyle(
+              color: _addedColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w800,
+              height: 1.4,
+            ),
+          );
+        }).toList(),
       ),
-      const SizedBox(width: 5),
-      Text(label, style: const TextStyle(fontSize: 10)),
-    ],
-  );
+    );
+  }
+
+  Widget _valuePill(String value, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withAlpha(18),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        value,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
 
   ({String title, String detail, IconData icon, Color color})
   _eventPresentation(MilkInventoryEvent event, AppLocalizations l10n) {

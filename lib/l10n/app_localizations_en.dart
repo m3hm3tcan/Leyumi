@@ -825,9 +825,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get comingSoon => 'Coming soon';
 
   @override
-  String get sleepTitle => 'Sleep';
-
-  @override
   String get babyInfoTitle => 'Baby Information';
 
   @override
@@ -1010,6 +1007,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get diaperChanges => 'Diaper changes';
 
   @override
+  String diaperChangeCount(int count) {
+    return '$count changes';
+  }
+
+  @override
+  String get recordedLabel => 'recorded';
+
+  @override
   String diaperDaySummary(int count, int peeCount, int poopCount) {
     return '$count changes · $peeCount wet · $poopCount dirty';
   }
@@ -1061,6 +1066,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unitGr => 'g';
 
   @override
+  String get unitKg => 'kg';
+
+  @override
   String get unitCm => 'cm';
 
   @override
@@ -1098,6 +1106,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get growthCharts => 'Growth Charts';
+
+  @override
+  String get growthJourney => 'Growth journey';
+
+  @override
+  String get measurementsByActualAge =>
+      'Measurements positioned by the child\'s actual age';
+
+  @override
+  String get tapPointForDetails => 'Tap a point to see its age, date and value';
+
+  @override
+  String get tapChartPointForDetails => 'Tap a point to see its date and value';
+
+  @override
+  String get ageLabel => 'Age';
+
+  @override
+  String measurementCount(int count) {
+    return '$count measurements';
+  }
 
   @override
   String get manualFeedingEntry => 'Manual Feeding Entry';
