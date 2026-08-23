@@ -1179,6 +1179,52 @@ class AppLocalizationsHu extends AppLocalizations {
   String get todayActivities => 'Mai Tevékenységek';
 
   @override
+  String get todayAtAGlance => 'A mai nap áttekintése';
+
+  @override
+  String todayRecordSummary(int feedingCount, int diaperCount) {
+    return '$feedingCount etetés · $diaperCount pelenka';
+  }
+
+  @override
+  String todayFeedingDuration(String duration) {
+    return 'Mai etetési idő: $duration';
+  }
+
+  @override
+  String get lastFeeding => 'Legutóbbi etetés';
+
+  @override
+  String get noFeedingRecordedYet => 'Még nincs etetési bejegyzés';
+
+  @override
+  String lastFeedingDetail(String side, String duration) {
+    return '$side · $duration';
+  }
+
+  @override
+  String get lastDiaperChange => 'Legutóbbi pelenkacsere';
+
+  @override
+  String get noDiaperRecordedYet => 'Még nincs pelenkabejegyzés';
+
+  @override
+  String get justNow => 'Épp most';
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours ó $minutes p';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes perc';
+  }
+
+  @override
+  String get dashboardLoadFailed => 'A főoldali összegzés nem tölthető be.';
+
+  @override
   String get last => 'Utolsó';
 
   @override

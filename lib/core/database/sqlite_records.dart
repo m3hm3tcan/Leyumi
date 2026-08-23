@@ -9,14 +9,32 @@ abstract final class SqliteRecords {
     DatabaseExecutor db,
     String table, {
     String? childId,
+    DateTime? from,
+    DateTime? until,
     bool descending = false,
+    int? limit,
   }) async {
+    final predicates = <String>[];
+    final arguments = <Object>[];
+    if (childId != null) {
+      predicates.add('child_id = ?');
+      arguments.add(childId);
+    }
+    if (from != null) {
+      predicates.add('sort_time >= ?');
+      arguments.add(from.microsecondsSinceEpoch);
+    }
+    if (until != null) {
+      predicates.add('sort_time < ?');
+      arguments.add(until.microsecondsSinceEpoch);
+    }
     final rows = await db.query(
       table,
       columns: const ['payload'],
-      where: childId == null ? null : 'child_id = ?',
-      whereArgs: childId == null ? null : [childId],
+      where: predicates.isEmpty ? null : predicates.join(' AND '),
+      whereArgs: arguments.isEmpty ? null : arguments,
       orderBy: 'sort_time ${descending ? 'DESC' : 'ASC'}, rowid ASC',
+      limit: limit,
     );
     final payloads = <Map<String, dynamic>>[];
     for (final row in rows) {

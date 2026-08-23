@@ -1169,6 +1169,52 @@ class AppLocalizationsTr extends AppLocalizations {
   String get todayActivities => 'Bugünkü Aktiviteler';
 
   @override
+  String get todayAtAGlance => 'Bugünün özeti';
+
+  @override
+  String todayRecordSummary(int feedingCount, int diaperCount) {
+    return '$feedingCount beslenme · $diaperCount bez';
+  }
+
+  @override
+  String todayFeedingDuration(String duration) {
+    return 'Bugünkü beslenme süresi: $duration';
+  }
+
+  @override
+  String get lastFeeding => 'Son beslenme';
+
+  @override
+  String get noFeedingRecordedYet => 'Henüz beslenme kaydı yok';
+
+  @override
+  String lastFeedingDetail(String side, String duration) {
+    return '$side · $duration';
+  }
+
+  @override
+  String get lastDiaperChange => 'Son bez değişimi';
+
+  @override
+  String get noDiaperRecordedYet => 'Henüz bez kaydı yok';
+
+  @override
+  String get justNow => 'Az önce';
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours sa $minutes dk';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes dk';
+  }
+
+  @override
+  String get dashboardLoadFailed => 'Ana ekran özeti yüklenemedi.';
+
+  @override
   String get last => 'Son';
 
   @override

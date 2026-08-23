@@ -2302,6 +2302,78 @@ abstract class AppLocalizations {
   /// **'Today\'s Activity'**
   String get todayActivities;
 
+  /// No description provided for @todayAtAGlance.
+  ///
+  /// In en, this message translates to:
+  /// **'Today at a glance'**
+  String get todayAtAGlance;
+
+  /// No description provided for @todayRecordSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{feedingCount} feedings · {diaperCount} diapers'**
+  String todayRecordSummary(int feedingCount, int diaperCount);
+
+  /// No description provided for @todayFeedingDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s feeding time: {duration}'**
+  String todayFeedingDuration(String duration);
+
+  /// No description provided for @lastFeeding.
+  ///
+  /// In en, this message translates to:
+  /// **'Last feeding'**
+  String get lastFeeding;
+
+  /// No description provided for @noFeedingRecordedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No feeding recorded yet'**
+  String get noFeedingRecordedYet;
+
+  /// No description provided for @lastFeedingDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'{side} · {duration}'**
+  String lastFeedingDetail(String side, String duration);
+
+  /// No description provided for @lastDiaperChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Last diaper change'**
+  String get lastDiaperChange;
+
+  /// No description provided for @noDiaperRecordedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No diaper recorded yet'**
+  String get noDiaperRecordedYet;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @durationHoursMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h {minutes}m'**
+  String durationHoursMinutes(int hours, int minutes);
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String durationMinutes(int minutes);
+
+  /// No description provided for @dashboardLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'The home summary could not be loaded.'**
+  String get dashboardLoadFailed;
+
   /// No description provided for @last.
   ///
   /// In en, this message translates to:

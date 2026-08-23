@@ -1173,6 +1173,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todayActivities => 'Today\'s Activity';
 
   @override
+  String get todayAtAGlance => 'Today at a glance';
+
+  @override
+  String todayRecordSummary(int feedingCount, int diaperCount) {
+    return '$feedingCount feedings · $diaperCount diapers';
+  }
+
+  @override
+  String todayFeedingDuration(String duration) {
+    return 'Today\'s feeding time: $duration';
+  }
+
+  @override
+  String get lastFeeding => 'Last feeding';
+
+  @override
+  String get noFeedingRecordedYet => 'No feeding recorded yet';
+
+  @override
+  String lastFeedingDetail(String side, String duration) {
+    return '$side · $duration';
+  }
+
+  @override
+  String get lastDiaperChange => 'Last diaper change';
+
+  @override
+  String get noDiaperRecordedYet => 'No diaper recorded yet';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get dashboardLoadFailed => 'The home summary could not be loaded.';
+
+  @override
   String get last => 'Last';
 
   @override

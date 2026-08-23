@@ -143,7 +143,10 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               BabyCard(profile: _profile!),
               const SizedBox(height: 4),
-              TodaySummaryCard(refreshVersion: _dashboardRefreshVersion),
+              TodaySummaryCard(
+                childId: _profile!.id,
+                refreshVersion: _dashboardRefreshVersion,
+              ),
               const SizedBox(height: 12),
               LiveFeedingHomeCard(refreshVersion: _dashboardRefreshVersion),
               const SizedBox(height: 12),
