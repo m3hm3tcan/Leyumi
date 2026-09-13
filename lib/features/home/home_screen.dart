@@ -13,6 +13,8 @@ import '../history/history_hub_screen.dart';
 import '../milk_inventory/milk_inventory_screen.dart';
 import '../care_calendar/care_calendar_screen.dart';
 import '../settings/settings_screen.dart';
+import 'preferences/home_preferences.dart';
+import 'preferences/home_preferences_provider.dart';
 import 'widgets/home_action_card.dart';
 import 'widgets/live_feeding_home_card.dart';
 import 'widgets/quick_diaper_card.dart';
@@ -98,6 +100,8 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final homePreferencesProvider = context.watch<HomePreferencesProvider>();
+    final homePreferences = homePreferencesProvider.value;
     if (_loadError != null) {
       return Scaffold(
         body: SafeArea(
@@ -130,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       );
     }
-    if (_loading) {
+    if (_loading || !homePreferencesProvider.isLoaded) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
@@ -144,33 +148,49 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               BabyCard(profile: _profile!),
               const SizedBox(height: 4),
-              TodaySummaryCard(
-                childId: _profile!.id,
-                refreshVersion: _dashboardRefreshVersion,
-              ),
-              const SizedBox(height: 12),
               LiveFeedingHomeCard(refreshVersion: _dashboardRefreshVersion),
               const SizedBox(height: 12),
-              QuickDiaperCard(
-                childId: _profile!.id,
-                onChanged: _refreshDashboard,
-                onOpenDetails: () async {
-                  await Navigator.pushNamed(context, '/diaper');
-                  _refreshDashboard();
-                },
-              ),
-              const SizedBox(height: 12),
-              UpcomingCareCard(refreshVersion: _dashboardRefreshVersion),
-              const SizedBox(height: 16),
-              _buildQuickActionsTitle(l10n),
-              const SizedBox(height: 10),
-              _buildQuickActions(l10n),
+              ..._buildDashboardCards(homePreferences),
+              if (homePreferences.visibleQuickActions.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                _buildQuickActionsTitle(l10n),
+                const SizedBox(height: 10),
+                _buildQuickActions(l10n, homePreferences),
+              ],
               const SizedBox(height: 30),
             ],
           ),
         ),
       ),
     );
+  }
+
+  List<Widget> _buildDashboardCards(HomePreferences preferences) {
+    final cards = <Widget>[];
+    for (final card in preferences.dashboardOrder) {
+      if (!preferences.visibleDashboardCards.contains(card)) continue;
+      cards
+        ..add(switch (card) {
+          HomeDashboardCard.todaySummary => TodaySummaryCard(
+            childId: _profile!.id,
+            refreshVersion: _dashboardRefreshVersion,
+          ),
+          HomeDashboardCard.quickDiaper => QuickDiaperCard(
+            childId: _profile!.id,
+            preferredType: preferences.preferredQuickDiaperType,
+            onChanged: _refreshDashboard,
+            onOpenDetails: () async {
+              await Navigator.pushNamed(context, '/diaper');
+              _refreshDashboard();
+            },
+          ),
+          HomeDashboardCard.upcomingCare => UpcomingCareCard(
+            refreshVersion: _dashboardRefreshVersion,
+          ),
+        })
+        ..add(const SizedBox(height: 12));
+    }
+    return cards;
   }
 
   PreferredSizeWidget _buildAppBar(AppLocalizations l10n) {
@@ -244,116 +264,128 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildQuickActions(AppLocalizations l10n) {
+  Widget _buildQuickActions(
+    AppLocalizations l10n,
+    HomePreferences preferences,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: LayoutBuilder(
         builder: (context, constraints) {
           const gap = 12.0;
           final compactWidth = (constraints.maxWidth - gap) / 2;
+          final actions = preferences.quickActionOrder
+              .where(preferences.visibleQuickActions.contains)
+              .toList();
           return Wrap(
             spacing: gap,
             runSpacing: gap,
             children: [
-              _compactAction(
-                width: compactWidth,
-                icon: Icons.favorite_rounded,
-                title: l10n.feeding,
-                subtitle: l10n.startSession,
-                colors: const [Color(0xffF26B8A), Color(0xffFF9A8B)],
-                onTap: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const FeedingScreen()),
-                  );
-                  _refreshDashboard();
-                },
-              ),
-              _compactAction(
-                width: compactWidth,
-                icon: Icons.inventory_2_rounded,
-                title: l10n.milkInventory,
-                subtitle: l10n.premiumMilkInventory,
-                colors: const [Color(0xff5687E8), Color(0xff72C6EF)],
-                isPremium: true,
-                onTap: () {
-                  PremiumAccess.open(
-                    context,
-                    feature: PremiumFeature.milkInventory,
-                    builder: (_) => const MilkInventoryScreen(),
-                  );
-                },
-              ),
-              _compactAction(
-                width: compactWidth,
-                icon: Icons.baby_changing_station_rounded,
-                title: l10n.diaper,
-                subtitle: l10n.trackChanges,
-                colors: const [Color(0xff38AFA9), Color(0xff6DD5C3)],
-                onTap: () async {
-                  await Navigator.pushNamed(context, '/diaper');
-                  _refreshDashboard();
-                },
-              ),
-              _compactAction(
-                width: compactWidth,
-                icon: Icons.monitor_weight_rounded,
-                title: l10n.growth,
-                subtitle: l10n.updateWeight,
-                colors: const [Color(0xffED8A52), Color(0xffF6BD60)],
-                onTap: () async {
-                  await Navigator.pushNamed(context, '/growth_update');
-                  if (!context.mounted) return;
-                  await context.read<ActiveChildProvider>().reload();
-                  await _loadProfile();
-                },
-              ),
-              SizedBox(
-                width: constraints.maxWidth,
-                height: 88,
-                child: HomeActionCard(
-                  icon: Icons.calendar_month_rounded,
-                  title: l10n.careCalendar,
-                  subtitle: l10n.careCalendarSubtitle,
-                  colors: const [Color(0xff5B6CFF), Color(0xff9B5DE5)],
-                  isWide: true,
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const CareCalendarScreen(),
-                      ),
-                    );
-                    _refreshDashboard();
-                  },
-                ),
-              ),
-              SizedBox(
-                width: constraints.maxWidth,
-                height: 88,
-                child: HomeActionCard(
-                  icon: Icons.history_rounded,
-                  title: l10n.history,
-                  subtitle: l10n.pastFeedings,
-                  colors: const [Color(0xff7568C9), Color(0xffA78BDA)],
-                  isWide: true,
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const HistoryHubScreen(),
-                      ),
-                    );
-                    _refreshDashboard();
-                  },
-                ),
-              ),
+              for (final action in actions)
+                _actionFor(action, l10n, compactWidth, constraints.maxWidth),
             ],
           );
         },
       ),
     );
   }
+
+  Widget _actionFor(
+    HomeQuickAction action,
+    AppLocalizations l10n,
+    double compactWidth,
+    double fullWidth,
+  ) => switch (action) {
+    HomeQuickAction.feeding => _compactAction(
+      width: compactWidth,
+      icon: Icons.favorite_rounded,
+      title: l10n.feeding,
+      subtitle: l10n.startSession,
+      colors: const [Color(0xffF26B8A), Color(0xffFF9A8B)],
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const FeedingScreen()),
+        );
+        _refreshDashboard();
+      },
+    ),
+    HomeQuickAction.milkInventory => _compactAction(
+      width: compactWidth,
+      icon: Icons.inventory_2_rounded,
+      title: l10n.milkInventory,
+      subtitle: l10n.premiumMilkInventory,
+      colors: const [Color(0xff5687E8), Color(0xff72C6EF)],
+      isPremium: true,
+      onTap: () {
+        PremiumAccess.open(
+          context,
+          feature: PremiumFeature.milkInventory,
+          builder: (_) => const MilkInventoryScreen(),
+        );
+      },
+    ),
+    HomeQuickAction.diaper => _compactAction(
+      width: compactWidth,
+      icon: Icons.baby_changing_station_rounded,
+      title: l10n.diaper,
+      subtitle: l10n.trackChanges,
+      colors: const [Color(0xff38AFA9), Color(0xff6DD5C3)],
+      onTap: () async {
+        await Navigator.pushNamed(context, '/diaper');
+        _refreshDashboard();
+      },
+    ),
+    HomeQuickAction.growth => _compactAction(
+      width: compactWidth,
+      icon: Icons.monitor_weight_rounded,
+      title: l10n.growth,
+      subtitle: l10n.updateWeight,
+      colors: const [Color(0xffED8A52), Color(0xffF6BD60)],
+      onTap: () async {
+        await Navigator.pushNamed(context, '/growth_update');
+        if (!mounted) return;
+        await context.read<ActiveChildProvider>().reload();
+        await _loadProfile();
+      },
+    ),
+    HomeQuickAction.careCalendar => SizedBox(
+      width: fullWidth,
+      height: 88,
+      child: HomeActionCard(
+        icon: Icons.calendar_month_rounded,
+        title: l10n.careCalendar,
+        subtitle: l10n.careCalendarSubtitle,
+        colors: const [Color(0xff5B6CFF), Color(0xff9B5DE5)],
+        isWide: true,
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CareCalendarScreen()),
+          );
+          _refreshDashboard();
+        },
+      ),
+    ),
+    HomeQuickAction.history => SizedBox(
+      width: fullWidth,
+      height: 88,
+      child: HomeActionCard(
+        icon: Icons.history_rounded,
+        title: l10n.history,
+        subtitle: l10n.pastFeedings,
+        colors: const [Color(0xff7568C9), Color(0xffA78BDA)],
+        isWide: true,
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const HistoryHubScreen()),
+          );
+          _refreshDashboard();
+        },
+      ),
+    ),
+  };
 
   Widget _compactAction({
     required double width,

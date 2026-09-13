@@ -46,6 +46,30 @@ void main() {
     expect(repository.entries, isEmpty);
     expect(changes, 2);
   });
+
+  testWidgets('places the preferred quick diaper type first', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        locale: const Locale('tr'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: QuickDiaperCard(
+            childId: 'child-1',
+            preferredType: DiaperType.poop,
+            service: QuickDiaperService(repository: _FakeRepository()),
+            onChanged: () {},
+            onOpenDetails: () {},
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      tester.getTopLeft(find.text('Kirli')).dx,
+      lessThan(tester.getTopLeft(find.text('Islak')).dx),
+    );
+  });
 }
 
 class _FakeRepository implements DiaperRepository {

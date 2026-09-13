@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/child/active_child_app_bar_title.dart';
 import '../../l10n/app_localizations.dart';
 import '../../services/baby_storage.dart';
-import '../../services/feeding_notification_service.dart';
+import '../../services/app_notification_service.dart';
 import '../../services/feeding_storage.dart';
 import 'feeding_controller.dart';
 import 'feeding_draft_service.dart';
@@ -255,18 +255,18 @@ class _FeedingScreenState extends State<FeedingScreen>
   }
 
   void _cancelActiveFeedingNotification() {
-    unawaited(FeedingNotificationService.instance.cancelActiveFeeding());
+    unawaited(AppNotificationService.instance.cancelActiveFeeding());
   }
 
   Future<void> _syncActiveFeedingNotification() async {
     final startedAt = _controller.activeSideStartedAt;
     if (_activeSide == null || startedAt == null) {
-      await FeedingNotificationService.instance.cancelActiveFeeding();
+      await AppNotificationService.instance.cancelActiveFeeding();
       return;
     }
 
     final l10n = AppLocalizations.of(context);
-    await FeedingNotificationService.instance.showActiveFeeding(
+    await AppNotificationService.instance.showActiveFeeding(
       title: l10n.activeFeedingNotificationTitle,
       body: l10n.activeFeedingNotificationBody,
       startedAt: startedAt,

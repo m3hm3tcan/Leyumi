@@ -5,7 +5,7 @@
 - Keep `docs/PRIVACY_POLICY.md` published at `https://leyumi-privacy-policy.leyumistudio.workers.dev/` and update the live page whenever this file changes.
 - Add the same URL to Google Play Console's Privacy policy field.
 - Complete the Data safety form. For the current offline build, user-entered care data stays on-device and is not collected by the developer.
-- Complete Google Play's Health apps declaration according to the actual growth, feeding, medicine and vaccine tracking features. Declare at least `Disease Prevention and Public Health` for vaccine tracking and `Medication and Treatment Management` for medicine reminders; evaluate `Nutrition and Weight Management` against the final feeding and growth feature set. Do not select `My app doesn't provide any health features` while these features are present.
+- Complete Google Play's Health apps declaration according to the actual feeding and growth tracking features. The calendar now provides only general plans, activities and reminders; do not declare vaccination or medication management for that feature. Evaluate `Nutrition and Weight Management` against the final feeding and growth feature set, and keep the declaration consistent with the store listing and in-app experience.
 - Include this meaning in every localized store description: Leyumi is not a medical device or healthcare service; it does not diagnose, treat, cure or prevent any medical condition, and users should consult a qualified healthcare professional for medical advice, diagnosis or treatment.
 - Confirm every dependency's data behavior before answering the Data safety form.
 - Create the upload keystore and copy `android/key.properties.example` to `android/key.properties` with real values.
@@ -23,6 +23,8 @@
 - Verify dark mode.
 - Verify notification permission denial does not break feeding sessions.
 - Verify Reset Leyumi deletes every record and returns to onboarding.
-- Clearly label cloud backup and smart reminders as Coming soon.
+- Clearly label every unavailable premium feature as Coming soon.
+- Do not show or advertise cloud backup or device sync in the free release.
 - Do not activate premium sales until store purchase and restore flows are implemented and verified.
 - Do not advertise premium in the store listing while its purchase flow is unavailable.
+- Do not show purchase, pricing, trial or subscription calls to action in the free release.

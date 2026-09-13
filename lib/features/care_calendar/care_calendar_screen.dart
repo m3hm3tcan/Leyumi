@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/child/active_child_app_bar_title.dart';
 import '../../core/child/active_child_aware.dart';
 import '../../l10n/app_localizations.dart';
+import '../../services/app_notification_service.dart';
 import '../../services/care_event_storage.dart';
 import '../history/helpers/delete_confirmation.dart';
 import 'care_event.dart';
@@ -46,10 +47,31 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
       backgroundColor: Colors.transparent,
       builder: (_) => CareEventFormSheet(initialEvent: event),
     );
-    if (result == null) return;
+    if (result == null || !mounted) return;
+    final l10n = AppLocalizations.of(context);
     await _storage.save(result);
+    final reminderScheduled = await _syncReminder(result, l10n);
     if (!mounted) return;
     _upsertLocalEvent(result);
+    final hasReminder = result.reminderMinutesBefore != null;
+    if (hasReminder) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            reminderScheduled
+                ? l10n.reminderScheduled
+                : l10n.reminderCouldNotBeScheduled,
+          ),
+          action: reminderScheduled
+              ? null
+              : SnackBarAction(
+                  label: l10n.openSettings,
+                  onPressed:
+                      AppNotificationService.instance.openNotificationSettings,
+                ),
+        ),
+      );
+    }
   }
 
   void _upsertLocalEvent(CareEvent event) {
@@ -69,6 +91,7 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
   Future<void> _delete(CareEvent event) async {
     if (!await confirmHistoryDelete(context)) return;
     await _storage.delete(event.id);
+    await AppNotificationService.instance.cancelCareReminder(event.id);
     await _load();
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -77,9 +100,26 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
   }
 
   Future<void> _setStatus(CareEvent event, CareEventStatus status) async {
+    final l10n = AppLocalizations.of(context);
     final updated = event.copyWith(status: status);
     await _storage.save(updated);
+    await _syncReminder(updated, l10n);
     await _load();
+  }
+
+  Future<bool> _syncReminder(CareEvent event, AppLocalizations l10n) async {
+    final minutesBefore = event.reminderMinutesBefore;
+    if (event.status != CareEventStatus.scheduled || minutesBefore == null) {
+      await AppNotificationService.instance.cancelCareReminder(event.id);
+      return true;
+    }
+    return AppNotificationService.instance.scheduleCareReminder(
+      eventId: event.id,
+      title: event.title,
+      body: l10n.careReminderBody,
+      scheduledAt: event.scheduledAt,
+      minutesBefore: minutesBefore,
+    );
   }
 
   List<CareEvent> get _selectedEvents =>
@@ -336,7 +376,6 @@ class _CareCalendarScreenState extends State<CareCalendarScreen>
                       TimeOfDay.fromDateTime(event.scheduledAt),
                     ),
                     if (event.location != null) event.location!,
-                    if (event.dosage != null) event.dosage!,
                   ].join(' \u2022 '),
                   style: TextStyle(
                     fontSize: 11,

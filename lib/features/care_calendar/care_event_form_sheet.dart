@@ -23,27 +23,28 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
   final _titleController = TextEditingController();
   final _locationController = TextEditingController();
   final _noteController = TextEditingController();
-  final _dosageController = TextEditingController();
   final _titleFocus = FocusNode();
 
   late CareEventType _type;
   late DateTime _dateTime;
   late CareEventRecurrence _recurrence;
+  int? _reminderMinutesBefore;
   String? _titleError;
   String? _dateError;
+  String? _reminderError;
 
   @override
   void initState() {
     super.initState();
     final event = widget.initialEvent;
-    _type = event?.type ?? CareEventType.appointment;
+    _type = event?.type ?? CareEventType.plan;
     _dateTime =
         event?.scheduledAt ?? DateTime.now().add(const Duration(days: 1));
     _recurrence = event?.recurrence ?? CareEventRecurrence.none;
+    _reminderMinutesBefore = event?.reminderMinutesBefore;
     _titleController.text = event?.title ?? '';
     _locationController.text = event?.location ?? '';
     _noteController.text = event?.note ?? '';
-    _dosageController.text = event?.dosage ?? '';
   }
 
   @override
@@ -51,7 +52,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
     _titleController.dispose();
     _locationController.dispose();
     _noteController.dispose();
-    _dosageController.dispose();
     _titleFocus.dispose();
     super.dispose();
   }
@@ -114,10 +114,11 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
         );
     final inPast = !_dateTime.isAfter(now);
 
-    if (!hasAdvanced && _isPremiumOnlyType(_type)) {
-      _openPremium(PremiumFeature.advancedCarePlanning);
-      return;
-    }
+    final reminderInPast =
+        _reminderMinutesBefore != null &&
+        !_dateTime
+            .subtract(Duration(minutes: _reminderMinutesBefore!))
+            .isAfter(now);
 
     setState(() {
       _titleError = title.length < 2 ? l10n.careTitleError : null;
@@ -126,12 +127,13 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
           : inPast
           ? l10n.carePastDateTimeError
           : null;
+      _reminderError = reminderInPast ? l10n.reminderTimeAlreadyPassed : null;
     });
     if (_titleError != null) {
       _titleFocus.requestFocus();
       return;
     }
-    if (_dateError != null || profile == null) return;
+    if (_dateError != null || _reminderError != null || profile == null) return;
 
     final initial = widget.initialEvent;
     Navigator.pop(
@@ -146,10 +148,7 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
         recurrence: hasAdvanced ? _recurrence : CareEventRecurrence.none,
         location: _nullIfEmpty(_locationController.text),
         note: _nullIfEmpty(_noteController.text),
-        dosage: hasAdvanced && _type == CareEventType.medicine
-            ? _nullIfEmpty(_dosageController.text)
-            : null,
-        reminderMinutesBefore: null,
+        reminderMinutesBefore: _reminderMinutesBefore,
         createdAt: initial?.createdAt,
       ),
     );
@@ -199,33 +198,19 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
               children: CareEventType.values.map((type) {
                 final selected = type == _type;
                 final color = CareEventStyle.color(type);
-                final locked = !hasAdvanced && _isPremiumOnlyType(type);
                 return ChoiceChip(
                   selected: selected,
                   avatar: Icon(
-                    locked ? Icons.lock : CareEventStyle.icon(type),
+                    CareEventStyle.icon(type),
                     size: 17,
-                    color: locked ? Theme.of(context).disabledColor : color,
+                    color: color,
                   ),
-                  label: Text(
-                    locked
-                        ? '${_typeLabel(type, l10n)} - ${l10n.premiumPlan}'
-                        : _typeLabel(type, l10n),
-                  ),
-                  onSelected: (_) {
-                    if (locked) {
-                      _openPremium(PremiumFeature.advancedCarePlanning);
-                      return;
-                    }
-                    setState(() => _type = type);
-                  },
+                  label: Text(_typeLabel(type, l10n)),
+                  onSelected: (_) => setState(() => _type = type),
                   selectedColor: color.withAlpha(28),
-                  disabledColor: Theme.of(context).disabledColor.withAlpha(14),
                   side: BorderSide(
                     color: selected
                         ? color
-                        : locked
-                        ? Theme.of(context).disabledColor.withAlpha(80)
                         : Theme.of(context).dividerColor.withAlpha(80),
                   ),
                 );
@@ -279,19 +264,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
               maxLength: 80,
               decoration: _decoration(l10n.contactOrLocation, Icons.place),
             ),
-            if (_type == CareEventType.medicine) ...[
-              const SizedBox(height: 12),
-              TextField(
-                controller: _dosageController,
-                maxLength: 40,
-                enabled: hasAdvanced,
-                decoration: _decoration(
-                  l10n.medicineDosage,
-                  Icons.local_pharmacy,
-                  suffix: hasAdvanced ? null : const Icon(Icons.lock),
-                ),
-              ),
-            ],
             const SizedBox(height: 12),
             TextField(
               controller: _noteController,
@@ -300,6 +272,23 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
               inputFormatters: [LengthLimitingTextInputFormatter(300)],
               decoration: _decoration(l10n.note, Icons.notes),
             ),
+            const SizedBox(height: 12),
+            _premiumSelector(
+              title: l10n.reminder,
+              value: _reminderLabel(_reminderMinutesBefore, l10n),
+              locked: false,
+              onTap: _selectReminder,
+            ),
+            if (_reminderError != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                _reminderError!,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.error,
+                  fontSize: 11,
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             _premiumSelector(
               title: l10n.repeatPlan,
@@ -367,6 +356,41 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
       },
     );
     if (selected != null) setState(() => _recurrence = selected);
+  }
+
+  Future<void> _selectReminder() async {
+    final selected = await showModalBottomSheet<int>(
+      context: context,
+      builder: (context) {
+        final l10n = AppLocalizations.of(context);
+        final options = <int>[-1, 60, 1440, 2880];
+        return SafeArea(
+          child: RadioGroup<int>(
+            groupValue: _reminderMinutesBefore ?? -1,
+            onChanged: (choice) => Navigator.pop(context, choice),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: options
+                  .map(
+                    (value) => RadioListTile<int>(
+                      value: value,
+                      title: Text(
+                        _reminderLabel(value == -1 ? null : value, l10n),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        );
+      },
+    );
+    if (!mounted) return;
+    if (selected == null) return;
+    setState(() {
+      _reminderMinutesBefore = selected == -1 ? null : selected;
+      _reminderError = null;
+    });
   }
 
   Future<void> _openPremium(PremiumFeature feature) {
@@ -445,14 +469,21 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
 
   String _typeLabel(CareEventType type, AppLocalizations l10n) =>
       switch (type) {
-        CareEventType.vaccine => l10n.careTypeVaccine,
-        CareEventType.appointment => l10n.careTypeAppointment,
-        CareEventType.medicine => l10n.careTypeMedicine,
-        CareEventType.checkup => l10n.careTypeCheckup,
-        CareEventType.laboratory => l10n.careTypeLaboratory,
-        CareEventType.therapy => l10n.careTypeTherapy,
-        CareEventType.custom => l10n.careTypeCustom,
+        CareEventType.routine => l10n.careTypeRoutine,
+        CareEventType.plan => l10n.careTypePlan,
+        CareEventType.reminder => l10n.careTypeReminder,
+        CareEventType.care => l10n.careTypeCare,
+        CareEventType.activity => l10n.careTypeActivity,
+        CareEventType.support => l10n.careTypeSupport,
+        CareEventType.custom => l10n.careTypeOther,
       };
+
+  String _reminderLabel(int? value, AppLocalizations l10n) => switch (value) {
+    60 => l10n.reminderOneHour,
+    1440 => l10n.reminderOneDay,
+    2880 => l10n.reminderTwoDays,
+    _ => l10n.reminderNone,
+  };
 
   String _recurrenceLabel(CareEventRecurrence value, AppLocalizations l10n) =>
       switch (value) {
@@ -466,11 +497,6 @@ class _CareEventFormSheetState extends State<CareEventFormSheet> {
     final trimmed = value.trim();
     return trimmed.isEmpty ? null : trimmed;
   }
-
-  bool _isPremiumOnlyType(CareEventType type) =>
-      type == CareEventType.medicine ||
-      type == CareEventType.laboratory ||
-      type == CareEventType.therapy;
 
   TextStyle get _labelStyle =>
       const TextStyle(fontSize: 12, fontWeight: FontWeight.w800);

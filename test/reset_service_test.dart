@@ -13,7 +13,11 @@ void main() {
 
   test('reset removes SQLite records and every preference', () async {
     await SqliteTestSupport.setUp(
-      preferences: {'premium_entitlement_active': true, 'darkMode': true},
+      preferences: {
+        'premium_entitlement_active': true,
+        'darkMode': true,
+        'home_preferences_v1': '{"schemaVersion":1}',
+      },
     );
     await BabyStorage().saveProfile(
       BabyProfile(

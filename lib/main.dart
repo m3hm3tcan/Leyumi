@@ -11,6 +11,7 @@ import 'core/premium/premium_provider.dart';
 import 'core/theme_provider.dart';
 import 'core/theme/app_design_tokens.dart';
 import 'core/child/active_child_provider.dart';
+import 'features/home/preferences/home_preferences_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => PremiumProvider()),
         ChangeNotifierProvider(create: (_) => ActiveChildProvider()),
+        ChangeNotifierProvider(create: (_) => HomePreferencesProvider()),
       ],
       child: const LeyumiApp(),
     ),

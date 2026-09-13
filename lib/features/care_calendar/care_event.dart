@@ -1,14 +1,6 @@
 import '../../core/data/record_identity.dart';
 
-enum CareEventType {
-  vaccine,
-  appointment,
-  medicine,
-  checkup,
-  laboratory,
-  therapy,
-  custom,
-}
+enum CareEventType { routine, plan, reminder, care, activity, support, custom }
 
 enum CareEventStatus { scheduled, completed, cancelled }
 
@@ -25,7 +17,6 @@ class CareEvent {
     this.recurrence = CareEventRecurrence.none,
     this.location,
     this.note,
-    this.dosage,
     this.reminderMinutesBefore,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -42,7 +33,6 @@ class CareEvent {
   final CareEventRecurrence recurrence;
   final String? location;
   final String? note;
-  final String? dosage;
   final int? reminderMinutesBefore;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -55,11 +45,9 @@ class CareEvent {
     CareEventRecurrence? recurrence,
     String? location,
     String? note,
-    String? dosage,
     int? reminderMinutesBefore,
     bool clearLocation = false,
     bool clearNote = false,
-    bool clearDosage = false,
     bool clearReminder = false,
   }) {
     return CareEvent(
@@ -72,7 +60,6 @@ class CareEvent {
       recurrence: recurrence ?? this.recurrence,
       location: clearLocation ? null : location ?? this.location,
       note: clearNote ? null : note ?? this.note,
-      dosage: clearDosage ? null : dosage ?? this.dosage,
       reminderMinutesBefore: clearReminder
           ? null
           : reminderMinutesBefore ?? this.reminderMinutesBefore,
@@ -82,7 +69,7 @@ class CareEvent {
   }
 
   Map<String, dynamic> toJson() => {
-    'schemaVersion': 1,
+    'schemaVersion': 2,
     'id': id,
     'childId': childId,
     'type': type.name,
@@ -92,7 +79,6 @@ class CareEvent {
     'recurrence': recurrence.name,
     'location': location,
     'note': note,
-    'dosage': dosage,
     'reminderMinutesBefore': reminderMinutesBefore,
     'createdAt': createdAt.toIso8601String(),
     'updatedAt': updatedAt.toIso8601String(),
@@ -103,9 +89,7 @@ class CareEvent {
     return CareEvent(
       id: json['id'] as String? ?? RecordIdentity.legacyId('care', scheduledAt),
       childId: json['childId'] as String? ?? RecordIdentity.legacyChildId,
-      type: CareEventType.values.byName(
-        json['type'] as String? ?? CareEventType.custom.name,
-      ),
+      type: _eventTypeFromStoredName(json['type'] as String?),
       title: json['title'] as String,
       scheduledAt: scheduledAt,
       status: CareEventStatus.values.byName(
@@ -116,7 +100,6 @@ class CareEvent {
       ),
       location: json['location'] as String?,
       note: json['note'] as String?,
-      dosage: json['dosage'] as String?,
       reminderMinutesBefore: (json['reminderMinutesBefore'] as num?)?.round(),
       createdAt:
           DateTime.tryParse(json['createdAt'] as String? ?? '') ?? scheduledAt,
@@ -125,3 +108,21 @@ class CareEvent {
     );
   }
 }
+
+CareEventType _eventTypeFromStoredName(String? name) => switch (name) {
+  // Compatibility with calendar records created before the categories were
+  // simplified into general planning categories.
+  'vaccine' => CareEventType.routine,
+  'appointment' => CareEventType.plan,
+  'medicine' => CareEventType.reminder,
+  'checkup' => CareEventType.care,
+  'laboratory' => CareEventType.activity,
+  'therapy' => CareEventType.support,
+  'routine' => CareEventType.routine,
+  'plan' => CareEventType.plan,
+  'reminder' => CareEventType.reminder,
+  'care' => CareEventType.care,
+  'activity' => CareEventType.activity,
+  'support' => CareEventType.support,
+  _ => CareEventType.custom,
+};

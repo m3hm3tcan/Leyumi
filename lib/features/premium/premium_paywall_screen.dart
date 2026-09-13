@@ -110,13 +110,6 @@ class PremiumPaywallScreen extends StatelessWidget {
               ),
               _featureTile(
                 context,
-                icon: Icons.cloud_done_rounded,
-                title: l10n.premiumCloudBackup,
-                active: feature == PremiumFeature.cloudBackup,
-                available: false,
-              ),
-              _featureTile(
-                context,
                 icon: Icons.notifications_active_rounded,
                 title: l10n.premiumSmartReminders,
                 active: feature == PremiumFeature.smartReminders,
@@ -137,33 +130,36 @@ class PremiumPaywallScreen extends StatelessWidget {
                 available: false,
               ),
               const SizedBox(height: 20),
-              SizedBox(
+              Container(
                 width: double.infinity,
-                child: FilledButton.icon(
-                  onPressed: null,
-                  icon: const Icon(Icons.workspace_premium_rounded),
-                  label: Text(l10n.comingSoon),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: const Color(0xff6558E8),
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    textStyle: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                l10n.premiumPurchaseComingSoon,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: theme.textTheme.bodySmall?.color?.withAlpha(150),
-                  fontSize: 11,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer.withAlpha(70),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.schedule_rounded,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        l10n.premiumAvailabilityNote,
+                        style: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          height: 1.35,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

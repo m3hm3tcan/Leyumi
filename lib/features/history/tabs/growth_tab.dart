@@ -367,8 +367,10 @@ class _GrowthTabState extends State<GrowthTab>
                         Padding(
                           padding: const EdgeInsets.only(left: 10, bottom: 5),
                           child: _diffPill(
-                            '${weightDiff > 0 ? "+" : ""}'
-                            '$weightDiff ${l10n.unitGr}',
+                            weightDiff == 0
+                                ? l10n.noChange
+                                : '${weightDiff > 0 ? "+" : ""}'
+                                      '$weightDiff ${l10n.unitGr}',
                             weightDiff,
                           ),
                         ),
@@ -487,7 +489,9 @@ class _GrowthTabState extends State<GrowthTab>
           if (diff != null) ...[
             const SizedBox(width: 6),
             Text(
-              '${diff > 0 ? "+" : ""}${diff.toStringAsFixed(0)}',
+              diff == 0
+                  ? AppLocalizations.of(context).noChange
+                  : '${diff > 0 ? "+" : ""}${diff.toStringAsFixed(0)}',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,

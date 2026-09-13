@@ -14,12 +14,14 @@ class QuickDiaperCard extends StatefulWidget {
     required this.childId,
     required this.onChanged,
     required this.onOpenDetails,
+    this.preferredType = DiaperType.pee,
     this.service,
   });
 
   final String childId;
   final VoidCallback onChanged;
   final VoidCallback onOpenDetails;
+  final DiaperType preferredType;
   final QuickDiaperService? service;
 
   @override
@@ -104,6 +106,10 @@ class _QuickDiaperCardState extends State<QuickDiaperCard> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final orderedTypes = [
+      widget.preferredType,
+      ...DiaperType.values.where((type) => type != widget.preferredType),
+    ];
     return AppCard(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.fromLTRB(15, 14, 15, 13),
@@ -184,35 +190,18 @@ class _QuickDiaperCardState extends State<QuickDiaperCard> {
               ),
               Row(
                 children: [
-                  Expanded(
-                    child: _QuickTypeButton(
-                      icon: Icons.water_drop_rounded,
-                      label: l10n.quickWet,
-                      color: const Color(0xff45A7D9),
-                      enabled: !_saving,
-                      onTap: () => _save(DiaperType.pee),
+                  for (var index = 0; index < orderedTypes.length; index++) ...[
+                    if (index > 0) const SizedBox(width: 7),
+                    Expanded(
+                      child: _QuickTypeButton(
+                        icon: _iconFor(orderedTypes[index]),
+                        label: _labelFor(orderedTypes[index], l10n),
+                        color: _colorFor(orderedTypes[index]),
+                        enabled: !_saving,
+                        onTap: () => _save(orderedTypes[index]),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 7),
-                  Expanded(
-                    child: _QuickTypeButton(
-                      icon: Icons.circle_rounded,
-                      label: l10n.quickDirty,
-                      color: const Color(0xffC78A54),
-                      enabled: !_saving,
-                      onTap: () => _save(DiaperType.poop),
-                    ),
-                  ),
-                  const SizedBox(width: 7),
-                  Expanded(
-                    child: _QuickTypeButton(
-                      icon: Icons.auto_awesome_rounded,
-                      label: l10n.quickBoth,
-                      color: const Color(0xff6D72D9),
-                      enabled: !_saving,
-                      onTap: () => _save(DiaperType.both),
-                    ),
-                  ),
+                  ],
                 ],
               ),
             ],
@@ -221,6 +210,24 @@ class _QuickDiaperCardState extends State<QuickDiaperCard> {
       ),
     );
   }
+
+  IconData _iconFor(DiaperType type) => switch (type) {
+    DiaperType.pee => Icons.water_drop_rounded,
+    DiaperType.poop => Icons.circle_rounded,
+    DiaperType.both => Icons.auto_awesome_rounded,
+  };
+
+  String _labelFor(DiaperType type, AppLocalizations l10n) => switch (type) {
+    DiaperType.pee => l10n.quickWet,
+    DiaperType.poop => l10n.quickDirty,
+    DiaperType.both => l10n.quickBoth,
+  };
+
+  Color _colorFor(DiaperType type) => switch (type) {
+    DiaperType.pee => const Color(0xff45A7D9),
+    DiaperType.poop => const Color(0xffC78A54),
+    DiaperType.both => const Color(0xff6D72D9),
+  };
 }
 
 class _QuickTypeButton extends StatelessWidget {

@@ -24,7 +24,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get onboardingFreePremiumTitle =>
-      'Ücretsiz başlayın, ihtiyaç duyduğunuzda daha fazlasını açın';
+      'Şimdi ücretsiz, yeni özellikler ise planlanıyor';
 
   @override
   String get freePlan => 'Ücretsiz';
@@ -77,7 +77,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get multipleChildrenPremiumHint =>
-      'Ek çocuk profilleri Premium\'a dahildir.';
+      'Ek çocuk profilleri yakında kullanıma açılacaktır.';
 
   @override
   String get deleteChildProfileTitle => 'Çocuk profili silinsin mi?';
@@ -134,7 +134,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get careCalendar => 'Bakım Takvimi';
 
   @override
-  String get careCalendarSubtitle => 'Aşı, randevu ve ilaç takibi';
+  String get careCalendarSubtitle => 'Planlar, etkinlikler ve hatırlatmalar';
 
   @override
   String get addCareEvent => 'Etkinlik ekle';
@@ -160,31 +160,28 @@ class AppLocalizationsTr extends AppLocalizations {
       'Etkinlik tarihi ve saati gelecekte olmalıdır.';
 
   @override
-  String get careTypeVaccine => 'Aşı';
+  String get careTypeRoutine => 'Rutin';
 
   @override
-  String get careTypeAppointment => 'Randevu';
+  String get careTypePlan => 'Plan';
 
   @override
-  String get careTypeMedicine => 'İlaç';
+  String get careTypeReminder => 'Hatırlatma';
 
   @override
-  String get careTypeCheckup => 'Kontrol';
+  String get careTypeCare => 'Bakım';
 
   @override
-  String get careTypeLaboratory => 'Tahlil/Test';
+  String get careTypeActivity => 'Etkinlik';
 
   @override
-  String get careTypeTherapy => 'Terapi';
+  String get careTypeSupport => 'Destek';
 
   @override
-  String get careTypeCustom => 'Diğer';
+  String get careTypeOther => 'Diğer';
 
   @override
   String get contactOrLocation => 'Kişi veya konum';
-
-  @override
-  String get medicineDosage => 'İlaç dozu';
 
   @override
   String get repeatPlan => 'Tekrar planı';
@@ -228,6 +225,9 @@ class AppLocalizationsTr extends AppLocalizations {
       'Hatırlatma planlanamadı. Lütfen bildirim iznini kontrol edin.';
 
   @override
+  String get careReminderBody => 'Planladığınız etkinliğin zamanı yaklaşıyor.';
+
+  @override
   String get openSettings => 'Ayarları aç';
 
   @override
@@ -235,10 +235,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get advancedCarePremiumHint =>
-      'Tekrarlayan planlar ve ilaç dozu Premium\'a dahildir.';
+      'Tekrarlayan planlar yakında kullanıma açılacaktır.';
 
   @override
-  String get premiumCarePlanning => 'Gelişmiş bakım ve ilaç planları';
+  String get premiumCarePlanning =>
+      'Gelişmiş planlama ve tekrarlayan etkinlikler';
 
   @override
   String get noCareEventsForDay => 'Bu gün için planlanmış etkinlik yok.';
@@ -436,14 +437,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get premiumTitle => 'Leyumi Premium';
 
   @override
-  String get unlockPremium => 'Premium ile daha fazlasını keşfedin';
+  String get unlockPremium => 'Premium özellikler planlanıyor';
 
   @override
   String get premiumDescription =>
-      'Bebek bakım kayıtlarınızı anlaşılır analizlere dönüştürün ve verilerinizi güvenle bağlantılı tutun.';
+      'Planlanan Premium özellikler henüz kullanıma açık değildir. Mevcut ücretsiz özellikleri kullanmaya devam edebilirsiniz.';
 
   @override
-  String get premiumIncludes => 'Premium özellikler';
+  String get premiumIncludes => 'Planlanan özellikler';
 
   @override
   String get premiumAnalytics => 'Gelişmiş beslenme, bez ve büyüme analizleri';
@@ -515,6 +516,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get latestMeasurement => 'Son ölçüm';
 
   @override
+  String get noChange => 'Değişiklik yok';
+
+  @override
   String get weightChange => 'Kilo değişimi';
 
   @override
@@ -554,20 +558,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get premiumMultipleChildren => 'Çoklu çocuk profili';
 
   @override
-  String get premiumCloudBackup => 'Bulut yedekleme ve cihaz senkronizasyonu';
-
-  @override
   String get premiumSmartReminders => 'Akıllı hatırlatmalar';
 
   @override
   String get premiumMilkInventory => 'Süt stoğu yönetimi';
 
   @override
-  String get upgradeToPremium => 'Premium’a Geç';
-
-  @override
-  String get premiumPurchaseComingSoon =>
-      'Premium satın alma çok yakında kullanıma açılacak.';
+  String get premiumAvailabilityNote =>
+      'Bu özellikler gelecek bir sürüm için planlanmaktadır ve henüz kullanıma açık değildir.';
 
   @override
   String get settings => 'Ayarlar';
@@ -583,7 +581,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get notificationsPremiumHint =>
-      'Akıllı hatırlatmalar Premium\'a dahildir.';
+      'Akıllı hatırlatmalar yakında kullanıma açılacaktır.';
 
   @override
   String get notificationsEnabled => 'Bildirimler açık';
@@ -1255,6 +1253,53 @@ class AppLocalizationsTr extends AppLocalizations {
   String get suggested => 'Önerilen';
 
   @override
+  String get customizeHomeTitle => 'Ana ekranı düzenle';
+
+  @override
+  String get customizeHomeSettingsSubtitle =>
+      'Kartları göster, gizle ve sırala';
+
+  @override
+  String get yourHomeYourWay => 'Ana ekranın, senin düzenin';
+
+  @override
+  String get customizeHomeIntro =>
+      'Sık kullandığın kartları öne taşı, ihtiyaç duymadıklarını gizle.';
+
+  @override
+  String get homeInformationCards => 'Bilgi kartları';
+
+  @override
+  String get homeInformationCardsSubtitle =>
+      'Ana ekrandaki özet ve hızlı kayıt alanlarını düzenle.';
+
+  @override
+  String get homeQuickActions => 'Hızlı işlemler';
+
+  @override
+  String get homeQuickActionsSubtitle =>
+      'İşlem kartlarının sırasını ve görünürlüğünü belirle.';
+
+  @override
+  String get defaultQuickDiaperType => 'Varsayılan hızlı bez türü';
+
+  @override
+  String get defaultQuickDiaperTypeSubtitle =>
+      'Seçilen tür hızlı bez kartında ilk sırada gösterilir.';
+
+  @override
+  String get restoreDefaultLayout => 'Varsayılan düzene dön';
+
+  @override
+  String get homeLayoutReset => 'Ana ekran düzeni varsayılana döndürüldü.';
+
+  @override
+  String get moveUp => 'Yukarı taşı';
+
+  @override
+  String get moveDown => 'Aşağı taşı';
+
+  @override
   String get last => 'Son';
 
   @override
@@ -1323,7 +1368,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get privacyDataBody =>
-      'Leyumi; isteğe bağlı olarak girdiğiniz çocuk profillerini, doğum tarihlerini, büyüme ölçümlerini, beslenme ve bez kayıtlarını, süt stoğunu, bakım planlarını, ilaç ve aşı hatırlatma kayıtlarını ve uygulama tercihlerini yalnızca cihazınızda işler.';
+      'Leyumi; isteğe bağlı olarak girdiğiniz çocuk profillerini, doğum tarihlerini, büyüme ölçümlerini, beslenme ve bez kayıtlarını, süt stoğunu, bakım planlarını, etkinlik hatırlatmalarını ve uygulama tercihlerini yalnızca cihazınızda işler.';
 
   @override
   String get privacyStorageTitle => 'Yerel saklama';
@@ -1368,7 +1413,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Gizlilikle ilgili sorular için Leyumi Studio ile leyumistudio@gmail.com adresinden iletişime geçin.';
 
   @override
-  String get privacyPolicyEffectiveDate => 'Yürürlük tarihi: 20 Ağustos 2026';
+  String get privacyPolicyEffectiveDate => 'Yürürlük tarihi: 12 Eylül 2026';
 
   @override
   String get dataManagement => 'Veri yedekleme';

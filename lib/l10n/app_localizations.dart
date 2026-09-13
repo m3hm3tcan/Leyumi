@@ -127,7 +127,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingFreePremiumTitle.
   ///
   /// In en, this message translates to:
-  /// **'Start free, unlock more when you need it'**
+  /// **'Free now, with more features planned'**
   String get onboardingFreePremiumTitle;
 
   /// No description provided for @freePlan.
@@ -223,7 +223,7 @@ abstract class AppLocalizations {
   /// No description provided for @multipleChildrenPremiumHint.
   ///
   /// In en, this message translates to:
-  /// **'Additional child profiles are included with Premium.'**
+  /// **'Additional child profiles are coming soon.'**
   String get multipleChildrenPremiumHint;
 
   /// No description provided for @deleteChildProfileTitle.
@@ -325,7 +325,7 @@ abstract class AppLocalizations {
   /// No description provided for @careCalendarSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Vaccines, appointments and medicine'**
+  /// **'Plans, activities and reminders'**
   String get careCalendarSubtitle;
 
   /// No description provided for @addCareEvent.
@@ -370,59 +370,53 @@ abstract class AppLocalizations {
   /// **'Event date and time must be in the future.'**
   String get carePastDateTimeError;
 
-  /// No description provided for @careTypeVaccine.
+  /// No description provided for @careTypeRoutine.
   ///
   /// In en, this message translates to:
-  /// **'Vaccine'**
-  String get careTypeVaccine;
+  /// **'Routine'**
+  String get careTypeRoutine;
 
-  /// No description provided for @careTypeAppointment.
+  /// No description provided for @careTypePlan.
   ///
   /// In en, this message translates to:
-  /// **'Appointment'**
-  String get careTypeAppointment;
+  /// **'Plan'**
+  String get careTypePlan;
 
-  /// No description provided for @careTypeMedicine.
+  /// No description provided for @careTypeReminder.
   ///
   /// In en, this message translates to:
-  /// **'Medicine'**
-  String get careTypeMedicine;
+  /// **'Reminder'**
+  String get careTypeReminder;
 
-  /// No description provided for @careTypeCheckup.
+  /// No description provided for @careTypeCare.
   ///
   /// In en, this message translates to:
-  /// **'Checkup'**
-  String get careTypeCheckup;
+  /// **'Care'**
+  String get careTypeCare;
 
-  /// No description provided for @careTypeLaboratory.
+  /// No description provided for @careTypeActivity.
   ///
   /// In en, this message translates to:
-  /// **'Lab/Test'**
-  String get careTypeLaboratory;
+  /// **'Activity'**
+  String get careTypeActivity;
 
-  /// No description provided for @careTypeTherapy.
+  /// No description provided for @careTypeSupport.
   ///
   /// In en, this message translates to:
-  /// **'Therapy'**
-  String get careTypeTherapy;
+  /// **'Support'**
+  String get careTypeSupport;
 
-  /// No description provided for @careTypeCustom.
+  /// No description provided for @careTypeOther.
   ///
   /// In en, this message translates to:
   /// **'Other'**
-  String get careTypeCustom;
+  String get careTypeOther;
 
   /// No description provided for @contactOrLocation.
   ///
   /// In en, this message translates to:
   /// **'Contact or location'**
   String get contactOrLocation;
-
-  /// No description provided for @medicineDosage.
-  ///
-  /// In en, this message translates to:
-  /// **'Medicine dose'**
-  String get medicineDosage;
 
   /// No description provided for @repeatPlan.
   ///
@@ -502,6 +496,12 @@ abstract class AppLocalizations {
   /// **'Reminder could not be scheduled. Please check notification permission.'**
   String get reminderCouldNotBeScheduled;
 
+  /// No description provided for @careReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'A planned activity is coming up.'**
+  String get careReminderBody;
+
   /// No description provided for @openSettings.
   ///
   /// In en, this message translates to:
@@ -517,13 +517,13 @@ abstract class AppLocalizations {
   /// No description provided for @advancedCarePremiumHint.
   ///
   /// In en, this message translates to:
-  /// **'Repeating plans and medicine doses are included with Premium.'**
+  /// **'Repeating plans are coming soon.'**
   String get advancedCarePremiumHint;
 
   /// No description provided for @premiumCarePlanning.
   ///
   /// In en, this message translates to:
-  /// **'Advanced care plans and medicine schedules'**
+  /// **'Advanced planning and repeating activities'**
   String get premiumCarePlanning;
 
   /// No description provided for @noCareEventsForDay.
@@ -907,19 +907,19 @@ abstract class AppLocalizations {
   /// No description provided for @unlockPremium.
   ///
   /// In en, this message translates to:
-  /// **'Unlock more with Premium'**
+  /// **'Premium features are planned'**
   String get unlockPremium;
 
   /// No description provided for @premiumDescription.
   ///
   /// In en, this message translates to:
-  /// **'Turn your baby care records into clear insights and keep everything safely connected.'**
+  /// **'Planned Premium features are not available yet. You can continue using the current free features.'**
   String get premiumDescription;
 
   /// No description provided for @premiumIncludes.
   ///
   /// In en, this message translates to:
-  /// **'Premium features'**
+  /// **'Planned features'**
   String get premiumIncludes;
 
   /// No description provided for @premiumAnalytics.
@@ -1054,6 +1054,12 @@ abstract class AppLocalizations {
   /// **'Latest measurement'**
   String get latestMeasurement;
 
+  /// No description provided for @noChange.
+  ///
+  /// In en, this message translates to:
+  /// **'No change'**
+  String get noChange;
+
   /// No description provided for @weightChange.
   ///
   /// In en, this message translates to:
@@ -1126,12 +1132,6 @@ abstract class AppLocalizations {
   /// **'Multiple child profiles'**
   String get premiumMultipleChildren;
 
-  /// No description provided for @premiumCloudBackup.
-  ///
-  /// In en, this message translates to:
-  /// **'Cloud backup and device sync'**
-  String get premiumCloudBackup;
-
   /// No description provided for @premiumSmartReminders.
   ///
   /// In en, this message translates to:
@@ -1144,17 +1144,11 @@ abstract class AppLocalizations {
   /// **'Milk inventory management'**
   String get premiumMilkInventory;
 
-  /// No description provided for @upgradeToPremium.
+  /// No description provided for @premiumAvailabilityNote.
   ///
   /// In en, this message translates to:
-  /// **'Upgrade to Premium'**
-  String get upgradeToPremium;
-
-  /// No description provided for @premiumPurchaseComingSoon.
-  ///
-  /// In en, this message translates to:
-  /// **'Premium purchasing will be available soon.'**
-  String get premiumPurchaseComingSoon;
+  /// **'These features are planned for a future release and are not available yet.'**
+  String get premiumAvailabilityNote;
 
   /// No description provided for @settings.
   ///
@@ -1183,7 +1177,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationsPremiumHint.
   ///
   /// In en, this message translates to:
-  /// **'Smart reminders are included with Premium.'**
+  /// **'Smart reminders are coming soon.'**
   String get notificationsPremiumHint;
 
   /// No description provided for @notificationsEnabled.
@@ -2452,6 +2446,90 @@ abstract class AppLocalizations {
   /// **'Suggested'**
   String get suggested;
 
+  /// No description provided for @customizeHomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize home'**
+  String get customizeHomeTitle;
+
+  /// No description provided for @customizeHomeSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show, hide and arrange cards'**
+  String get customizeHomeSettingsSubtitle;
+
+  /// No description provided for @yourHomeYourWay.
+  ///
+  /// In en, this message translates to:
+  /// **'Your home, your way'**
+  String get yourHomeYourWay;
+
+  /// No description provided for @customizeHomeIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Move frequent cards forward and hide what you do not need.'**
+  String get customizeHomeIntro;
+
+  /// No description provided for @homeInformationCards.
+  ///
+  /// In en, this message translates to:
+  /// **'Information cards'**
+  String get homeInformationCards;
+
+  /// No description provided for @homeInformationCardsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrange summaries and quick logging areas on the home screen.'**
+  String get homeInformationCardsSubtitle;
+
+  /// No description provided for @homeQuickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick actions'**
+  String get homeQuickActions;
+
+  /// No description provided for @homeQuickActionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the order and visibility of action cards.'**
+  String get homeQuickActionsSubtitle;
+
+  /// No description provided for @defaultQuickDiaperType.
+  ///
+  /// In en, this message translates to:
+  /// **'Default quick diaper type'**
+  String get defaultQuickDiaperType;
+
+  /// No description provided for @defaultQuickDiaperTypeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected type appears first in the quick diaper card.'**
+  String get defaultQuickDiaperTypeSubtitle;
+
+  /// No description provided for @restoreDefaultLayout.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore default layout'**
+  String get restoreDefaultLayout;
+
+  /// No description provided for @homeLayoutReset.
+  ///
+  /// In en, this message translates to:
+  /// **'The home layout was restored to default.'**
+  String get homeLayoutReset;
+
+  /// No description provided for @moveUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get moveUp;
+
+  /// No description provided for @moveDown.
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get moveDown;
+
   /// No description provided for @last.
   ///
   /// In en, this message translates to:
@@ -2563,7 +2641,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyDataBody.
   ///
   /// In en, this message translates to:
-  /// **'Leyumi processes only on your device the optional child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans, medicine and vaccination reminders, and app preferences that you enter.'**
+  /// **'Leyumi processes only on your device the optional child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans, activity reminders, and app preferences that you enter.'**
   String get privacyDataBody;
 
   /// No description provided for @privacyStorageTitle.
@@ -2641,7 +2719,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicyEffectiveDate.
   ///
   /// In en, this message translates to:
-  /// **'Effective date: August 20, 2026'**
+  /// **'Effective date: September 12, 2026'**
   String get privacyPolicyEffectiveDate;
 
   /// No description provided for @dataManagement.

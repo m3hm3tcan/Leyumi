@@ -24,7 +24,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboardingFreePremiumTitle =>
-      'Start free, unlock more when you need it';
+      'Free now, with more features planned';
 
   @override
   String get freePlan => 'Free';
@@ -77,7 +77,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get multipleChildrenPremiumHint =>
-      'Additional child profiles are included with Premium.';
+      'Additional child profiles are coming soon.';
 
   @override
   String get deleteChildProfileTitle => 'Delete child profile?';
@@ -136,7 +136,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get careCalendar => 'Care Calendar';
 
   @override
-  String get careCalendarSubtitle => 'Vaccines, appointments and medicine';
+  String get careCalendarSubtitle => 'Plans, activities and reminders';
 
   @override
   String get addCareEvent => 'Add event';
@@ -162,31 +162,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Event date and time must be in the future.';
 
   @override
-  String get careTypeVaccine => 'Vaccine';
+  String get careTypeRoutine => 'Routine';
 
   @override
-  String get careTypeAppointment => 'Appointment';
+  String get careTypePlan => 'Plan';
 
   @override
-  String get careTypeMedicine => 'Medicine';
+  String get careTypeReminder => 'Reminder';
 
   @override
-  String get careTypeCheckup => 'Checkup';
+  String get careTypeCare => 'Care';
 
   @override
-  String get careTypeLaboratory => 'Lab/Test';
+  String get careTypeActivity => 'Activity';
 
   @override
-  String get careTypeTherapy => 'Therapy';
+  String get careTypeSupport => 'Support';
 
   @override
-  String get careTypeCustom => 'Other';
+  String get careTypeOther => 'Other';
 
   @override
   String get contactOrLocation => 'Contact or location';
-
-  @override
-  String get medicineDosage => 'Medicine dose';
 
   @override
   String get repeatPlan => 'Repeat plan';
@@ -230,18 +227,20 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reminder could not be scheduled. Please check notification permission.';
 
   @override
+  String get careReminderBody => 'A planned activity is coming up.';
+
+  @override
   String get openSettings => 'Open settings';
 
   @override
   String get later => 'Later';
 
   @override
-  String get advancedCarePremiumHint =>
-      'Repeating plans and medicine doses are included with Premium.';
+  String get advancedCarePremiumHint => 'Repeating plans are coming soon.';
 
   @override
   String get premiumCarePlanning =>
-      'Advanced care plans and medicine schedules';
+      'Advanced planning and repeating activities';
 
   @override
   String get noCareEventsForDay => 'No events planned for this day.';
@@ -439,14 +438,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumTitle => 'Leyumi Premium';
 
   @override
-  String get unlockPremium => 'Unlock more with Premium';
+  String get unlockPremium => 'Premium features are planned';
 
   @override
   String get premiumDescription =>
-      'Turn your baby care records into clear insights and keep everything safely connected.';
+      'Planned Premium features are not available yet. You can continue using the current free features.';
 
   @override
-  String get premiumIncludes => 'Premium features';
+  String get premiumIncludes => 'Planned features';
 
   @override
   String get premiumAnalytics =>
@@ -519,6 +518,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get latestMeasurement => 'Latest measurement';
 
   @override
+  String get noChange => 'No change';
+
+  @override
   String get weightChange => 'Weight change';
 
   @override
@@ -558,20 +560,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premiumMultipleChildren => 'Multiple child profiles';
 
   @override
-  String get premiumCloudBackup => 'Cloud backup and device sync';
-
-  @override
   String get premiumSmartReminders => 'Smart reminders';
 
   @override
   String get premiumMilkInventory => 'Milk inventory management';
 
   @override
-  String get upgradeToPremium => 'Upgrade to Premium';
-
-  @override
-  String get premiumPurchaseComingSoon =>
-      'Premium purchasing will be available soon.';
+  String get premiumAvailabilityNote =>
+      'These features are planned for a future release and are not available yet.';
 
   @override
   String get settings => 'Settings';
@@ -586,8 +582,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationSettings => 'Notification settings';
 
   @override
-  String get notificationsPremiumHint =>
-      'Smart reminders are included with Premium.';
+  String get notificationsPremiumHint => 'Smart reminders are coming soon.';
 
   @override
   String get notificationsEnabled => 'Notifications are enabled';
@@ -1259,6 +1254,52 @@ class AppLocalizationsEn extends AppLocalizations {
   String get suggested => 'Suggested';
 
   @override
+  String get customizeHomeTitle => 'Customize home';
+
+  @override
+  String get customizeHomeSettingsSubtitle => 'Show, hide and arrange cards';
+
+  @override
+  String get yourHomeYourWay => 'Your home, your way';
+
+  @override
+  String get customizeHomeIntro =>
+      'Move frequent cards forward and hide what you do not need.';
+
+  @override
+  String get homeInformationCards => 'Information cards';
+
+  @override
+  String get homeInformationCardsSubtitle =>
+      'Arrange summaries and quick logging areas on the home screen.';
+
+  @override
+  String get homeQuickActions => 'Quick actions';
+
+  @override
+  String get homeQuickActionsSubtitle =>
+      'Choose the order and visibility of action cards.';
+
+  @override
+  String get defaultQuickDiaperType => 'Default quick diaper type';
+
+  @override
+  String get defaultQuickDiaperTypeSubtitle =>
+      'The selected type appears first in the quick diaper card.';
+
+  @override
+  String get restoreDefaultLayout => 'Restore default layout';
+
+  @override
+  String get homeLayoutReset => 'The home layout was restored to default.';
+
+  @override
+  String get moveUp => 'Move up';
+
+  @override
+  String get moveDown => 'Move down';
+
+  @override
   String get last => 'Last';
 
   @override
@@ -1327,7 +1368,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyDataBody =>
-      'Leyumi processes only on your device the optional child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans, medicine and vaccination reminders, and app preferences that you enter.';
+      'Leyumi processes only on your device the optional child profiles, birth dates, growth measurements, feeding and diaper records, milk inventory, care plans, activity reminders, and app preferences that you enter.';
 
   @override
   String get privacyStorageTitle => 'Local storage';
@@ -1372,7 +1413,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'For privacy questions, contact Leyumi Studio at leyumistudio@gmail.com.';
 
   @override
-  String get privacyPolicyEffectiveDate => 'Effective date: August 20, 2026';
+  String get privacyPolicyEffectiveDate => 'Effective date: September 12, 2026';
 
   @override
   String get dataManagement => 'Data backup';

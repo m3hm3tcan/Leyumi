@@ -1,6 +1,6 @@
 # Leyumi Gizlilik Politikası
 
-**Yürürlük tarihi:** 20 Ağustos 2026
+**Yürürlük tarihi:** 12 Eylül 2026
 
 **Uygulama:** Leyumi
 
@@ -22,7 +22,7 @@ Leyumi, kullanıcının isteğe bağlı olarak girdiği aşağıdaki bilgileri u
 - büyüme ölçümleri;
 - beslenme ve bez kayıtları;
 - süt stoğu kayıtları;
-- bakım planları, ilaç ve aşı hatırlatma kayıtları;
+- bakım planları ve etkinlik hatırlatma ayarları;
 - uygulama tercihleri ve aktif çocuk seçimi.
 
 Bu bilgiler Leyumi Studio tarafından toplanmaz. Buradaki “toplanmaz” ifadesi, verilerin geliştiriciye ait veya geliştirici tarafından işletilen bir sunucuya gönderilmediği anlamına gelir. Uygulama, girilen bilgileri özelliklerini sunabilmek için kullanıcının cihazında yerel olarak işler.
@@ -49,7 +49,7 @@ Kullanıcı bir rapor için Android'in paylaşma veya yazdırma işlevini açık
 
 ## 5. Bildirimler ve izinler
 
-Leyumi, yalnızca kullanıcı tarafından başlatılan etkin bir bakım sürecini cihazda göstermek için bildirim izni isteyebilir. Bildirim izni kişisel veri toplamak, kullanıcıyı izlemek veya verileri cihaz dışına göndermek için kullanılmaz. İzin reddedilirse bakım kayıtları çalışmaya devam eder.
+Leyumi, kullanıcı tarafından başlatılan etkin zamanlayıcıları ve kullanıcının seçtiği planlı etkinlik hatırlatmalarını cihazda göstermek için bildirim izni isteyebilir. Bildirim izni kişisel veri toplamak, kullanıcıyı izlemek veya verileri cihaz dışına göndermek için kullanılmaz. İzin reddedilirse bakım kayıtları çalışmaya devam eder.
 
 ## 6. Saklama ve silme
 
@@ -85,7 +85,7 @@ Bu politika veya Leyumi'nin gizlilik uygulamalarıyla ilgili sorular için **ley
 
 # Leyumi Privacy Policy
 
-**Effective date:** August 20, 2026
+**Effective date:** September 12, 2026
 
 **Application:** Leyumi
 
@@ -107,7 +107,7 @@ Leyumi locally processes the following optional user-entered information to prov
 - growth measurements;
 - feeding and diaper records;
 - milk inventory records;
-- care plans and medicine or vaccination reminder records;
+- care plans and activity reminder settings;
 - application preferences and the active-child selection.
 
 Leyumi Studio does not collect this information. “Does not collect” means that the data is not transmitted to a server owned or operated by the developer. The application processes entered information locally on the user's device to provide its features.
@@ -128,7 +128,7 @@ If the user explicitly selects Android's share or print controls for a report, t
 
 ## 5. Notifications and permissions
 
-Leyumi may request notification permission only to display an active user-started care process on the device. Notification permission is not used to collect personal data, track users, or send records off the device. Care records continue to work if permission is denied.
+Leyumi may request notification permission to display user-started active timers and user-selected planned activity reminders on the device. Notification permission is not used to collect personal data, track users, or send records off the device. Care records continue to work if permission is denied.
 
 ## 6. Retention and deletion
 

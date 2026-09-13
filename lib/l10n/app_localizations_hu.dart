@@ -24,7 +24,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get onboardingFreePremiumTitle =>
-      'Kezdd ingyen, és oldj fel többet, amikor szükséged van rá';
+      'Most ingyenes, további funkciók pedig tervezés alatt állnak';
 
   @override
   String get freePlan => 'Ingyenes';
@@ -77,7 +77,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get multipleChildrenPremiumHint =>
-      'További gyermekprofilok a Premium részei.';
+      'További gyermekprofilok hamarosan elérhetők lesznek.';
 
   @override
   String get deleteChildProfileTitle => 'Törlöd a gyermekprofilt?';
@@ -139,7 +139,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get careCalendar => 'Gondozási naptár';
 
   @override
-  String get careCalendarSubtitle => 'Oltások, időpontok és gyógyszerek';
+  String get careCalendarSubtitle => 'Tervek, tevékenységek és emlékeztetők';
 
   @override
   String get addCareEvent => 'Esemény hozzáadása';
@@ -165,31 +165,28 @@ class AppLocalizationsHu extends AppLocalizations {
       'Az esemény dátumának és idejének a jövőben kell lennie.';
 
   @override
-  String get careTypeVaccine => 'Oltás';
+  String get careTypeRoutine => 'Rutin';
 
   @override
-  String get careTypeAppointment => 'Időpont';
+  String get careTypePlan => 'Terv';
 
   @override
-  String get careTypeMedicine => 'Gyógyszer';
+  String get careTypeReminder => 'Emlékeztető';
 
   @override
-  String get careTypeCheckup => 'Ellenőrzés';
+  String get careTypeCare => 'Gondozás';
 
   @override
-  String get careTypeLaboratory => 'Labor/Teszt';
+  String get careTypeActivity => 'Tevékenység';
 
   @override
-  String get careTypeTherapy => 'Terápia';
+  String get careTypeSupport => 'Támogatás';
 
   @override
-  String get careTypeCustom => 'Egyéb';
+  String get careTypeOther => 'Egyéb';
 
   @override
   String get contactOrLocation => 'Kapcsolattartó vagy helyszín';
-
-  @override
-  String get medicineDosage => 'Gyógyszeradag';
 
   @override
   String get repeatPlan => 'Ismétlődési terv';
@@ -233,6 +230,10 @@ class AppLocalizationsHu extends AppLocalizations {
       'Az emlékeztetőt nem sikerült ütemezni. Ellenőrizd az értesítési engedélyt.';
 
   @override
+  String get careReminderBody =>
+      'Hamarosan kezdődik egy tervezett tevékenység.';
+
+  @override
   String get openSettings => 'Beállítások megnyitása';
 
   @override
@@ -240,10 +241,11 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get advancedCarePremiumHint =>
-      'Az ismétlődő tervek és gyógyszeradagok a Premium részei.';
+      'Az ismétlődő tervek hamarosan elérhetők lesznek.';
 
   @override
-  String get premiumCarePlanning => 'Fejlett gondozási és gyógyszertervek';
+  String get premiumCarePlanning =>
+      'Fejlett tervezés és ismétlődő tevékenységek';
 
   @override
   String get noCareEventsForDay => 'Erre a napra nincs tervezett esemény.';
@@ -441,14 +443,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get premiumTitle => 'Leyumi Premium';
 
   @override
-  String get unlockPremium => 'Fedezz fel többet a Premiummal';
+  String get unlockPremium => 'Premium funkciók tervezés alatt';
 
   @override
   String get premiumDescription =>
-      'Alakítsd a babaápolási adatokat áttekinthető elemzésekké, és tarts mindent biztonságosan összekapcsolva.';
+      'A tervezett Premium funkciók még nem érhetők el. A jelenlegi ingyenes funkciókat továbbra is használhatod.';
 
   @override
-  String get premiumIncludes => 'Premium funkciók';
+  String get premiumIncludes => 'Tervezett funkciók';
 
   @override
   String get premiumAnalytics =>
@@ -521,6 +523,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get latestMeasurement => 'Legutóbbi mérés';
 
   @override
+  String get noChange => 'Nincs változás';
+
+  @override
   String get weightChange => 'Súlyváltozás';
 
   @override
@@ -560,20 +565,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get premiumMultipleChildren => 'Több gyermekprofil';
 
   @override
-  String get premiumCloudBackup => 'Felhőmentés és eszközszinkronizálás';
-
-  @override
   String get premiumSmartReminders => 'Intelligens emlékeztetők';
 
   @override
   String get premiumMilkInventory => 'Tejkészlet kezelése';
 
   @override
-  String get upgradeToPremium => 'Váltás Premiumra';
-
-  @override
-  String get premiumPurchaseComingSoon =>
-      'A Premium vásárlás hamarosan elérhető lesz.';
+  String get premiumAvailabilityNote =>
+      'Ezeket a funkciókat egy későbbi kiadáshoz tervezzük, és még nem érhetők el.';
 
   @override
   String get settings => 'Beállítások';
@@ -589,7 +588,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get notificationsPremiumHint =>
-      'Az intelligens emlékeztetők a Premium részei.';
+      'Az intelligens emlékeztetők hamarosan elérhetők lesznek.';
 
   @override
   String get notificationsEnabled => 'Az értesítések engedélyezve vannak';
@@ -1265,6 +1264,55 @@ class AppLocalizationsHu extends AppLocalizations {
   String get suggested => 'Javasolt';
 
   @override
+  String get customizeHomeTitle => 'Főoldal testreszabása';
+
+  @override
+  String get customizeHomeSettingsSubtitle =>
+      'Kártyák megjelenítése, elrejtése és rendezése';
+
+  @override
+  String get yourHomeYourWay => 'A főoldalad, a te rended';
+
+  @override
+  String get customizeHomeIntro =>
+      'Helyezd előre a gyakori kártyákat, és rejtsd el, amire nincs szükséged.';
+
+  @override
+  String get homeInformationCards => 'Információs kártyák';
+
+  @override
+  String get homeInformationCardsSubtitle =>
+      'Rendezd a főoldali összegzéseket és gyorsbejegyzéseket.';
+
+  @override
+  String get homeQuickActions => 'Gyorsműveletek';
+
+  @override
+  String get homeQuickActionsSubtitle =>
+      'Állítsd be a műveletkártyák sorrendjét és láthatóságát.';
+
+  @override
+  String get defaultQuickDiaperType => 'Alapértelmezett gyors pelenkatípus';
+
+  @override
+  String get defaultQuickDiaperTypeSubtitle =>
+      'A kiválasztott típus jelenik meg elsőként a gyors pelenkakártyán.';
+
+  @override
+  String get restoreDefaultLayout =>
+      'Alapértelmezett elrendezés visszaállítása';
+
+  @override
+  String get homeLayoutReset =>
+      'A főoldal elrendezése visszaállt az alapértelmezettre.';
+
+  @override
+  String get moveUp => 'Mozgatás felfelé';
+
+  @override
+  String get moveDown => 'Mozgatás lefelé';
+
+  @override
   String get last => 'Utolsó';
 
   @override
@@ -1333,7 +1381,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get privacyDataBody =>
-      'A Leyumi kizárólag az eszközödön dolgozza fel az önként megadott gyermekprofilokat, születési dátumokat, növekedési méréseket, etetési és pelenkaadatokat, tejkészletet, gondozási terveket, gyógyszer- és oltási emlékeztetőket, valamint alkalmazásbeállításokat.';
+      'A Leyumi kizárólag az eszközödön dolgozza fel az önként megadott gyermekprofilokat, születési dátumokat, növekedési méréseket, etetési és pelenkaadatokat, tejkészletet, gondozási terveket, tevékenység-emlékeztetőket és alkalmazásbeállításokat.';
 
   @override
   String get privacyStorageTitle => 'Helyi tárolás';
@@ -1378,7 +1426,8 @@ class AppLocalizationsHu extends AppLocalizations {
       'Adatvédelmi kérdésekkel fordulj a Leyumi Studio csapatához a leyumistudio@gmail.com címen.';
 
   @override
-  String get privacyPolicyEffectiveDate => 'Hatálybalépés: 2026. augusztus 20.';
+  String get privacyPolicyEffectiveDate =>
+      'Hatálybalépés: 2026. szeptember 12.';
 
   @override
   String get dataManagement => 'Adatmentés';
