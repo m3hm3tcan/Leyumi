@@ -8,6 +8,8 @@ class HomeDashboardSnapshot {
     required this.todayDiaperCount,
     required this.todayPeeDiaperCount,
     required this.todayPoopDiaperCount,
+    this.todayFormulaMl = 0,
+    this.todayExpressedMl = 0,
     this.lastFeeding,
     this.lastDiaper,
   });
@@ -17,6 +19,8 @@ class HomeDashboardSnapshot {
   final int todayDiaperCount;
   final int todayPeeDiaperCount;
   final int todayPoopDiaperCount;
+  final int todayFormulaMl;
+  final int todayExpressedMl;
   final FeedingSession? lastFeeding;
   final DiaperEntry? lastDiaper;
 

@@ -3,6 +3,7 @@ import '../../core/database/sqlite_records.dart';
 import '../../core/logging/app_logger.dart';
 import '../diaper/diaper_entry.dart';
 import '../feeding/feeding_session.dart';
+import '../feeding/bottle_portion.dart';
 import 'home_dashboard_snapshot.dart';
 
 abstract interface class HomeDashboardLoader {
@@ -64,6 +65,14 @@ class HomeDashboardService implements HomeDashboardLoader {
 
     return HomeDashboardSnapshot(
       todayFeedingCount: todayFeedings.length,
+      todayFormulaMl: todayFeedings.fold(
+        0,
+        (sum, s) => sum + s.amountFor(BottleMilk.formula),
+      ),
+      todayExpressedMl: todayFeedings.fold(
+        0,
+        (sum, s) => sum + s.amountFor(BottleMilk.expressed),
+      ),
       todayFeedingDuration: todayFeedings.fold(
         Duration.zero,
         (total, session) => total + session.totalDuration,

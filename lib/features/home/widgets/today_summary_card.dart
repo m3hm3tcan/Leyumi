@@ -4,6 +4,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/app_card.dart';
 import '../../diaper/diaper_entry.dart';
 import '../../feeding/feeding_entry.dart';
+import '../../feeding/bottle_portion.dart';
 import '../home_dashboard_service.dart';
 import '../home_dashboard_snapshot.dart';
 
@@ -173,13 +174,34 @@ class _SummaryHeader extends StatelessWidget {
               ),
             ],
           ),
-          if (snapshot.todayFeedingCount > 0) ...[
+          if (snapshot.todayFeedingDuration > Duration.zero) ...[
             const SizedBox(height: 13),
             _HeaderPill(
               icon: Icons.timer_outlined,
               label: l10n.todayFeedingDuration(
                 _formatDuration(snapshot.todayFeedingDuration, l10n),
               ),
+            ),
+          ],
+          if (snapshot.todayFormulaMl > 0 || snapshot.todayExpressedMl > 0) ...[
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                if (snapshot.todayFormulaMl > 0)
+                  _HeaderPill(
+                    icon: Icons.local_drink_outlined,
+                    label:
+                        '${l10n.feedingFormula}: ${snapshot.todayFormulaMl} ml',
+                  ),
+                if (snapshot.todayExpressedMl > 0)
+                  _HeaderPill(
+                    icon: Icons.water_drop_outlined,
+                    label:
+                        '${l10n.feedingExpressed}: ${snapshot.todayExpressedMl} ml',
+                  ),
+              ],
             ),
           ],
         ],
@@ -245,6 +267,14 @@ class _ActivityTile extends StatelessWidget {
         : l10n.rightLabel;
     final detail = session == null
         ? l10n.noFeedingRecordedYet
+        : session.bottles.isNotEmpty
+        ? [
+            if (session.hasBreastfeeding)
+              _formatDuration(session.totalDuration, l10n),
+            for (final milk in BottleMilk.values)
+              if (session.amountFor(milk) > 0)
+                '${milk == BottleMilk.formula ? l10n.feedingFormula : l10n.feedingExpressed} ${session.amountFor(milk)} ml',
+          ].join(' · ')
         : side == null
         ? _formatDuration(session.totalDuration, l10n)
         : l10n.lastFeedingDetail(

@@ -550,5 +550,25 @@
         "type": "String"
       }
     }
-  }
+  },
+  "feedingBreast": "Szoptatás",
+  "feedingFormula": "Tápszer",
+  "feedingExpressed": "Lefejt anyatej",
+  "feedingUseStock": "Felhasználás a készletből",
+  "feedingBatch": "Tejadag",
+  "feedingNoStock": "Nincs felhasználható tej a készletben",
+  "feedingConsumed": "Elfogyasztott mennyiség",
+  "feedingAmountError": "Adj meg nullánál nagyobb egész számot.",
+  "feedingAddToMeal": "Hozzáadás az etetéshez",
+  "feedingBottle": "Cumisüveges etetés",
+  "feedingBottleVolume": "Rögzített cumisüveges mennyiség",
+  "feedingBreastDuration": "Szoptatási idő",
+  "feedingBreastAverage": "Átlagos szoptatási idő",
+  "feedingNote": "Megjegyzés (nem kötelező)",
+  "feedingSaveMeal": "Etetés mentése",
+  "feedingRemove": "Eltávolítás",
+  "feedingMealTime": "Etetés időpontja",
+  "feedingStockCorrection": "A kapcsolt adagok módosítása a készletet is frissíti.",
+  "feedingStockError": "A mentés sikertelen. Ellenőrizd a kiválasztott tejet és az elérhető mennyiséget.",
+  "feedingMeals": "Etetések"
 }

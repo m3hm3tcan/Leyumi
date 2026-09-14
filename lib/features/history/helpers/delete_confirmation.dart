@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 
-Future<bool> confirmHistoryDelete(BuildContext context) async {
+Future<bool> confirmHistoryDelete(
+  BuildContext context, {
+  String? detail,
+}) async {
   final l10n = AppLocalizations.of(context);
   final confirmed = await showDialog<bool>(
     context: context,
@@ -13,7 +16,9 @@ Future<bool> confirmHistoryDelete(BuildContext context) async {
           size: 32,
         ),
         title: Text(l10n.confirmDeleteTitle),
-        content: Text(l10n.confirmDeleteContent),
+        content: Text(
+          '${l10n.confirmDeleteContent}${detail == null ? '' : '\n\n$detail'}',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext, false),

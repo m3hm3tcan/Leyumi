@@ -5,6 +5,8 @@ import 'package:leyumi/services/feeding_storage.dart';
 import 'package:flutter/material.dart';
 
 import '../../../core/child/active_child_aware.dart';
+import '../../feeding/bottle_portion.dart';
+import '../../feeding/sheets/bottle_meal_sheet.dart';
 import '../../../core/utils/app_date_utils.dart';
 import '../widgets/history_page_shell.dart';
 import '../widgets/timeline_section.dart';
@@ -26,6 +28,7 @@ class _FeedingTabState extends State<FeedingTab>
   List<FeedingSession> sessions = [];
   _FeedingHistoryFilter _filter = _FeedingHistoryFilter.sevenDays;
   DateTimeRange? _customRange;
+  String _kind = 'all';
 
   Future<void> load() async {
     final data = await FeedingStorage().loadSessions();
@@ -38,7 +41,17 @@ class _FeedingTabState extends State<FeedingTab>
   Future<void> onActiveChildChanged() => load();
 
   List<FeedingSession> get _filteredSessions {
-    if (_filter == _FeedingHistoryFilter.all) return sessions;
+    final source = sessions
+        .where(
+          (s) => switch (_kind) {
+            'breast' => s.hasBreastfeeding,
+            'formula' => s.amountFor(BottleMilk.formula) > 0,
+            'expressed' => s.amountFor(BottleMilk.expressed) > 0,
+            _ => true,
+          },
+        )
+        .toList();
+    if (_filter == _FeedingHistoryFilter.all) return source;
 
     late final DateTime start;
     late final DateTime endExclusive;
@@ -55,7 +68,7 @@ class _FeedingTabState extends State<FeedingTab>
       ).add(const Duration(days: 1));
     }
 
-    return sessions
+    return source
         .where(
           (session) =>
               !session.startTime.isBefore(start) &&
@@ -112,7 +125,7 @@ class _FeedingTabState extends State<FeedingTab>
     });
 
     try {
-      await FeedingStorage().saveAllSessions(sessions);
+      await FeedingStorage().deleteMeal(session);
     } catch (_) {
       if (!mounted) return;
       setState(() => sessions.insert(index, session));
@@ -122,6 +135,16 @@ class _FeedingTabState extends State<FeedingTab>
 
   Future<void> editSession(FeedingSession session) async {
     if (!AppDateUtils.isToday(session.startTime)) return;
+    if (session.bottles.isNotEmpty) {
+      final saved = await showModalBottomSheet<FeedingSession>(
+        context: context,
+        isScrollControlled: true,
+        useSafeArea: true,
+        builder: (_) => BottleMealSheet(meal: session),
+      );
+      if (saved != null && mounted) await load();
+      return;
+    }
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
@@ -142,7 +165,7 @@ class _FeedingTabState extends State<FeedingTab>
     });
 
     try {
-      await FeedingStorage().saveAllSessions(sessions);
+      await FeedingStorage().saveMeal(updated);
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -154,6 +177,16 @@ class _FeedingTabState extends State<FeedingTab>
       });
       messenger.showSnackBar(SnackBar(content: Text(l10n.operationFailed)));
     }
+  }
+
+  Future<void> addToMeal(FeedingSession session) async {
+    final saved = await showModalBottomSheet<FeedingSession>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => BottleMealSheet(meal: session),
+    );
+    if (saved != null && mounted) await load();
   }
 
   FeedingSession _copyWithTimeRange(
@@ -185,6 +218,8 @@ class _FeedingTabState extends State<FeedingTab>
       startWeightGr: session.startWeightGr,
       endWeightGr: session.endWeightGr,
       milkIntakeGr: session.milkIntakeGr,
+      bottles: session.bottles,
+      note: session.note,
       createdAt: session.createdAt,
       updatedAt: DateTime.now(),
     );
@@ -365,6 +400,29 @@ class _FeedingTabState extends State<FeedingTab>
           : Column(
               children: [
                 _filterBar(l10n),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Row(
+                    children: [
+                      for (final option in [
+                        ('all', l10n.filterAll),
+                        ('breast', l10n.feedingBreast),
+                        ('formula', l10n.feedingFormula),
+                        ('expressed', l10n.feedingExpressed),
+                      ])
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text(option.$2),
+                            selected: _kind == option.$1,
+                            onSelected: (_) =>
+                                setState(() => _kind = option.$1),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
                 Expanded(
                   child: filtered.isEmpty
                       ? HistoryEmptyState(
@@ -386,6 +444,7 @@ class _FeedingTabState extends State<FeedingTab>
                                 summary: _dailySummary(grouped[today]!, l10n),
                                 onDelete: deleteSession,
                                 onEdit: editSession,
+                                onAddToMeal: addToMeal,
                               ),
                             for (final entry in grouped.entries)
                               if (entry.key != today)
@@ -402,6 +461,7 @@ class _FeedingTabState extends State<FeedingTab>
                                   collapsible: true,
                                   onDelete: deleteSession,
                                   onEdit: editSession,
+                                  onAddToMeal: addToMeal,
                                 ),
                           ],
                         ),
@@ -486,8 +546,11 @@ class _FeedingTabState extends State<FeedingTab>
     final durationText = _compactDuration(duration, l10n);
     final parts = <String>[
       '${daySessions.length} ${l10n.sessions.toLowerCase()}',
-      durationText,
+      if (daySessions.any((s) => s.hasBreastfeeding)) durationText,
       if (milk > 0) '$milk ${l10n.unitGr} ${l10n.milk.toLowerCase()}',
+      for (final type in BottleMilk.values)
+        if (daySessions.any((s) => s.amountFor(type) > 0))
+          '${type == BottleMilk.formula ? l10n.feedingFormula : l10n.feedingExpressed}: ${daySessions.fold<int>(0, (sum, s) => sum + s.amountFor(type))} ml',
     ];
     return parts.join(' · ');
   }

@@ -7,6 +7,7 @@ import '../../features/feeding/feeding_session.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/baby_profile.dart';
 import '../../models/growth_entry.dart';
+import '../feeding/bottle_portion.dart';
 
 class CareReportData {
   const CareReportData({
@@ -49,6 +50,7 @@ class CareReportPdfService {
       0,
       (sum, session) => sum + session.totalDuration.inMinutes,
     );
+    final breastCount = data.feedings.where((s) => s.hasBreastfeeding).length;
     final totalMilk = data.feedings.fold<int>(
       0,
       (sum, session) => sum + session.totalMilkIntake,
@@ -143,14 +145,21 @@ class CareReportPdfService {
               '$totalFeedingMinutes ${l10n.minutesShort}',
             ],
             [
-              l10n.average,
-              data.feedings.isEmpty
+              l10n.feedingBreastAverage,
+              breastCount == 0
                   ? '0 ${l10n.minutesShort}'
-                  : '${(totalFeedingMinutes / data.feedings.length).round()} ${l10n.minutesShort}',
+                  : '${(totalFeedingMinutes / breastCount).round()} ${l10n.minutesShort}',
             ],
             [l10n.leftBreast, '$leftMinutes ${l10n.minutesShort}'],
             [l10n.rightBreast, '$rightMinutes ${l10n.minutesShort}'],
             [l10n.milkIntake, '$totalMilk ${l10n.unitGr}'],
+            for (final milk in BottleMilk.values)
+              [
+                milk == BottleMilk.formula
+                    ? l10n.feedingFormula
+                    : l10n.feedingExpressed,
+                '${data.feedings.fold<int>(0, (sum, s) => sum + s.amountFor(milk))} ml',
+              ],
           ], bold),
           pw.SizedBox(height: 18),
           _sectionTitle(l10n.diaperSummary, bold),
@@ -437,12 +446,21 @@ class CareReportPdfService {
         _date(day),
         '${feedings.length}',
         '$minutes ${l10n.minutesShort}',
+        '${feedings.fold<int>(0, (sum, s) => sum + s.amountFor(BottleMilk.formula))} ml',
+        '${feedings.fold<int>(0, (sum, s) => sum + s.amountFor(BottleMilk.expressed))} ml',
         '${diapers.length}',
       ];
     }).toList();
 
     return _dataTable(
-      [l10n.dateAndTime, l10n.feeding, l10n.duration, l10n.diaper],
+      [
+        l10n.dateAndTime,
+        l10n.feedingMeals,
+        l10n.feedingBreastDuration,
+        l10n.feedingFormula,
+        l10n.feedingExpressed,
+        l10n.diaper,
+      ],
       rows,
       bold,
     );

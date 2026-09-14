@@ -1,6 +1,7 @@
 import 'package:leyumi/features/feeding/feeding_session.dart';
 import 'package:leyumi/features/history/helpers/delete_confirmation.dart';
 import 'package:flutter/material.dart';
+import '../../../l10n/app_localizations.dart';
 
 import '../../../core/utils/app_date_utils.dart';
 import 'session_card.dart';
@@ -14,6 +15,7 @@ class TimelineSection extends StatelessWidget {
   final bool collapsible;
   final Function(FeedingSession) onDelete;
   final Function(FeedingSession)? onEdit;
+  final Function(FeedingSession)? onAddToMeal;
 
   const TimelineSection({
     super.key,
@@ -23,6 +25,7 @@ class TimelineSection extends StatelessWidget {
     this.collapsible = false,
     required this.onDelete,
     this.onEdit,
+    this.onAddToMeal,
   });
 
   @override
@@ -124,12 +127,20 @@ class TimelineSection extends StatelessWidget {
               size: 28,
             ),
           ),
-          confirmDismiss: (_) => confirmHistoryDelete(context),
+          confirmDismiss: (_) => confirmHistoryDelete(
+            context,
+            detail: session.bottles.any((b) => b.batchId != null)
+                ? AppLocalizations.of(context).feedingStockCorrection
+                : null,
+          ),
           onDismissed: (_) => onDelete(session),
           child: TimelineItem(
             isLast: index == sessions.length - 1,
             child: SessionCard(
               session: session,
+              onAddToMeal: onAddToMeal == null
+                  ? null
+                  : () => onAddToMeal!(session),
               onEdit: AppDateUtils.isToday(session.startTime)
                   ? () => onEdit?.call(session)
                   : null,
