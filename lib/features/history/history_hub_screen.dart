@@ -1,12 +1,14 @@
-import 'package:leyumi/features/history/graphs/diaper_graph.dart';
-import 'package:leyumi/features/history/graphs/feeding_graph.dart';
-import 'package:leyumi/features/history/graphs/growth_graph.dart';
-import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-import 'tabs/diaper_tab.dart';
-import 'tabs/feeding_tab.dart';
-import 'tabs/growth_tab.dart';
+import '../../core/child/active_child_provider.dart';
+import '../../core/premium/premium_access.dart';
+import '../../core/premium/premium_feature.dart';
+import '../../features/care_report/care_report_screen.dart';
+import '../../features/milk_inventory/milk_history_screen.dart';
+import '../../l10n/app_localizations.dart';
+import 'analytics_center_screen.dart';
+import 'records_center_screen.dart';
 import 'widgets/hub_card.dart';
 
 class HistoryHubScreen extends StatelessWidget {
@@ -18,6 +20,7 @@ class HistoryHubScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final secondaryTextColor =
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
+    final childName = context.watch<ActiveChildProvider>().activeChild?.name;
 
     return Scaffold(
       body: SafeArea(
@@ -37,7 +40,9 @@ class HistoryHubScreen extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                l10n.historyHubSubtitle,
+                childName == null
+                    ? l10n.historyHubSubtitle
+                    : '${l10n.historyHubSubtitle} · $childName',
                 style: TextStyle(
                   fontSize: 13,
                   color: secondaryTextColor,
@@ -55,95 +60,60 @@ class HistoryHubScreen extends StatelessWidget {
                   ),
                   children: [
                     HubCard(
-                      title: l10n.feeding,
-                      icon: Icons.local_drink_rounded,
+                      title: l10n.history,
+                      icon: Icons.view_timeline_rounded,
                       color: const Color(0xff4DA3FF),
-                      subtitle: l10n.milkTracking,
+                      subtitle: l10n.recordsOverview,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const FeedingTab(),
+                            builder: (_) => const RecordsCenterScreen(),
                           ),
                         );
                       },
                     ),
                     HubCard(
-                      title: l10n.feedingGraph,
-                      icon: Icons.show_chart,
-                      color: const Color(0xff3B82F6),
-                      subtitle: l10n.viewCharts,
+                      title: l10n.analytics,
+                      icon: Icons.insights_rounded,
+                      color: const Color(0xff22A987),
+                      subtitle: l10n.premiumAnalytics,
+                      isPremium: true,
                       onTap: () {
-                        Navigator.push(
+                        PremiumAccess.open(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const FeedingGraphScreen(),
-                          ),
+                          feature: PremiumFeature.advancedAnalytics,
+                          builder: (_) => const AnalyticsCenterScreen(),
                         );
                       },
                     ),
                     HubCard(
-                      title: l10n.diaper,
-                      icon: Icons.baby_changing_station,
-                      color: const Color(0xffF59E0B),
-                      subtitle: l10n.diaperChanges,
+                      title: l10n.milkHistory,
+                      icon: Icons.history,
+                      color: const Color(0xff7C5CE7),
+                      subtitle: l10n.usedAndRemainingMilk,
+                      isPremium: true,
                       onTap: () {
-                        Navigator.push(
+                        PremiumAccess.open(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const DiaperTab(),
-                          ),
+                          feature: PremiumFeature.milkInventory,
+                          builder: (_) => const MilkHistoryScreen(),
                         );
                       },
                     ),
                     HubCard(
-                      title: l10n.diaperGraph,
-                      icon: Icons.bar_chart_rounded,
-                      color: const Color(0xffD97706),
-                      subtitle: l10n.viewCharts,
+                      title: l10n.careReport,
+                      icon: Icons.picture_as_pdf,
+                      color: const Color(0xffE05273),
+                      subtitle: l10n.createShareableReport,
+                      isPremium: true,
                       onTap: () {
-                        Navigator.push(
+                        PremiumAccess.open(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const DiaperGraphScreen(),
-                          ),
+                          feature: PremiumFeature.pdfReports,
+                          builder: (_) => const CareReportScreen(),
                         );
                       },
-                    ),
-                    HubCard(
-                      title: l10n.growth,
-                      icon: Icons.show_chart_rounded,
-                      color: const Color(0xff22C55E),
-                      subtitle: l10n.weightAndHeight,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const GrowthTab(),
-                          ),
-                        );
-                      },
-                    ),
-                    HubCard(
-                      title: l10n.growthGraph,
-                      icon: Icons.area_chart_rounded,
-                      color: const Color(0xff16A34A),
-                      subtitle: l10n.viewCharts,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const GrowthGraphScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    HubCard(
-                      title: l10n.sleepTitle,
-                      icon: Icons.nightlight_round,
-                      color: const Color(0xff8B5CF6),
-                      subtitle: l10n.comingSoon,
-                      onTap: () {},
                     ),
                   ],
                 ),

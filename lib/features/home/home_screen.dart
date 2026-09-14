@@ -1,18 +1,25 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:leyumi/features/feeding/feeding_screen.dart';
-import 'package:leyumi/features/history/history_hub_screen.dart';
-import 'package:leyumi/models/baby_profile.dart';
-import 'package:leyumi/services/baby_storage.dart';
-import 'package:leyumi/widgets/baby_card.dart';
-import 'package:leyumi/services/reset_service.dart';
-import 'package:leyumi/l10n/app_localizations.dart';
-import 'package:leyumi/services/diaper_storage.dart';
-import 'package:leyumi/services/feeding_storage.dart';
-
 import 'package:provider/provider.dart';
-import '../../core/theme_provider.dart';
+
+import '../../core/premium/premium_access.dart';
+import '../../core/premium/premium_feature.dart';
+import '../../core/child/active_child_aware.dart';
+import '../../core/child/active_child_provider.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/baby_profile.dart';
+import '../../widgets/baby_card.dart';
+import '../feeding/feeding_screen.dart';
+import '../history/history_hub_screen.dart';
+import '../milk_inventory/milk_inventory_screen.dart';
+import '../care_calendar/care_calendar_screen.dart';
+import '../settings/settings_screen.dart';
+import 'preferences/home_preferences.dart';
+import 'preferences/home_preferences_provider.dart';
+import 'widgets/home_action_card.dart';
+import 'widgets/live_feeding_home_card.dart';
+import 'widgets/quick_diaper_card.dart';
+import 'widgets/today_summary_card.dart';
+import 'widgets/upcoming_care_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -21,24 +28,21 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
-  final GlobalKey<_TodaySummaryCardState> _todaySummaryKey =
-      GlobalKey<_TodaySummaryCardState>();
-  final GlobalKey<_LiveFeedingHomeCardState> _liveFeedingKey =
-      GlobalKey<_LiveFeedingHomeCardState>();
-
-  BabyProfile? profile;
-  bool loading = true;
-  double opacity = 0;
+class _HomeScreenState extends State<HomeScreen>
+    with WidgetsBindingObserver, ActiveChildAware<HomeScreen> {
+  BabyProfile? _profile;
+  bool _loading = true;
+  Object? _loadError;
+  double _opacity = 0;
+  int _dashboardRefreshVersion = 0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    loadProfile();
-
     Future.delayed(const Duration(milliseconds: 200), () {
-      setState(() => opacity = 1);
+      if (!mounted) return;
+      setState(() => _opacity = 1);
     });
   }
 
@@ -50,238 +54,109 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed && mounted) {
-      setState(() {});
-      _liveFeedingKey.currentState?.refresh();
-    }
+    if (state == AppLifecycleState.resumed) _refreshDashboard();
   }
 
-  Future<void> loadProfile() async {
-    final p = await BabyStorage().loadProfile();
-
-    if (p == null) {
-      Future.microtask(() {
-        Navigator.pushReplacementNamed(context, "/onboarding");
-      });
-      return;
-    }
-
-    setState(() {
-      profile = p;
-      loading = false;
-    });
-  }
-
-  Future<void> handleReset(BuildContext context) async {
-    final t = AppLocalizations.of(context);
-
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: Text(t.confirmResetTitle),
-        content: Text(t.confirmResetContent),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(t.cancel),
-          ),
-          TextButton(
-            onPressed: () async => Navigator.pop(context, true),
-            child: Text(
-              t.delete,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      await ResetService.clearAll();
+  Future<void> _loadProfile({bool retry = false}) async {
+    if (mounted) setState(() => _loadError = null);
+    try {
+      final children = context.read<ActiveChildProvider>();
+      if (retry) {
+        await children.reload();
+      } else {
+        await children.ensureLoaded();
+      }
+      if (children.loadError case final error?) throw error;
+      final profile = children.activeChild;
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, "/onboarding");
+
+      if (profile == null) {
+        Navigator.pushReplacementNamed(context, '/onboarding');
+        return;
+      }
+
+      setState(() {
+        _profile = profile;
+        _loading = false;
+        _dashboardRefreshVersion++;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _loadError = error;
+        _loading = false;
+      });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    final t = AppLocalizations.of(context);
+  Future<void> onActiveChildChanged() => _loadProfile();
 
-    if (loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+  void _refreshDashboard() {
+    if (!mounted) return;
+    setState(() => _dashboardRefreshVersion++);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final homePreferencesProvider = context.watch<HomePreferencesProvider>();
+    final homePreferences = homePreferencesProvider.value;
+    if (_loadError != null) {
+      return Scaffold(
+        body: SafeArea(
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 52,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(l10n.loadFailed, textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: () {
+                      setState(() => _loading = true);
+                      _loadProfile(retry: true);
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(l10n.retry),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       );
+    }
+    if (_loading || !homePreferencesProvider.isLoaded) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-
-      appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/icon/app_icon_foreground.png',
-              width: 28,
-              height: 28,
-            ),
-            const SizedBox(width: 8),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  t.appTitle,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    height: 1.1,
-                  ),
-                ),
-                Text(
-                  t.appSubtitle,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withValues(alpha: 0.65),
-                    height: 1.2,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).cardColor,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(
-              Theme.of(context).brightness == Brightness.dark
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
-            ),
-            onPressed: () {
-              context.read<ThemeProvider>().toggleTheme();
-            },
-          ),
-          PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == "reset") {
-                handleReset(context);
-              }
-            },  
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: "reset",
-                child: Text(t.resetApp),
-              ),
-            ],
-          )
-        ],
-      ),
-
+      appBar: _buildAppBar(l10n),
       body: AnimatedOpacity(
         duration: const Duration(milliseconds: 600),
-        opacity: opacity,
+        opacity: _opacity,
         child: SingleChildScrollView(
           child: Column(
             children: [
-              BabyCard(profile: profile!),
-
-              const SizedBox(height: 16),
-
-              /// 🆕 TODAY SUMMARY
-              TodaySummaryCard(key: _todaySummaryKey),
-
+              BabyCard(profile: _profile!),
+              const SizedBox(height: 4),
+              LiveFeedingHomeCard(refreshVersion: _dashboardRefreshVersion),
               const SizedBox(height: 12),
-
-              LiveFeedingHomeCard(key: _liveFeedingKey),
-
-              const SizedBox(height: 20),
-
-              /// QUICK ACTIONS TITLE
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    t.quickActions,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              /// MODERN GRID
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 14,
-                  childAspectRatio: 1.1,
-                  children: [
-                    HomeActionCard(
-                      icon: Icons.favorite,
-                      title: t.feeding,
-                      subtitle: t.startSession,
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const FeedingScreen(),
-                          ),
-                        );
-                        await _todaySummaryKey.currentState?.loadStats();
-                        await _liveFeedingKey.currentState?.refresh();
-                      },
-                    ),
-                    HomeActionCard(
-                      icon: Icons.history,
-                      title: t.history,
-                      subtitle: t.pastFeedings,
-                      onTap: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const HistoryHubScreen(),
-                          ),
-                        );
-                        await _todaySummaryKey.currentState?.loadStats();
-                      },
-                    ),
-                    HomeActionCard(
-                      icon: Icons.baby_changing_station,
-                      title: t.diaper,
-                      subtitle: t.trackChanges,
-                      onTap: () async {
-                        await Navigator.pushNamed(context, "/diaper");
-                        await _todaySummaryKey.currentState?.loadStats();
-                      },
-                    ),
-                    HomeActionCard(
-                      icon: Icons.monitor_weight,
-                      title: t.growth,
-                      subtitle: t.updateWeight,
-                      onTap: () async {
-                        await Navigator.pushNamed(context, "/growth_update");
-                        await loadProfile();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
+              ..._buildDashboardCards(homePreferences),
+              if (homePreferences.visibleQuickActions.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                _buildQuickActionsTitle(l10n),
+                const SizedBox(height: 10),
+                _buildQuickActions(l10n, homePreferences),
+              ],
               const SizedBox(height: 30),
             ],
           ),
@@ -289,386 +164,248 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
       ),
     );
   }
-}
 
-class TodaySummaryCard extends StatefulWidget {
-  const TodaySummaryCard({super.key});
-
-  @override
-  State<TodaySummaryCard> createState() => _TodaySummaryCardState();
-}
-
-class _TodaySummaryCardState extends State<TodaySummaryCard> {
-  int feedingCount = 0;
-  int diaperCount = 0;
-  String lastActivity = "-";
-
-  @override
-  void initState() {
-    super.initState();
-    loadStats();
-  }
-
-  bool isToday(DateTime date) {
-    final now = DateTime.now();
-
-    return date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day;
-  }
-
-  String formatLast(DateTime time) {
-    final diff = DateTime.now().difference(time);
-
-    if (diff.inMinutes < 60) {
-      return "${diff.inMinutes} min ago";
-    }
-
-    if (diff.inHours < 24) {
-      return "${diff.inHours} h ago";
-    }
-
-    return "${diff.inDays} d ago";
-  }
-
-  Future<void> loadStats() async {
-    final feedingSessions = await FeedingStorage().loadSessions();
-
-    final diaperEntries = await DiaperStorage().loadEntries();
-
-    final todayFeedings = feedingSessions.where(
-      (s) => isToday(s.startTime),
-    ).toList();
-
-    final todayDiapers = diaperEntries.where(
-      (d) => isToday(d.timestamp),
-    ).toList();
-
-    final List<DateTime> activities = [];
-
-    activities.addAll(
-      todayFeedings.map((e) => e.startTime),
-    );
-
-    activities.addAll(
-      todayDiapers.map((e) => e.timestamp),
-    );
-
-    activities.sort();
-
-    if (!mounted) return;
-
-    setState(() {
-      feedingCount = todayFeedings.length;
-      diaperCount = todayDiapers.length;
-      lastActivity =
-          activities.isNotEmpty ? formatLast(activities.last) : "-";
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final t = AppLocalizations.of(context);
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 16,
-      ),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            color: theme.brightness ==
-                    Brightness.dark
-                ? Colors.black.withOpacity(0.25)
-                : Colors.black.withOpacity(0.05),
-          )
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
-        children: [
-          Text(
-            t.todayActivities,
-            style: theme.textTheme.titleMedium
-                ?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+  List<Widget> _buildDashboardCards(HomePreferences preferences) {
+    final cards = <Widget>[];
+    for (final card in preferences.dashboardOrder) {
+      if (!preferences.visibleDashboardCards.contains(card)) continue;
+      cards
+        ..add(switch (card) {
+          HomeDashboardCard.todaySummary => TodaySummaryCard(
+            childId: _profile!.id,
+            refreshVersion: _dashboardRefreshVersion,
           ),
+          HomeDashboardCard.quickDiaper => QuickDiaperCard(
+            childId: _profile!.id,
+            preferredType: preferences.preferredQuickDiaperType,
+            onChanged: _refreshDashboard,
+            onOpenDetails: () async {
+              await Navigator.pushNamed(context, '/diaper');
+              _refreshDashboard();
+            },
+          ),
+          HomeDashboardCard.upcomingCare => UpcomingCareCard(
+            refreshVersion: _dashboardRefreshVersion,
+          ),
+        })
+        ..add(const SizedBox(height: 12));
+    }
+    return cards;
+  }
 
-          const SizedBox(height: 12),
-
-          Row(
-            mainAxisAlignment:
-                MainAxisAlignment.spaceBetween,
+  PreferredSizeWidget _buildAppBar(AppLocalizations l10n) {
+    return AppBar(
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/icon/app_icon_foreground.png',
+            width: 28,
+            height: 28,
+          ),
+          const SizedBox(width: 8),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _StatItem(
-                label: t.feeding,
-                value: feedingCount.toString(),
+              Text(
+                l10n.appTitle,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  height: 1.1,
+                ),
               ),
-              _StatItem(
-                label: t.diaper,
-                value: diaperCount.toString(),
-              ),
-              _StatItem(
-                label: t.last,
-                value: lastActivity,
+              Text(
+                l10n.appSubtitle,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha(166),
+                  height: 1.2,
+                ),
               ),
             ],
           ),
         ],
       ),
-    );
-  }
-}
-
-class _StatItem extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _StatItem({
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Column(
-      children: [
-        Text(
-          value,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        Text(
-          label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.textTheme.bodySmall?.color?.withOpacity(0.7),
-          ),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          tooltip: l10n.settings,
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const SettingsScreen()),
+            );
+            await _loadProfile();
+            _refreshDashboard();
+          },
+          icon: const Icon(Icons.settings),
         ),
       ],
     );
   }
-}
 
-/// 🆕 MODERN ACTION CARD
-class LiveFeedingHomeCard extends StatefulWidget {
-  const LiveFeedingHomeCard({super.key});
-
-  @override
-  State<LiveFeedingHomeCard> createState() => _LiveFeedingHomeCardState();
-}
-
-class _LiveFeedingHomeCardState extends State<LiveFeedingHomeCard> {
-  Timer? _timer;
-  Map<String, dynamic>? _draft;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadDraft();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      if (mounted && _draft != null) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  Future<void> _loadDraft() async {
-    final draft = await FeedingStorage().loadActiveDraft();
-    if (!mounted) return;
-    setState(() {
-      _draft = draft;
-    });
-  }
-
-  Future<void> refresh() => _loadDraft();
-
-  String _format(Duration duration) {
-    final m = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final s = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return "$m:$s";
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_draft == null) {
-      return const SizedBox.shrink();
-    }
-
-    final theme = Theme.of(context);
-    final activeSide = _draft!["activeSide"] as String?;
-    final activeStartedAtRaw = _draft!["activeSideStartedAt"] as String?;
-    final startedAt = activeStartedAtRaw == null
-        ? null
-        : DateTime.tryParse(activeStartedAtRaw);
-    final elapsed = startedAt == null
-        ? Duration.zero
-        : DateTime.now().difference(startedAt);
-
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xffFF8A65), Color(0xffFFB74D)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+  Widget _buildQuickActionsTitle(AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          l10n.quickActions,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.color?.withAlpha(180),
+          ),
         ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            color: Colors.black.withOpacity(0.08),
-          )
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.18),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Icon(
-              Icons.timer_outlined,
-              color: Colors.white,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Live feeding devam ediyor",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  activeSide == null
-                      ? "Kaydedilmemis feeding taslagi hazir"
-                      : "${activeSide == "left" ? "Sol" : "Sag"} taraf - ${_format(elapsed)}",
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.92),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const FeedingScreen(),
-                ),
-              );
-              await _loadDraft();
-            },
-            child: Text(
-              "Ac",
-              style: TextStyle(
-                color: theme.cardColor,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
-}
 
-class HomeActionCard extends StatefulWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const HomeActionCard({
-    super.key,
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  State<HomeActionCard> createState() => _HomeActionCardState();
-}
-
-class _HomeActionCardState extends State<HomeActionCard> {
-  double scale = 1;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => scale = 0.96),
-      onTapUp: (_) => setState(() => scale = 1),
-      onTapCancel: () => setState(() => scale = 1),
-      onTap: widget.onTap,
-      child: AnimatedScale(
-        scale: scale,
-        duration: const Duration(milliseconds: 120),
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: const LinearGradient(
-              colors: [Color(0xff6C8EFF), Color(0xff88E0EF)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 10,
-                offset: const Offset(0, 6),
-              )
-            ],
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildQuickActions(
+    AppLocalizations l10n,
+    HomePreferences preferences,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const gap = 12.0;
+          final compactWidth = (constraints.maxWidth - gap) / 2;
+          final actions = preferences.quickActionOrder
+              .where(preferences.visibleQuickActions.contains)
+              .toList();
+          return Wrap(
+            spacing: gap,
+            runSpacing: gap,
             children: [
-              Icon(widget.icon, color: Theme.of(context).cardColor, size: 28),
-              const Spacer(),
-              Text(
-                widget.title,
-                style: TextStyle(
-                  color: Theme.of(context).cardColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                widget.subtitle,
-                style: TextStyle(
-                  color: Theme.of(context).cardColor,
-                  fontSize: 12,
-                ),
-              ),
+              for (final action in actions)
+                _actionFor(action, l10n, compactWidth, constraints.maxWidth),
             ],
-          ),
-        ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _actionFor(
+    HomeQuickAction action,
+    AppLocalizations l10n,
+    double compactWidth,
+    double fullWidth,
+  ) => switch (action) {
+    HomeQuickAction.feeding => _compactAction(
+      width: compactWidth,
+      icon: Icons.favorite_rounded,
+      title: l10n.feeding,
+      subtitle: l10n.startSession,
+      colors: const [Color(0xffF26B8A), Color(0xffFF9A8B)],
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const FeedingScreen()),
+        );
+        _refreshDashboard();
+      },
+    ),
+    HomeQuickAction.milkInventory => _compactAction(
+      width: compactWidth,
+      icon: Icons.inventory_2_rounded,
+      title: l10n.milkInventory,
+      subtitle: l10n.premiumMilkInventory,
+      colors: const [Color(0xff5687E8), Color(0xff72C6EF)],
+      isPremium: true,
+      onTap: () {
+        PremiumAccess.open(
+          context,
+          feature: PremiumFeature.milkInventory,
+          builder: (_) => const MilkInventoryScreen(),
+        );
+      },
+    ),
+    HomeQuickAction.diaper => _compactAction(
+      width: compactWidth,
+      icon: Icons.baby_changing_station_rounded,
+      title: l10n.diaper,
+      subtitle: l10n.trackChanges,
+      colors: const [Color(0xff38AFA9), Color(0xff6DD5C3)],
+      onTap: () async {
+        await Navigator.pushNamed(context, '/diaper');
+        _refreshDashboard();
+      },
+    ),
+    HomeQuickAction.growth => _compactAction(
+      width: compactWidth,
+      icon: Icons.monitor_weight_rounded,
+      title: l10n.growth,
+      subtitle: l10n.updateWeight,
+      colors: const [Color(0xffED8A52), Color(0xffF6BD60)],
+      onTap: () async {
+        await Navigator.pushNamed(context, '/growth_update');
+        if (!mounted) return;
+        await context.read<ActiveChildProvider>().reload();
+        await _loadProfile();
+      },
+    ),
+    HomeQuickAction.careCalendar => SizedBox(
+      width: fullWidth,
+      height: 88,
+      child: HomeActionCard(
+        icon: Icons.calendar_month_rounded,
+        title: l10n.careCalendar,
+        subtitle: l10n.careCalendarSubtitle,
+        colors: const [Color(0xff5B6CFF), Color(0xff9B5DE5)],
+        isWide: true,
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CareCalendarScreen()),
+          );
+          _refreshDashboard();
+        },
+      ),
+    ),
+    HomeQuickAction.history => SizedBox(
+      width: fullWidth,
+      height: 88,
+      child: HomeActionCard(
+        icon: Icons.history_rounded,
+        title: l10n.history,
+        subtitle: l10n.pastFeedings,
+        colors: const [Color(0xff7568C9), Color(0xffA78BDA)],
+        isWide: true,
+        onTap: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const HistoryHubScreen()),
+          );
+          _refreshDashboard();
+        },
+      ),
+    ),
+  };
+
+  Widget _compactAction({
+    required double width,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required List<Color> colors,
+    required VoidCallback onTap,
+    bool isPremium = false,
+  }) {
+    return SizedBox(
+      width: width,
+      height: 112,
+      child: HomeActionCard(
+        icon: icon,
+        title: title,
+        subtitle: subtitle,
+        colors: colors,
+        isPremium: isPremium,
+        onTap: onTap,
       ),
     );
   }

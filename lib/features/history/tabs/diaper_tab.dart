@@ -1,19 +1,31 @@
 import 'package:leyumi/features/diaper/diaper_entry.dart';
+import 'package:leyumi/features/history/helpers/delete_confirmation.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:leyumi/services/diaper_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../core/child/active_child_aware.dart';
+import '../../../core/utils/app_date_utils.dart';
+import '../widgets/history_page_shell.dart';
+
+enum _DiaperHistoryFilter { sevenDays, thirtyDays, all, custom }
+
 class DiaperTab extends StatefulWidget {
-  const DiaperTab({super.key});
+  const DiaperTab({super.key, this.embedded = false});
+
+  final bool embedded;
 
   @override
   State<DiaperTab> createState() => _DiaperTabState();
 }
 
-class _DiaperTabState extends State<DiaperTab> {
+class _DiaperTabState extends State<DiaperTab>
+    with ActiveChildAware<DiaperTab> {
   List<DiaperEntry> entries = [];
   bool loading = true;
+  _DiaperHistoryFilter _filter = _DiaperHistoryFilter.sevenDays;
+  DateTimeRange? _customRange;
 
   bool showTooltip = false;
   static const _tooltipKey = 'diaper_tab_open_count';
@@ -23,12 +35,7 @@ class _DiaperTabState extends State<DiaperTab> {
   @override
   void initState() {
     super.initState();
-    _init();
-  }
-
-  Future<void> _init() async {
-    await _checkTooltip();
-    await load();
+    _checkTooltip();
   }
 
   Future<void> _checkTooltip() async {
@@ -53,9 +60,13 @@ class _DiaperTabState extends State<DiaperTab> {
     });
   }
 
+  @override
+  Future<void> onActiveChildChanged() => load();
+
   Future<void> deleteEntry(DiaperEntry entry) async {
     final l10n = AppLocalizations.of(context);
     final index = entries.indexOf(entry);
+    final messenger = ScaffoldMessenger.of(context);
 
     setState(() {
       recentlyDeleted = entry;
@@ -63,9 +74,19 @@ class _DiaperTabState extends State<DiaperTab> {
       entries.removeAt(index);
     });
 
-    await DiaperStorage().saveAllEntries(entries.reversed.toList());
+    try {
+      await DiaperStorage().saveAllEntries(entries.reversed.toList());
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        entries.insert(index, entry);
+        recentlyDeleted = null;
+        recentlyDeletedIndex = null;
+      });
+      messenger.showSnackBar(SnackBar(content: Text(l10n.operationFailed)));
+      return;
+    }
 
-    final messenger = ScaffoldMessenger.of(context);
     messenger.hideCurrentSnackBar();
 
     final controller = messenger.showSnackBar(
@@ -77,12 +98,22 @@ class _DiaperTabState extends State<DiaperTab> {
           onPressed: () async {
             if (!mounted) return;
             if (recentlyDeleted != null && recentlyDeletedIndex != null) {
+              final restored = recentlyDeleted!;
+              final restoredIndex = recentlyDeletedIndex!;
               setState(() {
-                entries.insert(recentlyDeletedIndex!, recentlyDeleted!);
+                entries.insert(restoredIndex, restored);
                 recentlyDeleted = null;
                 recentlyDeletedIndex = null;
               });
-              await DiaperStorage().saveAllEntries(entries.reversed.toList());
+              try {
+                await DiaperStorage().saveAllEntries(entries.reversed.toList());
+              } catch (_) {
+                if (!mounted) return;
+                setState(() => entries.remove(restored));
+                messenger.showSnackBar(
+                  SnackBar(content: Text(l10n.operationFailed)),
+                );
+              }
             }
           },
         ),
@@ -100,24 +131,70 @@ class _DiaperTabState extends State<DiaperTab> {
     });
   }
 
-  Map<String, List<DiaperEntry>> group(AppLocalizations l10n) {
-    final map = <String, List<DiaperEntry>>{};
+  List<DiaperEntry> get _filteredEntries {
+    if (_filter == _DiaperHistoryFilter.all) return entries;
 
-    for (final entry in entries) {
-      final now = DateTime.now();
-      final today = DateTime(now.year, now.month, now.day);
-      final day = DateTime(
-        entry.timestamp.year,
-        entry.timestamp.month,
-        entry.timestamp.day,
-      );
+    late final DateTime start;
+    late final DateTime endExclusive;
+    if (_filter == _DiaperHistoryFilter.custom && _customRange != null) {
+      start = AppDateUtils.dateOnly(_customRange!.start);
+      endExclusive = AppDateUtils.dateOnly(
+        _customRange!.end,
+      ).add(const Duration(days: 1));
+    } else {
+      final days = _filter == _DiaperHistoryFilter.sevenDays ? 7 : 30;
+      start = AppDateUtils.startOfRange(days);
+      endExclusive = AppDateUtils.dateOnly(
+        DateTime.now(),
+      ).add(const Duration(days: 1));
+    }
 
-      final key = day == today ? l10n.today : _formatSectionDate(day);
-      map.putIfAbsent(key, () => []);
-      map[key]!.add(entry);
+    return entries
+        .where(
+          (entry) =>
+              !entry.timestamp.isBefore(start) &&
+              entry.timestamp.isBefore(endExclusive),
+        )
+        .toList(growable: false);
+  }
+
+  Map<DateTime, List<DiaperEntry>> group(List<DiaperEntry> source) {
+    final map = <DateTime, List<DiaperEntry>>{};
+
+    for (final entry in source) {
+      final day = AppDateUtils.dateOnly(entry.timestamp);
+      map.putIfAbsent(day, () => []);
+      map[day]!.add(entry);
     }
 
     return map;
+  }
+
+  Future<void> _pickDateRange() async {
+    if (entries.isEmpty) return;
+
+    final today = AppDateUtils.dateOnly(DateTime.now());
+    final oldest = AppDateUtils.dateOnly(entries.last.timestamp);
+    final thirtyDayStart = AppDateUtils.startOfRange(30);
+    final defaultStart = thirtyDayStart.isBefore(oldest)
+        ? oldest
+        : thirtyDayStart;
+    final selected = await showDateRangePicker(
+      context: context,
+      firstDate: oldest,
+      lastDate: today,
+      initialDateRange:
+          _customRange ?? DateTimeRange(start: defaultStart, end: today),
+    );
+    if (selected == null || !mounted) return;
+
+    setState(() {
+      _customRange = DateTimeRange(
+        start: AppDateUtils.dateOnly(selected.start),
+        end: AppDateUtils.dateOnly(selected.end),
+      );
+      _filter = _DiaperHistoryFilter.custom;
+    });
   }
 
   @override
@@ -127,50 +204,302 @@ class _DiaperTabState extends State<DiaperTab> {
     }
 
     final l10n = AppLocalizations.of(context);
-    final grouped = group(l10n);
-    final theme = Theme.of(context);
-    final secondaryTextColor =
-        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
+    final filtered = _filteredEntries;
+    final grouped = group(filtered);
+    final today = AppDateUtils.dateOnly(DateTime.now());
 
-    return ColoredBox(
-      color: theme.scaffoldBackgroundColor,
+    return HistoryPageShell(
+      title: l10n.diaper,
+      subtitle: l10n.addDiaperChangesHint,
+      icon: Icons.baby_changing_station_rounded,
+      color: const Color(0xffF59E0B),
+      showHeader: false,
+      embedded: widget.embedded,
       child: entries.isEmpty
           ? _emptyState(l10n)
-          : ListView(
-              padding: const EdgeInsets.only(bottom: 28),
+          : Column(
               children: [
-                const SizedBox(height: 12),
-                if (showTooltip) _swipeHint(l10n),
-                for (final section in grouped.entries) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Text(
-                      section.key,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w800,
-                        color: secondaryTextColor,
-                        decoration: TextDecoration.none,
-                      ),
-                    ),
-                  ),
-                  ...section.value.map(
-                    (entry) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
-                      child: _modernItem(entry, l10n),
-                    ),
-                  ),
-                ],
+                _filterBar(l10n),
+                Expanded(
+                  child: filtered.isEmpty
+                      ? HistoryEmptyState(
+                          icon: Icons.event_busy_rounded,
+                          color: const Color(0xffF59E0B),
+                          title: l10n.noDataInRange,
+                          subtitle: l10n.addDiaperChangesHint,
+                        )
+                      : ListView(
+                          padding: const EdgeInsets.only(bottom: 32),
+                          children: [
+                            if (grouped[today] != null)
+                              _summaryCard(l10n, grouped[today]!),
+                            if (showTooltip) _swipeHint(l10n),
+                            if (grouped[today] != null) ...[
+                              HistorySectionTitle(
+                                title: l10n.today,
+                                count: grouped[today]!.length,
+                                countLabel: l10n.diaperChanges.toLowerCase(),
+                                color: const Color(0xffF59E0B),
+                              ),
+                              ...grouped[today]!.map(
+                                (entry) => _entryPadding(entry, l10n),
+                              ),
+                            ],
+                            for (final section in grouped.entries)
+                              if (section.key != today)
+                                _dayAccordion(
+                                  day: section.key,
+                                  dayEntries: section.value,
+                                  l10n: l10n,
+                                ),
+                          ],
+                        ),
+                ),
               ],
             ),
     );
   }
+
+  Widget _filterBar(AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            _filterChip(
+              label: l10n.filter7d,
+              value: _DiaperHistoryFilter.sevenDays,
+            ),
+            const SizedBox(width: 8),
+            _filterChip(
+              label: l10n.filter30d,
+              value: _DiaperHistoryFilter.thirtyDays,
+            ),
+            const SizedBox(width: 8),
+            _filterChip(label: l10n.filterAll, value: _DiaperHistoryFilter.all),
+            const SizedBox(width: 8),
+            ChoiceChip(
+              avatar: const Icon(Icons.calendar_month_rounded, size: 18),
+              label: Text(_dateRangeLabel(l10n)),
+              selected: _filter == _DiaperHistoryFilter.custom,
+              onSelected: (_) => _pickDateRange(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _filterChip({
+    required String label,
+    required _DiaperHistoryFilter value,
+  }) {
+    return ChoiceChip(
+      label: Text(label),
+      selected: _filter == value,
+      onSelected: (_) {
+        setState(() {
+          _filter = value;
+          _customRange = null;
+        });
+      },
+    );
+  }
+
+  String _dateRangeLabel(AppLocalizations l10n) {
+    final range = _customRange;
+    if (range == null) return l10n.selectDate;
+
+    final start = AppDateFormatter.shortDate(context, range.start);
+    if (AppDateUtils.isSameDay(range.start, range.end)) return start;
+    return '$start – ${AppDateFormatter.shortDate(context, range.end)}';
+  }
+
+  Widget _dayAccordion({
+    required DateTime day,
+    required List<DiaperEntry> dayEntries,
+    required AppLocalizations l10n,
+  }) {
+    final theme = Theme.of(context);
+    final secondaryTextColor =
+        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
+    final peeCount = dayEntries
+        .where(
+          (entry) =>
+              entry.type == DiaperType.pee || entry.type == DiaperType.both,
+        )
+        .length;
+    final poopCount = dayEntries
+        .where(
+          (entry) =>
+              entry.type == DiaperType.poop || entry.type == DiaperType.both,
+        )
+        .length;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 7, 16, 7),
+      decoration: BoxDecoration(
+        color: theme.cardColor.withAlpha(
+          theme.brightness == Brightness.dark ? 220 : 248,
+        ),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: const Color(0xffF59E0B).withAlpha(32)),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: Theme(
+        data: theme.copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          key: PageStorageKey('diaper-${day.toIso8601String()}'),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          childrenPadding: const EdgeInsets.only(bottom: 8),
+          leading: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: const Color(0xffF59E0B).withAlpha(26),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.calendar_today_rounded,
+              size: 19,
+              color: Color(0xffF59E0B),
+            ),
+          ),
+          title: Text(
+            AppDateFormatter.sectionDate(context, day),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w900),
+          ),
+          subtitle: Text(
+            l10n.diaperDaySummary(dayEntries.length, peeCount, poopCount),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11,
+              height: 1.3,
+              color: secondaryTextColor,
+            ),
+          ),
+          children: [
+            for (final entry in dayEntries) _entryPadding(entry, l10n),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _entryPadding(DiaperEntry entry, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: _modernItem(entry, l10n),
+    );
+  }
+
+  Widget _summaryCard(AppLocalizations l10n, List<DiaperEntry> todayItems) {
+    final peeCount = todayItems
+        .where(
+          (entry) =>
+              entry.type == DiaperType.pee || entry.type == DiaperType.both,
+        )
+        .length;
+    final poopCount = todayItems
+        .where(
+          (entry) =>
+              entry.type == DiaperType.poop || entry.type == DiaperType.both,
+        )
+        .length;
+
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 2, 16, 12),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(28),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xffF59E0B), Color(0xffF97316)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xffF59E0B).withAlpha(55),
+            blurRadius: 28,
+            offset: const Offset(0, 14),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _summaryMetric(
+              icon: Icons.today_rounded,
+              value: todayItems.length.toString(),
+              label: l10n.today,
+            ),
+          ),
+          _summaryDivider(),
+          Expanded(
+            child: _summaryMetric(
+              icon: Icons.invert_colors_rounded,
+              value: peeCount.toString(),
+              label: l10n.pee,
+            ),
+          ),
+          _summaryDivider(),
+          Expanded(
+            child: _summaryMetric(
+              icon: Icons.bubble_chart_rounded,
+              value: poopCount.toString(),
+              label: l10n.poop,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summaryMetric({
+    required IconData icon,
+    required String value,
+    required String label,
+  }) {
+    return Column(
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w900,
+            decoration: TextDecoration.none,
+          ),
+        ),
+        const SizedBox(height: 3),
+        Text(
+          label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Colors.white.withAlpha(205),
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            decoration: TextDecoration.none,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _summaryDivider() => Container(
+    width: 1,
+    height: 54,
+    margin: const EdgeInsets.symmetric(horizontal: 10),
+    color: Colors.white.withAlpha(45),
+  );
 
   Widget _swipeHint(AppLocalizations l10n) {
     final theme = Theme.of(context);
@@ -227,45 +556,49 @@ class _DiaperTabState extends State<DiaperTab> {
     final isDark = theme.brightness == Brightness.dark;
     final secondaryTextColor =
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
-    final mutedChipColor =
-        isDark ? const Color(0xff2B2B2B) : Colors.grey.shade100;
+    final mutedChipColor = isDark
+        ? const Color(0xff2B2B2B)
+        : Colors.grey.shade100;
 
     return Dismissible(
-      key: ValueKey(entry.timestamp.toIso8601String()),
+      key: ValueKey(entry.id),
       direction: DismissDirection.endToStart,
       background: Container(
         margin: const EdgeInsets.only(top: 4, bottom: 4),
         decoration: BoxDecoration(
           color: Colors.red.shade400,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(22),
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         child: const Icon(Icons.delete_outline, color: Colors.white, size: 28),
       ),
+      confirmDismiss: (_) => confirmHistoryDelete(context),
       onDismissed: (_) => deleteEntry(entry),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(16),
+          color: theme.cardColor.withAlpha(isDark ? 220 : 250),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: _bgForType(entry.type).withAlpha(90)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withAlpha(isDark ? 30 : 8),
-              blurRadius: 10,
-              offset: const Offset(0, 6),
+              color: Colors.black.withAlpha(isDark ? 34 : 10),
+              blurRadius: 16,
+              offset: const Offset(0, 10),
             ),
           ],
         ),
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.all(10),
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 color: _bgForType(entry.type),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
               ),
-              child: _icon(entry.type),
+              child: Center(child: _icon(entry.type)),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -438,79 +771,12 @@ class _DiaperTabState extends State<DiaperTab> {
     }
   }
 
-  String _formatSectionDate(DateTime date) {
-    const months = [
-      '',
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
-    ];
-
-    return "${months[date.month]} ${date.day}, ${date.year}";
-  }
-
   Widget _emptyState(AppLocalizations l10n) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final secondaryTextColor =
-        theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
-
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(28),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: theme.cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(isDark ? 35 : 13),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: const Icon(
-                Icons.baby_changing_station,
-                size: 60,
-                color: Colors.blueGrey,
-              ),
-            ),
-            const SizedBox(height: 18),
-            Text(
-              l10n.noDiaperRecordsYet,
-              style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w700,
-                decoration: TextDecoration.none,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.addDiaperChangesHint,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: secondaryTextColor,
-                decoration: TextDecoration.none,
-                fontSize: 14,
-              ),
-            ),
-          ],
-        ),
-      ),
+    return HistoryEmptyState(
+      icon: Icons.baby_changing_station_rounded,
+      color: const Color(0xffF59E0B),
+      title: l10n.noDiaperRecordsYet,
+      subtitle: l10n.addDiaperChangesHint,
     );
   }
 }

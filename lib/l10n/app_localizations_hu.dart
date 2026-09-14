@@ -1,0 +1,1595 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Hungarian (`hu`).
+class AppLocalizationsHu extends AppLocalizations {
+  AppLocalizationsHu([String locale = 'hu']) : super(locale);
+
+  @override
+  String get welcomeToLeyumi => 'Üdvözöl a Leyumi';
+
+  @override
+  String get onboardingWelcomeDescription =>
+      'Nyugodt és privát hely a baba mindennapi gondozásának és fejlődésének követéséhez.';
+
+  @override
+  String get onboardingTrackTitle => 'Minden egy helyen';
+
+  @override
+  String get onboardingTrackDescription =>
+      'Rögzítsd az etetést, pelenkacserét, növekedést és lefejt tejet az apró részletek elvesztése nélkül.';
+
+  @override
+  String get onboardingFreePremiumTitle =>
+      'Most ingyenes, további funkciók pedig tervezés alatt állnak';
+
+  @override
+  String get freePlan => 'Ingyenes';
+
+  @override
+  String get premiumPlan => 'Premium';
+
+  @override
+  String get freePlanFeatures =>
+      'Etetési, pelenka- és növekedési adatok\nGondozási naptár és közelgő események\nTeljes előzmény, sötét mód és többnyelvű támogatás';
+
+  @override
+  String get premiumPlanFeatures =>
+      'Fejlett grafikonok és gondozási tervek\nTejkészlet\nPDF gondozási jelentések\nTöbb gyermekprofil';
+
+  @override
+  String get onboardingPrivacyTitle => 'A családi adataid a tieid maradnak';
+
+  @override
+  String get onboardingPrivacyDescription =>
+      'A bejegyzések helyben, ezen az eszközön tárolódnak. Te döntöd el, mikor készítesz vagy osztasz meg jelentést.';
+
+  @override
+  String get createFirstChildProfile => 'Hozd létre gyermeked profilját';
+
+  @override
+  String get onboardingChildDescription =>
+      'Ezek az adatok személyre szabják a bejegyzéseket és jelentéseket. Később módosíthatók.';
+
+  @override
+  String get continueLabel => 'Tovább';
+
+  @override
+  String get getStarted => 'Kezdés';
+
+  @override
+  String get childProfiles => 'Gyermekprofilok';
+
+  @override
+  String get addChildProfile => 'Gyermek hozzáadása';
+
+  @override
+  String get editChildProfile => 'Gyermek szerkesztése';
+
+  @override
+  String get switchChild => 'Gyermekváltás';
+
+  @override
+  String get activeChild => 'Aktív gyermek';
+
+  @override
+  String get multipleChildrenPremiumHint =>
+      'További gyermekprofilok hamarosan elérhetők lesznek.';
+
+  @override
+  String get deleteChildProfileTitle => 'Törlöd a gyermekprofilt?';
+
+  @override
+  String get deleteChildProfileContent =>
+      'A gyermekprofilhoz tartozó összes etetési, pelenka-, növekedési, tej- és gondozási naptáradat véglegesen törlődik.';
+
+  @override
+  String get nameLengthError => 'A névnek 2–30 karakter hosszúnak kell lennie.';
+
+  @override
+  String get weightRangeError =>
+      'A súlynak 500 és 30 000 g között kell lennie.';
+
+  @override
+  String get heightRangeError =>
+      'A magasságnak 20 és 100 cm között kell lennie.';
+
+  @override
+  String get headCircumferenceRangeError =>
+      'A fejkörfogatnak 20 és 70 cm között kell lennie.';
+
+  @override
+  String get waistCircumferenceRangeError =>
+      'A derékbőségnek 20 és 100 cm között kell lennie.';
+
+  @override
+  String get milkLabelLengthError =>
+      'A címke legfeljebb 30 karakter hosszú lehet.';
+
+  @override
+  String get milkAmountRangeError =>
+      'A tejmennyiségnek 1 és 500 ml között kell lennie.';
+
+  @override
+  String get futureDateTimeError => 'A dátum és az idő nem lehet a jövőben.';
+
+  @override
+  String get selectFeedingTimesError =>
+      'Válaszd ki a kezdési és befejezési időt.';
+
+  @override
+  String get feedingTimeOrderError =>
+      'A befejezési időnek későbbinek kell lennie a kezdési időnél.';
+
+  @override
+  String get feedingDurationRangeError =>
+      'A kézi etetési bejegyzés nem lehet hosszabb 12 óránál.';
+
+  @override
+  String get feedingBeforeBirthError =>
+      'Az etetés dátuma nem lehet korábbi a gyermek születési dátumánál.';
+
+  @override
+  String get feedingDate => 'Etetés dátuma';
+
+  @override
+  String get careCalendar => 'Gondozási naptár';
+
+  @override
+  String get careCalendarSubtitle => 'Tervek, tevékenységek és emlékeztetők';
+
+  @override
+  String get addCareEvent => 'Esemény hozzáadása';
+
+  @override
+  String get editCareEvent => 'Esemény szerkesztése';
+
+  @override
+  String get eventType => 'Esemény típusa';
+
+  @override
+  String get eventTitle => 'Cím';
+
+  @override
+  String get careTitleError => 'A cím legalább 2 karakterből álljon.';
+
+  @override
+  String get careBeforeBirthError =>
+      'Az esemény dátuma nem lehet korábbi a gyermek születésénél.';
+
+  @override
+  String get carePastDateTimeError =>
+      'Az esemény dátumának és idejének a jövőben kell lennie.';
+
+  @override
+  String get careTypeRoutine => 'Rutin';
+
+  @override
+  String get careTypePlan => 'Terv';
+
+  @override
+  String get careTypeReminder => 'Emlékeztető';
+
+  @override
+  String get careTypeCare => 'Gondozás';
+
+  @override
+  String get careTypeActivity => 'Tevékenység';
+
+  @override
+  String get careTypeSupport => 'Támogatás';
+
+  @override
+  String get careTypeOther => 'Egyéb';
+
+  @override
+  String get contactOrLocation => 'Kapcsolattartó vagy helyszín';
+
+  @override
+  String get repeatPlan => 'Ismétlődési terv';
+
+  @override
+  String get repeatNone => 'Nem ismétlődik';
+
+  @override
+  String get repeatDaily => 'Naponta';
+
+  @override
+  String get repeatWeekly => 'Hetente';
+
+  @override
+  String get repeatMonthly => 'Havonta';
+
+  @override
+  String get reminder => 'Emlékeztető';
+
+  @override
+  String get reminderNone => 'Nincs emlékeztető';
+
+  @override
+  String get reminderOneHour => '1 órával előtte';
+
+  @override
+  String get reminderOneDay => '1 nappal előtte';
+
+  @override
+  String get reminderTwoDays => '2 nappal előtte';
+
+  @override
+  String get reminderScheduled => 'Emlékeztető ütemezve.';
+
+  @override
+  String get reminderTimeAlreadyPassed =>
+      'Ez az emlékeztetési idő már elmúlt. Válassz későbbi eseményidőt vagy rövidebb emlékeztetőt.';
+
+  @override
+  String get reminderCouldNotBeScheduled =>
+      'Az emlékeztetőt nem sikerült ütemezni. Ellenőrizd az értesítési engedélyt.';
+
+  @override
+  String get careReminderBody =>
+      'Hamarosan kezdődik egy tervezett tevékenység.';
+
+  @override
+  String get openSettings => 'Beállítások megnyitása';
+
+  @override
+  String get later => 'Később';
+
+  @override
+  String get advancedCarePremiumHint =>
+      'Az ismétlődő tervek hamarosan elérhetők lesznek.';
+
+  @override
+  String get premiumCarePlanning =>
+      'Fejlett tervezés és ismétlődő tevékenységek';
+
+  @override
+  String get noCareEventsForDay => 'Erre a napra nincs tervezett esemény.';
+
+  @override
+  String get markCompleted => 'Megjelölés teljesítettként';
+
+  @override
+  String get markCancelled => 'Megjelölés töröltként';
+
+  @override
+  String get statusScheduled => 'Tervezett';
+
+  @override
+  String get statusCompleted => 'Teljesítve';
+
+  @override
+  String get statusCancelled => 'Törölve';
+
+  @override
+  String get edit => 'Szerkesztés';
+
+  @override
+  String get upcomingCare => 'Közelgő események';
+
+  @override
+  String get viewCalendar => 'Naptár megnyitása';
+
+  @override
+  String get tomorrow => 'Holnap';
+
+  @override
+  String inDays(int count) {
+    return '$count nap múlva';
+  }
+
+  @override
+  String get milkInventory => 'Tejkészlet';
+
+  @override
+  String get addMilk => 'Tej hozzáadása';
+
+  @override
+  String get saveMilk => 'Tej mentése';
+
+  @override
+  String get totalMilkStock => 'Teljes tejkészlet';
+
+  @override
+  String get refrigerator => 'Hűtőszekrény';
+
+  @override
+  String get freezer => 'Fagyasztó';
+
+  @override
+  String get bottles => 'Palackok';
+
+  @override
+  String get all => 'Összes';
+
+  @override
+  String get noStoredMilk => 'Még nincs tárolt tej';
+
+  @override
+  String get noStoredMilkHint =>
+      'Add hozzá az első lefejt tejet, és a Leyumi követi a frissességét.';
+
+  @override
+  String get labelNumber => 'Címkeszám';
+
+  @override
+  String get amountMl => 'Mennyiség (ml)';
+
+  @override
+  String get storageLocation => 'Tárolás helye';
+
+  @override
+  String get expressedAt => 'Fejés dátuma és ideje';
+
+  @override
+  String get pumpedFrom => 'Fejés oldala';
+
+  @override
+  String get mixed => 'Vegyes';
+
+  @override
+  String get unspecified => 'Nincs megadva';
+
+  @override
+  String get freshFor => 'Friss még';
+
+  @override
+  String get useWithin => 'Használd fel';
+
+  @override
+  String get expired => 'Lejárt';
+
+  @override
+  String get bestBefore => 'Minőségét megőrzi';
+
+  @override
+  String get hoursShort => 'ó';
+
+  @override
+  String get useMilk => 'Tej felhasználása';
+
+  @override
+  String get confirm => 'Megerősítés';
+
+  @override
+  String get moveToFreezer => 'Áthelyezés a fagyasztóba';
+
+  @override
+  String get moveToRefrigerator => 'Áthelyezés a hűtőbe';
+
+  @override
+  String get deleteMilkTitle => 'Törlöd a tejes palackot?';
+
+  @override
+  String get deleteMilkContent =>
+      'Biztosan eltávolítod ezt a tejes palackot a készletből?';
+
+  @override
+  String get milkStorageSafetyNote =>
+      'A friss tej hűtőben legfeljebb 4 napig, fagyasztva lehetőleg 6 hónapon belül használható fel. A kisebb adagok csökkenthetik a pazarlást.';
+
+  @override
+  String get invalidMilkEntry =>
+      'Adj meg egy címkét és 1–500 ml közötti tejmennyiséget.';
+
+  @override
+  String get duplicateMilkLabel => 'Ez a címkeszám már használatban van.';
+
+  @override
+  String get discardMilk => 'Tej kiöntése';
+
+  @override
+  String get editMilkRecord => 'Bejegyzés szerkesztése';
+
+  @override
+  String get deleteIncorrectRecord => 'Hibás bejegyzés törlése';
+
+  @override
+  String get saveChanges => 'Módosítások mentése';
+
+  @override
+  String get milkHistory => 'Tejelőzmények';
+
+  @override
+  String get usedAndRemainingMilk => 'Felhasznált és megmaradt tej';
+
+  @override
+  String get remainingMilk => 'Megmaradt';
+
+  @override
+  String get usedMilk => 'Felhasznált tej';
+
+  @override
+  String get discardedMilk => 'Kiöntött tej';
+
+  @override
+  String get activity => 'Tevékenység';
+
+  @override
+  String get insights => 'Elemzések';
+
+  @override
+  String get noMilkHistory => 'Még nincs tejjel kapcsolatos esemény';
+
+  @override
+  String get dailyMilkMovement => 'Hozzáadott és felhasznált tej';
+
+  @override
+  String get last14Days => 'Utolsó 14 nap';
+
+  @override
+  String get stockOverTime => 'Tejkészlet időbeli változása';
+
+  @override
+  String get addedMilk => 'Hozzáadott tej';
+
+  @override
+  String get milkAdded => 'Tej hozzáadva';
+
+  @override
+  String get remaining => 'Megmaradt';
+
+  @override
+  String get movedToFreezer => 'Fagyasztóba helyezve';
+
+  @override
+  String get recordCorrected => 'Bejegyzés javítva';
+
+  @override
+  String get premiumTitle => 'Leyumi Premium';
+
+  @override
+  String get unlockPremium => 'Premium funkciók tervezés alatt';
+
+  @override
+  String get premiumDescription =>
+      'A tervezett Premium funkciók még nem érhetők el. A jelenlegi ingyenes funkciókat továbbra is használhatod.';
+
+  @override
+  String get premiumIncludes => 'Tervezett funkciók';
+
+  @override
+  String get premiumAnalytics =>
+      'Fejlett etetési, pelenka- és növekedési elemzések';
+
+  @override
+  String get premiumPdfReports => 'PDF gondozási jelentések';
+
+  @override
+  String get careReport => 'Gondozási jelentés';
+
+  @override
+  String get careReportDescription =>
+      'Készíts áttekinthető összefoglalót az etetési, pelenka- és növekedési adatokról.';
+
+  @override
+  String get createShareableReport => 'Megosztható gondozási összefoglaló';
+
+  @override
+  String get selectReportPeriod => 'Jelentési időszak kiválasztása';
+
+  @override
+  String get last7Days => 'Utolsó 7 nap';
+
+  @override
+  String get last30Days => 'Utolsó 30 nap';
+
+  @override
+  String get last90Days => 'Utolsó 90 nap';
+
+  @override
+  String get reportPeriod => 'Jelentési időszak';
+
+  @override
+  String get reportSummary => 'Összefoglaló';
+
+  @override
+  String get minutesShort => 'perc';
+
+  @override
+  String get secondsShort => 'mp';
+
+  @override
+  String get diaperSummary => 'Pelenka összefoglaló';
+
+  @override
+  String get growthSummary => 'Növekedési összefoglaló';
+
+  @override
+  String get dailyActivitySummary => 'Napi tevékenységek';
+
+  @override
+  String get growthMeasurements => 'Növekedési mérések';
+
+  @override
+  String generatedOn(String date) {
+    return 'Létrehozva: $date';
+  }
+
+  @override
+  String get generatedByLeyumi => 'Készítette a Leyumi';
+
+  @override
+  String get noBabyProfile => 'A baba profiladatai nem érhetők el.';
+
+  @override
+  String get birthDate => 'Születési dátum';
+
+  @override
+  String get latestMeasurement => 'Legutóbbi mérés';
+
+  @override
+  String get noChange => 'Nincs változás';
+
+  @override
+  String get weightChange => 'Súlyváltozás';
+
+  @override
+  String get heightChange => 'Magasságváltozás';
+
+  @override
+  String get noDataForPeriod => 'Ebben az időszakban nincs rögzített adat.';
+
+  @override
+  String get duration => 'Időtartam';
+
+  @override
+  String get reportDisclaimer =>
+      'Ez a jelentés a gondozó által rögzített adatok általános összefoglalója, és nem helyettesíti a szakértői értékelést vagy tanácsadást.';
+
+  @override
+  String get createAndSharePdf => 'PDF létrehozása és megosztása';
+
+  @override
+  String get preparingReport => 'Jelentés készítése...';
+
+  @override
+  String get reportGenerationFailed =>
+      'A PDF-jelentést nem sikerült létrehozni. Próbáld újra.';
+
+  @override
+  String get reportPrivacyNote =>
+      'A jelentés ezen az eszközön készül. Te döntöd el, hol és kivel osztod meg.';
+
+  @override
+  String get reportIncludes => 'A jelentés tartalma';
+
+  @override
+  String get babyInformation => 'Baba adatai';
+
+  @override
+  String get premiumMultipleChildren => 'Több gyermekprofil';
+
+  @override
+  String get premiumSmartReminders => 'Intelligens emlékeztetők';
+
+  @override
+  String get premiumMilkInventory => 'Tejkészlet kezelése';
+
+  @override
+  String get premiumAvailabilityNote =>
+      'Ezeket a funkciókat egy későbbi kiadáshoz tervezzük, és még nem érhetők el.';
+
+  @override
+  String get settings => 'Beállítások';
+
+  @override
+  String get premiumActive => 'A Premium aktív';
+
+  @override
+  String get premiumInactive => 'A Premium nem aktív';
+
+  @override
+  String get notificationSettings => 'Értesítési beállítások';
+
+  @override
+  String get notificationsPremiumHint =>
+      'Az intelligens emlékeztetők hamarosan elérhetők lesznek.';
+
+  @override
+  String get notificationsEnabled => 'Az értesítések engedélyezve vannak';
+
+  @override
+  String get notificationsDenied =>
+      'Az értesítések le vannak tiltva. Koppints az engedély újbóli kéréséhez, vagy kapcsold be a rendszerbeállításokban.';
+
+  @override
+  String get notificationsNotChecked =>
+      'Az értesítési engedély még nincs ellenőrizve.';
+
+  @override
+  String get sendTestNotification => 'Tesztértesítés küldése';
+
+  @override
+  String get sendTestNotificationDescription =>
+      'Mutass egy teszt emlékeztetőt, hogy lásd, működnek-e az értesítések.';
+
+  @override
+  String get testNotificationTitle => 'Leyumi emlékeztető';
+
+  @override
+  String get testNotificationBody =>
+      'Az értesítések működnek. Kis győzelem, nagy nyugalom.';
+
+  @override
+  String get testNotificationSent => 'Tesztértesítés elküldve.';
+
+  @override
+  String get darkMode => 'Sötét mód';
+
+  @override
+  String get darkModeDescription =>
+      'Váltás világos és sötét megjelenés között.';
+
+  @override
+  String get resetAppDescription =>
+      'Helyi adatok törlése és visszatérés az onboardinghoz.';
+
+  @override
+  String get loading => 'Betöltés...';
+
+  @override
+  String get confirmDeleteTitle => 'Törlöd a bejegyzést?';
+
+  @override
+  String get confirmDeleteContent =>
+      'Biztosan törölni szeretnéd ezt a bejegyzést? A művelet rövid ideig visszavonható.';
+
+  @override
+  String get confirmSaveTitle => 'Mented az etetési bejegyzést?';
+
+  @override
+  String get confirmSaveContent =>
+      'Biztosan menteni szeretnéd ezt az etetési bejegyzést?';
+
+  @override
+  String get dontSave => 'Ne mentsd';
+
+  @override
+  String get appTitle => 'Leyumi';
+
+  @override
+  String get appSubtitle => 'Együtt növekszünk a kis fényeddel. 🌙✨';
+
+  @override
+  String get homeTitle => 'Főoldal';
+
+  @override
+  String get feeding => 'Etetés';
+
+  @override
+  String get history => 'Előzmények';
+
+  @override
+  String get diaper => 'Pelenka';
+
+  @override
+  String get growth => 'Növekedés';
+
+  @override
+  String get startSession => 'Etetés indítása';
+
+  @override
+  String get pastFeedings => 'Korábbi etetések';
+
+  @override
+  String get trackChanges => 'Változások követése';
+
+  @override
+  String get updateWeight => 'Súly frissítése';
+
+  @override
+  String get dangerZone => 'Veszélyzóna';
+
+  @override
+  String get resetApp => 'Alkalmazás visszaállítása (Összes adat törlése)';
+
+  @override
+  String get confirmResetTitle => 'Alkalmazás visszaállítása';
+
+  @override
+  String get confirmResetContent =>
+      'Biztosan törölni szeretnéd az összes adatot?';
+
+  @override
+  String get cancel => 'Mégse';
+
+  @override
+  String get delete => 'Törlés';
+
+  @override
+  String get today => 'Ma';
+
+  @override
+  String get yesterday => 'Tegnap';
+
+  @override
+  String get older => 'Korábbiak';
+
+  @override
+  String get entryDeleted => 'Bejegyzés törölve';
+
+  @override
+  String get swipeToDelete => 'Húzd balra a törléshez';
+
+  @override
+  String get swipeHintInfo => 'Ez a tipp az első 3 megnyitáskor jelenik meg.';
+
+  @override
+  String get noDiaperRecordsYet => 'Még nincs pelenka bejegyzés';
+
+  @override
+  String get addDiaperChangesHint =>
+      'Adj hozzá pelenkacserét a főoldalról az előzmények követéséhez.';
+
+  @override
+  String get pee => 'Pisi';
+
+  @override
+  String get poop => 'Kaki';
+
+  @override
+  String get peeAndPoop => 'Pisi & Kaki';
+
+  @override
+  String get amount => 'Mennyiség';
+
+  @override
+  String get color => 'Szín';
+
+  @override
+  String get note => 'Megjegyzés';
+
+  @override
+  String get diaperScreenTitle => 'Pelenka bejegyzés hozzáadása';
+
+  @override
+  String get diaperType => 'Pelenka típusa';
+
+  @override
+  String get peeAmountTitle => 'Pisi mennyisége';
+
+  @override
+  String get poopAmountTitle => 'Kaki mennyisége';
+
+  @override
+  String get poopColor => 'Kaki színe';
+
+  @override
+  String get optionalNote => 'Opcionális megjegyzés';
+
+  @override
+  String get saveDiaperRecord => 'Pelenka bejegyzés mentése';
+
+  @override
+  String get diaperRecordSaved => 'Pelenka bejegyzés mentve';
+
+  @override
+  String get small => 'Kicsi';
+
+  @override
+  String get medium => 'Közepes';
+
+  @override
+  String get large => 'Nagy';
+
+  @override
+  String get yellow => 'Sárga';
+
+  @override
+  String get brown => 'Barna';
+
+  @override
+  String get green => 'Zöld';
+
+  @override
+  String get black => 'Fekete';
+
+  @override
+  String get mustardYellow => 'Mustársárga';
+
+  @override
+  String get yellowGreen => 'Sárga-zöld';
+
+  @override
+  String get darkGreen => 'Sötétzöld';
+
+  @override
+  String get whiteGray => 'Szürke-fehér';
+
+  @override
+  String get noFeedingSessionsYet => 'Még nincs etetési bejegyzés';
+
+  @override
+  String get startFeedingSessionHint =>
+      'Indíts etetési folyamatot, hogy tiszta idővonalon követhesd a baba etetési előzményeit.';
+
+  @override
+  String get totalFeedingDuration => 'Összes etetési idő';
+
+  @override
+  String get milk => 'Tej';
+
+  @override
+  String get average => 'Átlag';
+
+  @override
+  String get sessions => 'Etetések';
+
+  @override
+  String get totalFeedingTime => 'Összes etetési idő';
+
+  @override
+  String get comingSoon => 'Hamarosan';
+
+  @override
+  String get babyInfoTitle => 'Baba adatai';
+
+  @override
+  String get babyNameLabel => 'Baba neve';
+
+  @override
+  String get genderLabel => 'Nem';
+
+  @override
+  String get genderMale => 'Fiú';
+
+  @override
+  String get genderFemale => 'Lány';
+
+  @override
+  String get birthDateNotSelected => 'Születési dátum nincs kiválasztva';
+
+  @override
+  String get selectDate => 'Dátum kiválasztása';
+
+  @override
+  String get saveContinue => 'Mentés és folytatás';
+
+  @override
+  String get requiredField => 'Ez a mező kötelező';
+
+  @override
+  String get weightGr => 'Súly (g)';
+
+  @override
+  String get heightCm => 'Magasság (cm)';
+
+  @override
+  String get birthWeightGr => 'Születési súly (g)';
+
+  @override
+  String get birthHeightCm => 'Születési hossz (cm)';
+
+  @override
+  String get headCircumferenceOptional => 'Fejkörfogat (opcionális)';
+
+  @override
+  String get waistCircumferenceOptional => 'Derékkörfogat (opcionális)';
+
+  @override
+  String get feedingSessionTitle => 'Etetési folyamat';
+
+  @override
+  String get babyWeightGr => 'Baba súlya (g)';
+
+  @override
+  String get exampleWeight => 'pl. 2500';
+
+  @override
+  String get liveSession => 'Élő folyamat';
+
+  @override
+  String get backLiveSession =>
+      'A háttérben rögzítették a folyamatos szoptatást.';
+
+  @override
+  String get ready => 'Kész';
+
+  @override
+  String get tapLeftOrRightToStart =>
+      'Kezdéshez érintsd meg a bal vagy jobb oldalt';
+
+  @override
+  String get leftSide => 'Bal oldal';
+
+  @override
+  String get rightSide => 'Jobb oldal';
+
+  @override
+  String get live => 'ÉLŐ';
+
+  @override
+  String get stop => 'Leállítás';
+
+  @override
+  String get feedingSummary => 'Etetési összegzés';
+
+  @override
+  String get leftLabel => 'Bal';
+
+  @override
+  String get rightLabel => 'Jobb';
+
+  @override
+  String get totalLabel => 'Összesen';
+
+  @override
+  String get feedingAfterWeight => 'Etetés utáni súly';
+
+  @override
+  String get save => 'Mentés';
+
+  @override
+  String get saving => 'Mentés...';
+
+  @override
+  String get saveFailed => 'A bejegyzést nem sikerült menteni. Próbáld újra.';
+
+  @override
+  String get operationFailed =>
+      'A műveletet nem sikerült befejezni. Próbáld újra.';
+
+  @override
+  String get loadFailed => 'A bejegyzéseket nem sikerült betölteni.';
+
+  @override
+  String get retry => 'Próbáld újra';
+
+  @override
+  String get currentLabel => 'Jelenlegi';
+
+  @override
+  String get enterNewValueHint => 'Adj meg új értéket';
+
+  @override
+  String get currentGrowthSnapshot => 'Aktuális növekedési állapot';
+
+  @override
+  String get saveGrowthRecord => 'Növekedési adat mentése';
+
+  @override
+  String get growthUpdateTitle => 'Growth Update';
+
+  @override
+  String get historyHubTitle => 'Előzmények központ';
+
+  @override
+  String get historyHubSubtitle => 'Kövesd a babával kapcsolatos összes adatot';
+
+  @override
+  String get timeline => 'Idővonal';
+
+  @override
+  String get analytics => 'Elemzések';
+
+  @override
+  String get reports => 'Jelentések';
+
+  @override
+  String get recordsOverview => 'Bejegyzések áttekintése';
+
+  @override
+  String get recentTimeline => 'Legutóbbi idővonal';
+
+  @override
+  String get noTimelineRecords =>
+      'Még nincs bejegyzés. Kezdd a követést a főoldalról.';
+
+  @override
+  String get analyticsHubTitle => 'Premium elemzések';
+
+  @override
+  String get analyticsHubSubtitle =>
+      'Grafikonok és trendek etetéshez, pelenkához, növekedéshez és tejhez.';
+
+  @override
+  String get reportsHubTitle => 'Jelentések';
+
+  @override
+  String get reportsHubSubtitle =>
+      'Készíts áttekinthető összefoglalókat az etetési, pelenka- és növekedési adatokról.';
+
+  @override
+  String get diaperPatterns => 'Pelenka minták';
+
+  @override
+  String get growthTrends => 'Növekedési trendek';
+
+  @override
+  String get milkTracking => 'Tej követése';
+
+  @override
+  String get weightAndHeight => 'Súly és magasság';
+
+  @override
+  String get diaperChanges => 'Pelenkacserék';
+
+  @override
+  String diaperChangeCount(int count) {
+    return '$count csere';
+  }
+
+  @override
+  String get recordedLabel => 'rögzítve';
+
+  @override
+  String diaperDaySummary(int count, int peeCount, int poopCount) {
+    return '$count csere · $peeCount pisis · $poopCount kakis';
+  }
+
+  @override
+  String get sessionDeleted => 'Etetés törölve';
+
+  @override
+  String get undo => 'VISSZAVONÁS';
+
+  @override
+  String get thisWeek => 'Ezen a héten';
+
+  @override
+  String get swipeHistoryTip =>
+      'Tipp: Húzd balra az etetési bejegyzést a törléshez.';
+
+  @override
+  String get noGrowthDataYet => 'Még nincs növekedési adat';
+
+  @override
+  String get leftBreast => 'Bal mell';
+
+  @override
+  String get rightBreast => 'Jobb mell';
+
+  @override
+  String get initialWeight => 'Kezdő súly';
+
+  @override
+  String get finalWeight => 'Végső súly';
+
+  @override
+  String get milkIntake => 'Elfogyasztott tej';
+
+  @override
+  String get weight => 'Súly';
+
+  @override
+  String get height => 'Magasság';
+
+  @override
+  String get headCircumference => 'Fejkörfogat';
+
+  @override
+  String get waistCircumference => 'Derékkörfogat';
+
+  @override
+  String get unitGr => 'g';
+
+  @override
+  String get unitKg => 'kg';
+
+  @override
+  String get unitCm => 'cm';
+
+  @override
+  String get weightHeightRequired => 'Súly és magasság kötelező';
+
+  @override
+  String get growthRecordSaved => 'Növekedési adat mentve';
+
+  @override
+  String get growthHistoryTitle => 'Növekedési előzmények';
+
+  @override
+  String get yearsShort => 'év';
+
+  @override
+  String get monthsShort => 'hó';
+
+  @override
+  String get daysShort => 'nap';
+
+  @override
+  String get dateAndTime => 'Datum és idő';
+
+  @override
+  String get feedingGraph => 'Etetési grafikon';
+
+  @override
+  String get growthGraph => 'Növekedési grafikon';
+
+  @override
+  String get diaperGraph => 'Pelenka grafikon';
+
+  @override
+  String get viewCharts => 'Grafikonok megtekintése';
+
+  @override
+  String get growthCharts => 'Növekedési grafikonok';
+
+  @override
+  String get growthJourney => 'Növekedési út';
+
+  @override
+  String get measurementsByActualAge =>
+      'A mérések a gyermek tényleges életkora szerint jelennek meg';
+
+  @override
+  String get tapPointForDetails =>
+      'Érintsd meg a pontot az életkor, dátum és érték megtekintéséhez';
+
+  @override
+  String get tapChartPointForDetails =>
+      'Érintsd meg a pontot a dátum és érték megtekintéséhez';
+
+  @override
+  String get ageLabel => 'Életkor';
+
+  @override
+  String measurementCount(int count) {
+    return '$count mérés';
+  }
+
+  @override
+  String get manualFeedingEntry => 'Manuális etetési bejegyzés';
+
+  @override
+  String get startTime => 'Kezdési idő';
+
+  @override
+  String get endTime => 'Befejezési idő';
+
+  @override
+  String get select => 'Kiválasztás';
+
+  @override
+  String get leftRightRatio => 'Bal/Jobb arány';
+
+  @override
+  String get noData => 'Nincs adat';
+
+  @override
+  String get noGrowthData => 'Nincs növekedési adat';
+
+  @override
+  String get filter7d => '7n';
+
+  @override
+  String get filter30d => '30n';
+
+  @override
+  String get filter90d => '90n';
+
+  @override
+  String get filterAll => 'Összes';
+
+  @override
+  String dateFormat(int day, int month) {
+    return '$day.$month';
+  }
+
+  @override
+  String get quickActions => 'Akciók';
+
+  @override
+  String get todayActivities => 'Mai Tevékenységek';
+
+  @override
+  String get todayAtAGlance => 'A mai nap áttekintése';
+
+  @override
+  String todayRecordSummary(int feedingCount, int diaperCount) {
+    return '$feedingCount etetés · $diaperCount pelenka';
+  }
+
+  @override
+  String todayFeedingDuration(String duration) {
+    return 'Mai etetési idő: $duration';
+  }
+
+  @override
+  String get lastFeeding => 'Legutóbbi etetés';
+
+  @override
+  String get noFeedingRecordedYet => 'Még nincs etetési bejegyzés';
+
+  @override
+  String lastFeedingDetail(String side, String duration) {
+    return '$side · $duration';
+  }
+
+  @override
+  String get lastDiaperChange => 'Legutóbbi pelenkacsere';
+
+  @override
+  String get noDiaperRecordedYet => 'Még nincs pelenkabejegyzés';
+
+  @override
+  String get justNow => 'Épp most';
+
+  @override
+  String durationHoursMinutes(int hours, int minutes) {
+    return '$hours ó $minutes p';
+  }
+
+  @override
+  String durationMinutes(int minutes) {
+    return '$minutes perc';
+  }
+
+  @override
+  String get dashboardLoadFailed => 'A főoldali összegzés nem tölthető be.';
+
+  @override
+  String get quickDiaperTitle => 'Gyors pelenkabejegyzés';
+
+  @override
+  String get quickDiaperSubtitle => 'Válassz típust, és mentsd egy érintéssel';
+
+  @override
+  String get details => 'Részletek';
+
+  @override
+  String get quickWet => 'Pisis';
+
+  @override
+  String get quickDirty => 'Kakis';
+
+  @override
+  String get quickBoth => 'Mindkettő';
+
+  @override
+  String get quickPeeSaved => 'Pisis pelenka mentve.';
+
+  @override
+  String get quickPoopSaved => 'Kakis pelenka mentve.';
+
+  @override
+  String get quickBothSaved => 'Pisis és kakis pelenka mentve.';
+
+  @override
+  String get quickDiaperSaveFailed =>
+      'A gyors pelenkabejegyzés nem menthető. Próbáld újra.';
+
+  @override
+  String get quickDiaperUndone => 'A gyors pelenkabejegyzés visszavonva.';
+
+  @override
+  String get quickDiaperUndoFailed => 'A bejegyzés nem vonható vissza.';
+
+  @override
+  String get suggested => 'Javasolt';
+
+  @override
+  String get customizeHomeTitle => 'Főoldal testreszabása';
+
+  @override
+  String get customizeHomeSettingsSubtitle =>
+      'Kártyák megjelenítése, elrejtése és rendezése';
+
+  @override
+  String get yourHomeYourWay => 'A főoldalad, a te rended';
+
+  @override
+  String get customizeHomeIntro =>
+      'Helyezd előre a gyakori kártyákat, és rejtsd el, amire nincs szükséged.';
+
+  @override
+  String get homeInformationCards => 'Információs kártyák';
+
+  @override
+  String get homeInformationCardsSubtitle =>
+      'Rendezd a főoldali összegzéseket és gyorsbejegyzéseket.';
+
+  @override
+  String get homeQuickActions => 'Gyorsműveletek';
+
+  @override
+  String get homeQuickActionsSubtitle =>
+      'Állítsd be a műveletkártyák sorrendjét és láthatóságát.';
+
+  @override
+  String get defaultQuickDiaperType => 'Alapértelmezett gyors pelenkatípus';
+
+  @override
+  String get defaultQuickDiaperTypeSubtitle =>
+      'A kiválasztott típus jelenik meg elsőként a gyors pelenkakártyán.';
+
+  @override
+  String get restoreDefaultLayout =>
+      'Alapértelmezett elrendezés visszaállítása';
+
+  @override
+  String get homeLayoutReset =>
+      'A főoldal elrendezése visszaállt az alapértelmezettre.';
+
+  @override
+  String get moveUp => 'Mozgatás felfelé';
+
+  @override
+  String get moveDown => 'Mozgatás lefelé';
+
+  @override
+  String get last => 'Utolsó';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count perce';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count órája';
+  }
+
+  @override
+  String daysAgo(int count) {
+    return '$count napja';
+  }
+
+  @override
+  String get liveFeedingContinues => 'Az élő etetés folyamatban van';
+
+  @override
+  String get unsavedFeedingDraft => 'Egy nem mentett etetési vázlat vár';
+
+  @override
+  String get longFeedingWarning =>
+      'Az etetés már egy ideje tart. Ha elfelejtetted menteni, mentsd el most, és később módosíthatod az időt az etetési előzményekben.';
+
+  @override
+  String get activeFeedingNotificationTitle => 'Etetés folyamatban';
+
+  @override
+  String get activeFeedingNotificationBody =>
+      'Az etetési időzítő fut. Nyisd meg a Leyumit a leállításhoz vagy mentéshez.';
+
+  @override
+  String feedingSideProgress(String side, String duration) {
+    return '$side oldal - $duration';
+  }
+
+  @override
+  String get privacyPolicyTitle => 'Adatvédelmi szabályzat';
+
+  @override
+  String get privacyPolicySubtitle => 'Hogyan védi a Leyumi a helyi adataidat';
+
+  @override
+  String get aboutLeyumiTitle => 'A Leyumi névjegye';
+
+  @override
+  String get aboutLeyumiBody =>
+      'A Leyumi a gondozó által megadott babaápolási feljegyzések rendszerezésére szolgáló offline nyilvántartási eszköz. Nem orvostechnikai eszköz és nem egészségügyi szolgáltatás; nem diagnosztizál, kezel, gyógyít vagy előz meg semmilyen betegséget. Egészségügyi tanácsért, diagnózisért vagy kezelésért forduljon szakképzett egészségügyi szakemberhez.';
+
+  @override
+  String get privacyPolicyIntro =>
+      'A Leyumi internetkapcsolat nélkül működő babaápolási nyilvántartó eszköz. Ez a verzió nem igényel fiókot, és nem küldi el a gondozási adatokat a Leyumi Studio részére vagy semmilyen szerverre.';
+
+  @override
+  String get privacyPurposeTitle => 'A Leyumi célja';
+
+  @override
+  String get privacyPurposeBody =>
+      'A Leyumi egy offline nyilvántartási eszköz, amely kizárólag a gondozó által megadott babaápolási feljegyzések rendszerezését segíti. Nem orvostechnikai eszköz és nem egészségügyi szolgáltatás; nem nyújt egészségügyi tanácsot, diagnózist, kezelést, sürgősségi útmutatást vagy szakmai értékelést, továbbá nem gyógyít és nem előz meg semmilyen betegséget. Egészségügyi tanácsért, diagnózisért vagy kezelésért forduljon szakképzett egészségügyi szakemberhez.';
+
+  @override
+  String get privacyDataTitle => 'Az alkalmazás által használt adatok';
+
+  @override
+  String get privacyDataBody =>
+      'A Leyumi kizárólag az eszközödön dolgozza fel az önként megadott gyermekprofilokat, születési dátumokat, növekedési méréseket, etetési és pelenkaadatokat, tejkészletet, gondozási terveket, tevékenység-emlékeztetőket és alkalmazásbeállításokat.';
+
+  @override
+  String get privacyStorageTitle => 'Helyi tárolás';
+
+  @override
+  String get privacyStorageBody =>
+      'Az adataid helyi SQLite-adatbázisban, kizárólag a Leyumi privát alkalmazásterületén vannak ezen az eszközön. A felhő- és Android-rendszermentés ki van kapcsolva. Az alkalmazás eltávolítása vagy az eszköz elvesztése véglegesen törölheti ezeket az adatokat.';
+
+  @override
+  String get privacyBackupTitle => 'Felhasználó által vezérelt mentés';
+
+  @override
+  String get privacyBackupBody =>
+      'Jelszóval védett, titkosított .leyumi fájlt hozhatsz létre, és egy másik eszközön visszaállíthatod. Te választod ki a mentés vagy megnyitás helyét. A Leyumi Studio nem kapja meg a fájlt vagy a jelszót, és az elfelejtett jelszót nem tudja helyreállítani.';
+
+  @override
+  String get privacySharingTitle => 'Adatgyűjtés és megosztás';
+
+  @override
+  String get privacySharingBody =>
+      'A Leyumi Studio nem gyűjt személyes adatokat vagy gondozási feljegyzéseket, nem továbbítja azokat saját szervereire, nem értékesíti, nem használja reklámhoz vagy elemzéshez, és nem osztja meg harmadik féllel. Ha kifejezetten megosztasz vagy kinyomtatsz egy jelentést, az csak az általad választott célhoz kerül.';
+
+  @override
+  String get privacyRetentionTitle => 'Megőrzés és törlés';
+
+  @override
+  String get privacyRetentionBody =>
+      'Az adatok addig maradnak az eszközödön, amíg nem törlöd őket, nem állítod alaphelyzetbe a Leyumit, nem törlöd az alkalmazás adatait vagy nem távolítod el az alkalmazást. A Leyumi alaphelyzetbe állítása a Beállításokban véglegesen töröl minden helyi Leyumi-adatot.';
+
+  @override
+  String get privacySecurityTitle => 'Biztonság';
+
+  @override
+  String get privacySecurityBody =>
+      'A Leyumi az Android alkalmazás-sandboxára és az eszköz zárolására támaszkodik a helyi adatok védelmében. Tartsd naprakészen az eszközt, és védd PIN-kóddal, jelszóval vagy biometrikus zárral.';
+
+  @override
+  String get privacyContactTitle => 'Kapcsolat';
+
+  @override
+  String get privacyContactBody =>
+      'Adatvédelmi kérdésekkel fordulj a Leyumi Studio csapatához a leyumistudio@gmail.com címen.';
+
+  @override
+  String get privacyPolicyEffectiveDate =>
+      'Hatálybalépés: 2026. szeptember 12.';
+
+  @override
+  String get dataManagement => 'Adatmentés';
+
+  @override
+  String get dataManagementSubtitle =>
+      'Titkosított exportálás és visszaállítás';
+
+  @override
+  String get backupData => 'Adataim biztonsági mentése';
+
+  @override
+  String get backupDataDescription =>
+      'Jelszóval védett Leyumi biztonsági mentés létrehozása.';
+
+  @override
+  String get restoreData => 'Visszaállítás mentésből';
+
+  @override
+  String get restoreDataDescription =>
+      'Az eszköz adatainak lecserélése egy Leyumi mentéssel.';
+
+  @override
+  String get createBackupPassword => 'Védd a biztonsági mentést';
+
+  @override
+  String get restoreBackupPassword => 'Add meg a mentés jelszavát';
+
+  @override
+  String get backupPassword => 'Biztonsági mentés jelszava';
+
+  @override
+  String get confirmBackupPassword => 'Jelszó megerősítése';
+
+  @override
+  String get backupPasswordRequirement =>
+      'Használj 8–128 karaktert. A Leyumi Studio nem tudja visszaállítani ezt a jelszót.';
+
+  @override
+  String get backupPasswordsDoNotMatch => 'A jelszavak nem egyeznek.';
+
+  @override
+  String get backupSaved => 'A titkosított mentés elkészült.';
+
+  @override
+  String get restoreBackupTitle => 'Visszaállítod ezt a mentést?';
+
+  @override
+  String restoreBackupSummary(String date, int profileCount, int recordCount) {
+    return 'Létrehozva: $date · $profileCount profil · $recordCount bejegyzés';
+  }
+
+  @override
+  String get restoreBackupWarning =>
+      'Az eszközön lévő összes jelenlegi Leyumi-adat lecserélődik. A művelet nem vonható vissza, ha nincs másik biztonsági mentésed.';
+
+  @override
+  String get restoreNow => 'Visszaállítás most';
+
+  @override
+  String get restoreComplete => 'A biztonsági mentés sikeresen visszaállítva.';
+
+  @override
+  String get backupNoData =>
+      'Biztonsági mentés előtt hozz létre egy gyermekprofilt.';
+
+  @override
+  String get backupInvalidPassword =>
+      'A jelszó hibás, vagy a mentés megváltozott.';
+
+  @override
+  String get backupInvalidFile => 'Ez nem érvényes Leyumi biztonsági mentés.';
+
+  @override
+  String get backupUnsupportedVersion =>
+      'A mentést a Leyumi egy újabb, nem támogatott verziója készítette.';
+
+  @override
+  String get backupTooLarge => 'A biztonsági mentés túl nagy.';
+
+  @override
+  String get backupOperationFailed =>
+      'A biztonsági mentési művelet nem fejezhető be.';
+
+  @override
+  String get feedingAnalytics => 'Etetési elemzések';
+
+  @override
+  String get noFeedingData => 'Nincs etetési adat';
+
+  @override
+  String get noDataInRange => 'Nincs adat ebben az időszakban';
+
+  @override
+  String get widerRangeFeedingHint =>
+      'Válassz hosszabb időszakot az etetési trendek megtekintéséhez.';
+
+  @override
+  String get dailyFeedingTime => 'Napi etetési idő';
+
+  @override
+  String get dailyFeedingTimeSubtitle => 'Napi összes aktív etetési perc';
+
+  @override
+  String get sideBalance => 'Bal és jobb oldal egyensúlya';
+
+  @override
+  String get sideBalanceSubtitle => 'Napi etetési idő oldalanként';
+
+  @override
+  String get milkIntakeSubtitle =>
+      'Súlyméréses etetésekből rögzített tejbevitel';
+
+  @override
+  String get noMilkIntakeForPeriod =>
+      'Erre az időszakra nincs rögzített tejbevitel.';
+
+  @override
+  String get diaperAnalytics => 'Pelenkaelemzések';
+
+  @override
+  String get noDiaperData => 'Nincs pelenkaadat';
+
+  @override
+  String get overview => 'Áttekintés';
+
+  @override
+  String get dailyChanges => 'Napi cserék';
+
+  @override
+  String get dailyChangesSubtitle =>
+      'Érints meg egy pontot a pontos nap és összeg megtekintéséhez';
+
+  @override
+  String get dailyComposition => 'Napi összetétel';
+
+  @override
+  String get dailyCompositionSubtitle =>
+      'Pisis, kakis és vegyes cserék naponta';
+
+  @override
+  String get both => 'Mindkettő';
+
+  @override
+  String get peeAmountDistribution => 'Pisimennyiség eloszlása';
+
+  @override
+  String changesWithAmount(int count) {
+    return '$count cserénél van mennyiség megadva';
+  }
+
+  @override
+  String get activityByHour => 'Aktivitás óránként';
+
+  @override
+  String get activityByHourSubtitle =>
+      'Nézd meg, mikor történik a legtöbb pelenkacsere';
+
+  @override
+  String get widerRangeDiaperHint =>
+      'Válassz hosszabb időszakot a pelenkatrendek megtekintéséhez.';
+
+  @override
+  String get open => 'Megnyitás';
+}

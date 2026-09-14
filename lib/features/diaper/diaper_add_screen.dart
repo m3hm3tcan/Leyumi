@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import '../../services/diaper_storage.dart';
+import '../../services/baby_storage.dart';
+import '../../core/data/record_identity.dart';
 import 'diaper_entry.dart';
-import 'package:provider/provider.dart';
-import 'package:leyumi/core/theme_provider.dart';
+import '../../core/child/active_child_app_bar_title.dart';
 
 class DiaperAddScreen extends StatefulWidget {
   const DiaperAddScreen({super.key});
@@ -18,54 +20,68 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
   PoopAmount? poopAmount = PoopAmount.medium;
   PoopColor? poopColor = PoopColor.mustardYellow;
   DateTime selectedDateTime = DateTime.now();
+  bool _isSaving = false;
 
   final noteCtrl = TextEditingController();
 
+  @override
+  void dispose() {
+    noteCtrl.dispose();
+    super.dispose();
+  }
+
   Future<void> save() async {
-    final entry = DiaperEntry(
-      timestamp: selectedDateTime,
-      type: type,
-      peeAmount: type == DiaperType.pee || type == DiaperType.both
-          ? peeAmount
-          : null,
-      poopAmount: type == DiaperType.poop || type == DiaperType.both
-          ? poopAmount
-          : null,
-      poopColor: type == DiaperType.poop || type == DiaperType.both
-          ? poopColor
-          : null,
-      note: noteCtrl.text.isEmpty ? null : noteCtrl.text,
-    );
-
-    await DiaperStorage().addEntry(entry);
-
-    if (!mounted) return;
-
     final l10n = AppLocalizations.of(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.diaperRecordSaved)),
-    );
+    if (_isSaving) return;
+    setState(() => _isSaving = true);
+    try {
+      final profile = await BabyStorage().loadProfile();
+      final entry = DiaperEntry(
+        childId: profile?.id ?? RecordIdentity.legacyChildId,
+        timestamp: selectedDateTime,
+        type: type,
+        peeAmount: type == DiaperType.pee || type == DiaperType.both
+            ? peeAmount
+            : null,
+        poopAmount: type == DiaperType.poop || type == DiaperType.both
+            ? poopAmount
+            : null,
+        poopColor: type == DiaperType.poop || type == DiaperType.both
+            ? poopColor
+            : null,
+        note: noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim(),
+      );
 
-    Navigator.pop(context);
+      await DiaperStorage().addEntry(entry);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.diaperRecordSaved)));
+      Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   Future<void> pickDateTime() async {
     final date = await showDatePicker(
       context: context,
       initialDate: selectedDateTime,
-      firstDate: DateTime.now().subtract(
-        const Duration(days: 365),
-      ),
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
       lastDate: DateTime.now(),
     );
 
     if (date == null) return;
+    if (!mounted) return;
 
     final time = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.fromDateTime(
-        selectedDateTime,
-      ),
+      initialTime: TimeOfDay.fromDateTime(selectedDateTime),
     );
 
     if (time == null) return;
@@ -88,7 +104,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(l10n.diaperScreenTitle),
+        title: ActiveChildAppBarTitle(title: l10n.diaperScreenTitle),
         backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
       ),
@@ -139,7 +155,10 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
             ),
 
             // DIAPER TYPE
-            Text(l10n.diaperType, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(
+              l10n.diaperType,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
 
             Row(
@@ -153,18 +172,25 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
                         color: selected
-                          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                          : Theme.of(context).cardColor,
+                            ? Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.1)
+                            : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: selected ? Colors.blue : Theme.of(context).dividerColor,
+                          color: selected
+                              ? Colors.blue
+                              : Theme.of(context).dividerColor,
                         ),
                       ),
                       child: Center(
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(_emojiForType(t), style: const TextStyle(fontSize: 24)),
+                            Text(
+                              _emojiForType(t),
+                              style: const TextStyle(fontSize: 24),
+                            ),
                             const SizedBox(height: 4),
                             Text(
                               _labelForType(t, l10n),
@@ -172,8 +198,10 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: selected
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).textTheme.bodyLarge?.color,
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge?.color,
                               ),
                             ),
                           ],
@@ -190,7 +218,10 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
             // PEE AMOUNT
             if (type == DiaperType.pee || type == DiaperType.both) ...[
               const SizedBox(height: 8),
-              Text(l10n.peeAmountTitle, style: const TextStyle(fontWeight: FontWeight.w700)),
+              Text(
+                l10n.peeAmountTitle,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
               const SizedBox(height: 8),
               Row(
                 children: PeeAmount.values.map((p) {
@@ -203,11 +234,13 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           color: sel
-                            ? Colors.green.withOpacity(0.15)
-                            : Theme.of(context).cardColor,
+                              ? Colors.green.withValues(alpha: 0.15)
+                              : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: sel ? Colors.green : Theme.of(context).dividerColor,
+                            color: sel
+                                ? Colors.green
+                                : Theme.of(context).dividerColor,
                           ),
                         ),
                         child: Center(child: Text(_labelForPeeAmount(p, l10n))),
@@ -237,7 +270,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         decoration: BoxDecoration(
                           color: selected
-                              ? Colors.orange.withOpacity(0.15)
+                              ? Colors.orange.withValues(alpha: 0.15)
                               : Theme.of(context).cardColor,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
@@ -255,7 +288,10 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                 }).toList(),
               ),
               const SizedBox(height: 12),
-              Text(l10n.poopColor, style: const TextStyle(fontWeight: FontWeight.w700)),
+              Text(
+                l10n.poopColor,
+                style: const TextStyle(fontWeight: FontWeight.w700),
+              ),
 
               const SizedBox(height: 8),
               GridView.count(
@@ -282,10 +318,9 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: selected
-                            ? Theme.of(context)
-                                .colorScheme
-                                .primary
-                                .withOpacity(0.12)
+                            ? Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: 0.12)
                             : Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
@@ -303,9 +338,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                             decoration: BoxDecoration(
                               color: _colorForPoop(color),
                               shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.grey.shade400,
-                              ),
+                              border: Border.all(color: Colors.grey.shade400),
                             ),
                           ),
 
@@ -322,7 +355,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
                           ),
 
                           if (selected)
-                             Icon(
+                            Icon(
                               Icons.check_circle,
                               color: Theme.of(context).colorScheme.primary,
                               size: 20,
@@ -338,11 +371,16 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
             const SizedBox(height: 10),
 
             // NOTE
-            Text(l10n.note, style: const TextStyle(fontWeight: FontWeight.w700)),
+            Text(
+              l10n.note,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+            ),
             const SizedBox(height: 8),
             TextField(
               controller: noteCtrl,
               maxLines: 3,
+              maxLength: 250,
+              inputFormatters: [LengthLimitingTextInputFormatter(250)],
               decoration: InputDecoration(
                 hintText: l10n.optionalNote,
                 filled: true,
@@ -361,9 +399,9 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
               width: double.infinity,
               height: 52,
               child: ElevatedButton(
-                onPressed: save,
+                onPressed: _isSaving ? null : save,
                 child: Text(
-                  l10n.saveDiaperRecord,
+                  _isSaving ? l10n.saving : l10n.saveDiaperRecord,
                   style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
@@ -373,7 +411,6 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
       ),
     );
   }
-
 
   String _labelForType(DiaperType t, AppLocalizations l10n) {
     switch (t) {
@@ -421,13 +458,10 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
   //   }
   // }
 
-  String _labelForPoopColor(
-    PoopColor color,
-    AppLocalizations l10n,
-  ) {
+  String _labelForPoopColor(PoopColor color, AppLocalizations l10n) {
     switch (color) {
       case PoopColor.mustardYellow:
-        return  l10n.mustardYellow;
+        return l10n.mustardYellow;
 
       case PoopColor.yellowGreen:
         return l10n.yellowGreen;
@@ -468,7 +502,7 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
     }
   }
 
-   String _emojiForType(DiaperType type) {
+  String _emojiForType(DiaperType type) {
     switch (type) {
       case DiaperType.pee:
         return "💦";
@@ -480,7 +514,4 @@ class _DiaperAddScreenState extends State<DiaperAddScreen> {
         return "💦💩";
     }
   }
-
 }
-
- 

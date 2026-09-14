@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import '../../models/baby_profile.dart';
 import '../../models/growth_entry.dart';
@@ -15,11 +16,21 @@ class GrowthUpdateScreen extends StatefulWidget {
 class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   BabyProfile? profile;
   GrowthEntry? previousEntry;
+  bool _isSaving = false;
 
   final weightCtrl = TextEditingController();
   final heightCtrl = TextEditingController();
   final headCtrl = TextEditingController();
   final waistCtrl = TextEditingController();
+  final _weightFocus = FocusNode();
+  final _heightFocus = FocusNode();
+  final _headFocus = FocusNode();
+  final _waistFocus = FocusNode();
+
+  String? _weightError;
+  String? _heightError;
+  String? _headError;
+  String? _waistError;
 
   @override
   void initState() {
@@ -43,52 +54,80 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   }
 
   Future<void> save() async {
-    if (profile == null) return;
+    if (profile == null || _isSaving) return;
 
     final l10n = AppLocalizations.of(context);
+    final weight = int.tryParse(weightCtrl.text);
+    final height = int.tryParse(heightCtrl.text);
+    final head = headCtrl.text.isEmpty ? null : int.tryParse(headCtrl.text);
+    final waist = waistCtrl.text.isEmpty ? null : int.tryParse(waistCtrl.text);
 
-    if (weightCtrl.text.isEmpty || heightCtrl.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.weightHeightRequired),
-        ),
-      );
+    setState(() {
+      _weightError = weight == null || weight < 500 || weight > 30000
+          ? l10n.weightRangeError
+          : null;
+      _heightError = height == null || height < 20 || height > 100
+          ? l10n.heightRangeError
+          : null;
+      _headError =
+          headCtrl.text.isNotEmpty && (head == null || head < 20 || head > 70)
+          ? l10n.headCircumferenceRangeError
+          : null;
+      _waistError =
+          waistCtrl.text.isNotEmpty &&
+              (waist == null || waist < 20 || waist > 100)
+          ? l10n.waistCircumferenceRangeError
+          : null;
+    });
+
+    final firstInvalidFocus = _weightError != null
+        ? _weightFocus
+        : _heightError != null
+        ? _heightFocus
+        : _headError != null
+        ? _headFocus
+        : _waistError != null
+        ? _waistFocus
+        : null;
+    if (firstInvalidFocus != null) {
+      firstInvalidFocus.requestFocus();
       return;
     }
 
     final entry = GrowthEntry(
+      childId: profile!.id,
       date: DateTime.now(),
-      weight: int.parse(weightCtrl.text),
-      height: int.parse(heightCtrl.text),
-      headCircumference:
-          headCtrl.text.isEmpty ? null : int.parse(headCtrl.text),
-      waistCircumference:
-          waistCtrl.text.isEmpty ? null : int.parse(waistCtrl.text),
+      weight: weight!,
+      height: height!,
+      headCircumference: head,
+      waistCircumference: waist,
     );
 
-    await GrowthStorage().addEntry(entry);
-
-    final updated = BabyProfile(
-      name: profile!.name,
-      gender: profile!.gender,
-      birthDate: profile!.birthDate,
+    final updated = profile!.copyWith(
       weight: entry.weight,
       height: entry.height,
       headCircumference: entry.headCircumference,
       waistCircumference: entry.waistCircumference,
+      clearHeadCircumference: entry.headCircumference == null,
+      clearWaistCircumference: entry.waistCircumference == null,
     );
 
-    await BabyStorage().saveProfile(updated);
-
-    if (!mounted) return;
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.growthRecordSaved),
-      ),
-    );
-
-    Navigator.pop(context);
+    setState(() => _isSaving = true);
+    try {
+      await GrowthStorage().addEntryAndUpdateProfile(entry, updated);
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.growthRecordSaved)));
+      Navigator.pop(context);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saveFailed)));
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
@@ -97,6 +136,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     heightCtrl.dispose();
     headCtrl.dispose();
     waistCtrl.dispose();
+    _weightFocus.dispose();
+    _heightFocus.dispose();
+    _headFocus.dispose();
+    _waistFocus.dispose();
     super.dispose();
   }
 
@@ -108,27 +151,23 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     if (profile == null) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final isBoy = profile!.gender.toLowerCase() == "male";
-    final primaryColor =
-        isBoy ? const Color(0xff4DA3FF) : const Color(0xffFF6B9D);
+    final primaryColor = isBoy
+        ? const Color(0xff4DA3FF)
+        : const Color(0xffFF6B9D);
     final surfaceColor = theme.cardColor;
-    final subtleSurface = isDark ? const Color(0xff262626) : const Color(0xffF4F6FA);
+    final subtleSurface = isDark
+        ? const Color(0xff262626)
+        : const Color(0xffF4F6FA);
     final secondaryTextColor =
         theme.textTheme.bodyMedium?.color?.withAlpha(170) ?? Colors.grey;
     final shadowColor = Colors.black.withAlpha(isDark ? 40 : 10);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.growthUpdateTitle),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(l10n.growthUpdateTitle), elevation: 0),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -236,6 +275,14 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               subtleSurface: subtleSurface,
               secondaryTextColor: secondaryTextColor,
               accentColor: primaryColor,
+              focusNode: _weightFocus,
+              maxDigits: 5,
+              errorText: _weightError,
+              onChanged: (_) {
+                if (_weightError != null) {
+                  setState(() => _weightError = null);
+                }
+              },
             ),
 
             _growthField(
@@ -250,6 +297,14 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               subtleSurface: subtleSurface,
               secondaryTextColor: secondaryTextColor,
               accentColor: primaryColor,
+              focusNode: _heightFocus,
+              maxDigits: 3,
+              errorText: _heightError,
+              onChanged: (_) {
+                if (_heightError != null) {
+                  setState(() => _heightError = null);
+                }
+              },
             ),
 
             _growthField(
@@ -264,6 +319,12 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               subtleSurface: subtleSurface,
               secondaryTextColor: secondaryTextColor,
               accentColor: primaryColor,
+              focusNode: _headFocus,
+              maxDigits: 2,
+              errorText: _headError,
+              onChanged: (_) {
+                if (_headError != null) setState(() => _headError = null);
+              },
             ),
 
             _growthField(
@@ -278,6 +339,12 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               subtleSurface: subtleSurface,
               secondaryTextColor: secondaryTextColor,
               accentColor: primaryColor,
+              focusNode: _waistFocus,
+              maxDigits: 3,
+              errorText: _waistError,
+              onChanged: (_) {
+                if (_waistError != null) setState(() => _waistError = null);
+              },
             ),
 
             const SizedBox(height: 24),
@@ -286,10 +353,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: save,
+                onPressed: _isSaving ? null : save,
                 icon: const Icon(Icons.favorite),
                 label: Text(
-                  l10n.saveGrowthRecord,
+                  _isSaving ? l10n.saving : l10n.saveGrowthRecord,
                   style: const TextStyle(
                     fontWeight: FontWeight.w700,
                     fontSize: 15,
@@ -308,11 +375,11 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
   Widget _statCard(
     String title,
     String value,
-    IconData icon,
-    {required Color surfaceColor,
+    IconData icon, {
+    required Color surfaceColor,
     required Color secondaryTextColor,
-    required Color iconColor,}
-  ) {
+    required Color iconColor,
+  }) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -327,20 +394,14 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
           Text(
             value,
-            style: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-            ),
+            style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
           ),
 
           const SizedBox(height: 4),
 
           Text(
             title,
-            style: TextStyle(
-              color: secondaryTextColor,
-              fontSize: 12,
-            ),
+            style: TextStyle(color: secondaryTextColor, fontSize: 12),
           ),
         ],
       ),
@@ -359,6 +420,10 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
     required Color subtleSurface,
     required Color secondaryTextColor,
     required Color accentColor,
+    required FocusNode focusNode,
+    required int maxDigits,
+    required String? errorText,
+    required ValueChanged<String> onChanged,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 14),
@@ -377,12 +442,7 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
               const SizedBox(width: 8),
 
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
+              Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
             ],
           ),
 
@@ -390,34 +450,65 @@ class _GrowthUpdateScreenState extends State<GrowthUpdateScreen> {
 
           Text(
             "$currentLabel: $currentValue $unit",
-            style: TextStyle(
-              color: secondaryTextColor,
-            ),
+            style: TextStyle(color: secondaryTextColor),
           ),
 
           const SizedBox(height: 10),
 
           TextField(
             controller: controller,
+            focusNode: focusNode,
             keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+              LengthLimitingTextInputFormatter(maxDigits),
+            ],
+            onChanged: onChanged,
             decoration: InputDecoration(
               filled: true,
               fillColor: subtleSurface,
               hintText: hintText,
-              prefixIcon: Icon(icon, color: accentColor),
+              errorText: errorText,
+              prefixIcon: Icon(
+                icon,
+                color: errorText == null
+                    ? accentColor
+                    : Theme.of(context).colorScheme.error,
+              ),
+              suffixIcon: errorText == null
+                  ? null
+                  : Icon(
+                      Icons.error_rounded,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
-                borderSide: BorderSide.none,
+                borderSide: BorderSide(
+                  color: Theme.of(context).dividerColor.withAlpha(90),
+                ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: BorderSide(
                   color: accentColor.withAlpha(140),
                   width: 1.5,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.error,
+                  width: 2,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.error,
+                  width: 2.5,
                 ),
               ),
             ),

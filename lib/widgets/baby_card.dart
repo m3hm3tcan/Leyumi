@@ -71,19 +71,19 @@ class _BabyCardState extends State<BabyCard>
     final t = AppLocalizations.of(context);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      padding: const EdgeInsets.all(18),
+      margin: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(26),
+        borderRadius: BorderRadius.circular(22),
         color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).brightness == Brightness.dark
-              ? Colors.black.withOpacity(0.25)
-              : Colors.black.withOpacity(0.06),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          )
+                ? Colors.black.withValues(alpha: 0.25)
+                : Colors.black.withValues(alpha: 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, 7),
+          ),
         ],
       ),
       child: Stack(
@@ -96,8 +96,8 @@ class _BabyCardState extends State<BabyCard>
               child: Opacity(
                 opacity: 0.85,
                 child: SizedBox(
-                  width: 90,
-                  height: 90,
+                  width: 76,
+                  height: 76,
                   child: Lottie.asset(
                     isBoy
                         ? "assets/lottie/baby_boy_bg.json"
@@ -123,7 +123,7 @@ class _BabyCardState extends State<BabyCard>
                         Text(
                           widget.profile.name,
                           style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             fontWeight: FontWeight.w800,
                           ),
                         ),
@@ -132,7 +132,8 @@ class _BabyCardState extends State<BabyCard>
                           calculateAge(context, widget.profile.birthDate),
                           style: TextStyle(
                             fontSize: 13,
-                            color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
+                            color: Theme.of(context).textTheme.bodySmall?.color
+                                ?.withValues(alpha: 0.7),
                           ),
                         ),
                       ],
@@ -141,7 +142,7 @@ class _BabyCardState extends State<BabyCard>
                 ],
               ),
 
-              const SizedBox(height: 18),
+              const SizedBox(height: 12),
 
               /// STATS
               Row(
@@ -156,7 +157,7 @@ class _BabyCardState extends State<BabyCard>
                     t.height,
                     "${widget.profile.height} ${t.unitCm}",
                   ),
-                                  ],
+                ],
               ),
             ],
           ),
@@ -164,7 +165,7 @@ class _BabyCardState extends State<BabyCard>
       ),
     );
   }
- 
+
   Widget _stat(BuildContext context, String label, String value) {
     return Expanded(
       child: Column(
@@ -174,21 +175,16 @@ class _BabyCardState extends State<BabyCard>
             label.toUpperCase(),
             style: TextStyle(
               fontSize: 10,
-              color: Theme.of(context)
-                .textTheme
-                .bodySmall
-                ?.color
-                ?.withOpacity(0.6),
+              color: Theme.of(
+                context,
+              ).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
               letterSpacing: 1.2,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             value,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-            ),
+            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
           ),
         ],
       ),

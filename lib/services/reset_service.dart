@@ -1,8 +1,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../core/database/app_database.dart';
+
 class ResetService {
   static Future<void> clearAll() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
+    await AppDatabase.deleteAllData();
+    final preferences = await SharedPreferences.getInstance();
+    await preferences.clear();
   }
 }

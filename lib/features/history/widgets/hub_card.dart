@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../../shared/widgets/premium_badge.dart';
+
 class HubCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
+  final bool isPremium;
 
   const HubCard({
     super.key,
@@ -14,6 +17,7 @@ class HubCard extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.onTap,
+    this.isPremium = false,
   });
 
   @override
@@ -41,29 +45,31 @@ class HubCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withAlpha(31),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(icon, color: color),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: color.withAlpha(31),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: color),
+                ),
+                const Spacer(),
+                if (isPremium)
+                  const PremiumBadge(backgroundColor: Color(0xff6558E8)),
+              ],
             ),
             const Spacer(),
             Text(
               title,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w800,
-              ),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
             ),
             const SizedBox(height: 4),
             Text(
               subtitle,
-              style: TextStyle(
-                fontSize: 12,
-                color: secondaryTextColor,
-              ),
+              style: TextStyle(fontSize: 12, color: secondaryTextColor),
             ),
           ],
         ),
