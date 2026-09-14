@@ -3009,6 +3009,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open'**
   String get open;
+
+  /// No description provided for @feedingBreast.
+  ///
+  /// In en, this message translates to:
+  /// **'Breastfeeding'**
+  String get feedingBreast;
+
+  /// No description provided for @feedingFormula.
+  ///
+  /// In en, this message translates to:
+  /// **'Formula'**
+  String get feedingFormula;
+
+  /// No description provided for @feedingExpressed.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressed milk'**
+  String get feedingExpressed;
+
+  /// No description provided for @feedingUseStock.
+  ///
+  /// In en, this message translates to:
+  /// **'Use from inventory'**
+  String get feedingUseStock;
+
+  /// No description provided for @feedingBatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Milk batch'**
+  String get feedingBatch;
+
+  /// No description provided for @feedingNoStock.
+  ///
+  /// In en, this message translates to:
+  /// **'No available milk in inventory'**
+  String get feedingNoStock;
+
+  /// No description provided for @feedingConsumed.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount consumed'**
+  String get feedingConsumed;
+
+  /// No description provided for @feedingAmountError.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number greater than zero.'**
+  String get feedingAmountError;
+
+  /// No description provided for @feedingAddToMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to this meal'**
+  String get feedingAddToMeal;
+
+  /// No description provided for @feedingBottle.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottle feeding'**
+  String get feedingBottle;
+
+  /// No description provided for @feedingBottleVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded bottle volume'**
+  String get feedingBottleVolume;
+
+  /// No description provided for @feedingBreastDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Breastfeeding duration'**
+  String get feedingBreastDuration;
+
+  /// No description provided for @feedingBreastAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Breastfeeding average'**
+  String get feedingBreastAverage;
+
+  /// No description provided for @feedingNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get feedingNote;
+
+  /// No description provided for @feedingSaveMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save meal'**
+  String get feedingSaveMeal;
+
+  /// No description provided for @feedingRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get feedingRemove;
+
+  /// No description provided for @feedingMealTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Meal time'**
+  String get feedingMealTime;
+
+  /// No description provided for @feedingStockCorrection.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes to linked portions also update inventory.'**
+  String get feedingStockCorrection;
+
+  /// No description provided for @feedingStockError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save. Check the selected milk and available amount.'**
+  String get feedingStockError;
+
+  /// No description provided for @feedingMeals.
+  ///
+  /// In en, this message translates to:
+  /// **'Meals'**
+  String get feedingMeals;
 }
 
 class _AppLocalizationsDelegate

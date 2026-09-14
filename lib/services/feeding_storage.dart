@@ -8,11 +8,54 @@ import '../core/logging/app_logger.dart';
 import '../domain/repositories/feeding_repository.dart';
 import '../features/feeding/feeding_session.dart';
 import 'active_child_scope.dart';
+import 'feeding_inventory_link.dart';
 
 class FeedingStorage implements FeedingRepository {
   @override
   Future<void> saveSession(FeedingSession session) async {
+    await saveMeal(session);
+  }
+
+  Future<void> saveMeal(
+    FeedingSession session, {
+    bool inventoryAccess = false,
+  }) async {
     final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    if (childId != null && childId != session.childId) {
+      throw StateError('Active child changed');
+    }
+    await db.transaction(
+      (txn) => _save(txn, session, inventoryAccess: inventoryAccess),
+    );
+  }
+
+  Future<FeedingSession?> _find(DatabaseExecutor db, String id) async {
+    final rows = await db.query(
+      AppDatabase.feedingTable,
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return FeedingSession.fromJson(
+      Map<String, dynamic>.from(
+        jsonDecode(rows.single['payload'] as String) as Map,
+      ),
+    );
+  }
+
+  Future<void> _save(
+    DatabaseExecutor db,
+    FeedingSession session, {
+    bool inventoryAccess = false,
+  }) async {
+    await FeedingInventoryLink.reconcile(
+      db,
+      before: await _find(db, session.id),
+      after: session,
+      inventoryAccess: inventoryAccess,
+    );
     await SqliteRecords.upsert(
       db,
       AppDatabase.feedingTable,
@@ -21,6 +64,24 @@ class FeedingStorage implements FeedingRepository {
       sortTime: session.startTime,
       payload: session.toJson(),
     );
+    final drafts = await db.query(
+      AppDatabase.feedingDraftsTable,
+      where: 'child_id = ?',
+      whereArgs: [session.childId],
+      limit: 1,
+    );
+    if (drafts.isNotEmpty) {
+      final draft = jsonDecode(drafts.single['payload'] as String);
+      if (draft is Map &&
+          draft['session'] is Map &&
+          draft['session']['id'] == session.id) {
+        await db.delete(
+          AppDatabase.feedingDraftsTable,
+          where: 'child_id = ?',
+          whereArgs: [session.childId],
+        );
+      }
+    }
   }
 
   @override
@@ -44,6 +105,40 @@ class FeedingStorage implements FeedingRepository {
     return _decode(payloads).firstOrNull;
   }
 
+  Future<FeedingSession?> loadLatestBreastfeeding({String? childId}) async {
+    final db = await AppDatabase.instance;
+    final records = await _load(
+      db,
+      childId: childId ?? await ActiveChildScope.id(),
+    );
+    final breast = records.where((s) => s.hasBreastfeeding).toList()
+      ..sort((a, b) => b.startTime.compareTo(a.startTime));
+    return breast.firstOrNull;
+  }
+
+  Future<void> deleteMeal(FeedingSession session) async {
+    final db = await AppDatabase.instance;
+    final childId = await ActiveChildScope.id();
+    if (childId != null && childId != session.childId) {
+      throw StateError('Active child changed');
+    }
+    await db.transaction((txn) async {
+      final current = await _find(txn, session.id);
+      if (current == null) return;
+      await FeedingInventoryLink.reconcile(
+        txn,
+        before: current,
+        after: null,
+        inventoryAccess: false,
+      );
+      await txn.delete(
+        AppDatabase.feedingTable,
+        where: 'id = ?',
+        whereArgs: [session.id],
+      );
+    });
+  }
+
   Future<List<FeedingSession>> _load(
     DatabaseExecutor db, {
     String? childId,
@@ -60,16 +155,29 @@ class FeedingStorage implements FeedingRepository {
   Future<void> saveAllSessions(List<FeedingSession> sessions) async {
     final db = await AppDatabase.instance;
     final childId = await ActiveChildScope.id();
-    await SqliteRecords.replaceForChild(
-      db,
-      AppDatabase.feedingTable,
-      childId: childId,
-      records: sessions,
-      idOf: (item) => item.id,
-      childIdOf: (item) => item.childId,
-      sortTimeOf: (item) => item.startTime,
-      toJson: (item) => item.toJson(),
-    );
+    await db.transaction((txn) async {
+      final old = await _load(txn, childId: childId);
+      final ids = sessions.map((s) => s.id).toSet();
+      for (final session in old.where((s) => !ids.contains(s.id))) {
+        await FeedingInventoryLink.reconcile(
+          txn,
+          before: session,
+          after: null,
+          inventoryAccess: false,
+        );
+        await txn.delete(
+          AppDatabase.feedingTable,
+          where: 'id = ?',
+          whereArgs: [session.id],
+        );
+      }
+      for (final session in sessions) {
+        if (childId != null && session.childId != childId) {
+          throw StateError('Active child changed');
+        }
+        await _save(txn, session);
+      }
+    });
   }
 
   @override

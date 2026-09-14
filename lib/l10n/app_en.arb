@@ -550,5 +550,25 @@
         "type": "String"
       }
     }
-  }
+  },
+  "feedingBreast": "Breastfeeding",
+  "feedingFormula": "Formula",
+  "feedingExpressed": "Expressed milk",
+  "feedingUseStock": "Use from inventory",
+  "feedingBatch": "Milk batch",
+  "feedingNoStock": "No available milk in inventory",
+  "feedingConsumed": "Amount consumed",
+  "feedingAmountError": "Enter a whole number greater than zero.",
+  "feedingAddToMeal": "Add to this meal",
+  "feedingBottle": "Bottle feeding",
+  "feedingBottleVolume": "Recorded bottle volume",
+  "feedingBreastDuration": "Breastfeeding duration",
+  "feedingBreastAverage": "Breastfeeding average",
+  "feedingNote": "Note (optional)",
+  "feedingSaveMeal": "Save meal",
+  "feedingRemove": "Remove",
+  "feedingMealTime": "Meal time",
+  "feedingStockCorrection": "Changes to linked portions also update inventory.",
+  "feedingStockError": "Could not save. Check the selected milk and available amount.",
+  "feedingMeals": "Meals"
 }

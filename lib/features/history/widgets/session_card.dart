@@ -2,6 +2,7 @@ import 'package:leyumi/features/feeding/feeding_entry.dart';
 import 'package:leyumi/features/feeding/feeding_session.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import '../../feeding/bottle_portion.dart';
 
 class UIColors {
   static const text = Color(0xff111827);
@@ -14,8 +15,14 @@ class UIColors {
 class SessionCard extends StatelessWidget {
   final FeedingSession session;
   final VoidCallback? onEdit;
+  final VoidCallback? onAddToMeal;
 
-  const SessionCard({super.key, required this.session, this.onEdit});
+  const SessionCard({
+    super.key,
+    required this.session,
+    this.onEdit,
+    this.onAddToMeal,
+  });
 
   String _formatDuration(Duration duration, AppLocalizations l10n) {
     final h = duration.inHours;
@@ -111,6 +118,12 @@ class SessionCard extends StatelessWidget {
                 ),
               ),
               const Spacer(),
+              if (onAddToMeal != null)
+                IconButton(
+                  tooltip: l10n.feedingAddToMeal,
+                  onPressed: onAddToMeal,
+                  icon: const Icon(Icons.add_circle_outline),
+                ),
               if (onEdit != null) ...[
                 Tooltip(
                   message: l10n.edit,
@@ -141,67 +154,92 @@ class SessionCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 6),
-          Text(
-            _formatDuration(session.totalDuration, l10n),
-            style: TextStyle(
-              fontSize: 28,
-              height: 1,
-              fontWeight: FontWeight.w900,
-              color: primaryTextColor,
-              letterSpacing: -0.5,
-              decoration: TextDecoration.none,
-            ),
-          ),
-          const SizedBox(height: 1),
-          Text(
-            l10n.totalFeedingTime,
-            style: TextStyle(
-              fontSize: 12,
-              color: secondaryTextColor,
-              decoration: TextDecoration.none,
-            ),
-          ),
-          const SizedBox(height: 6),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: SizedBox(
-              height: 10,
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: leftFlex,
-                    child: Container(color: UIColors.left),
-                  ),
-                  Expanded(
-                    flex: rightFlex,
-                    child: Container(color: UIColors.right),
-                  ),
-                ],
+          if (session.hasBreastfeeding) ...[
+            Text(
+              _formatDuration(session.totalDuration, l10n),
+              style: TextStyle(
+                fontSize: 28,
+                height: 1,
+                fontWeight: FontWeight.w900,
+                color: primaryTextColor,
+                letterSpacing: -0.5,
+                decoration: TextDecoration.none,
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(
-                child: _miniStat(
-                  context: context,
-                  label: l10n.leftLabel,
-                  value: _formatDuration(leftTotal, l10n),
-                  color: UIColors.left,
+            const SizedBox(height: 1),
+            Text(
+              l10n.feedingBreastDuration,
+              style: TextStyle(
+                fontSize: 12,
+                color: secondaryTextColor,
+                decoration: TextDecoration.none,
+              ),
+            ),
+            const SizedBox(height: 6),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: SizedBox(
+                height: 10,
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: leftFlex,
+                      child: Container(color: UIColors.left),
+                    ),
+                    Expanded(
+                      flex: rightFlex,
+                      child: Container(color: UIColors.right),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: _miniStat(
-                  context: context,
-                  label: l10n.rightLabel,
-                  value: _formatDuration(rightTotal, l10n),
-                  color: UIColors.right,
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Expanded(
+                  child: _miniStat(
+                    context: context,
+                    label: l10n.leftLabel,
+                    value: _formatDuration(leftTotal, l10n),
+                    color: UIColors.left,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _miniStat(
+                    context: context,
+                    label: l10n.rightLabel,
+                    value: _formatDuration(rightTotal, l10n),
+                    color: UIColors.right,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          for (final bottle in session.bottles)
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading: Icon(
+                Icons.local_drink_outlined,
+                color: bottle.milk == BottleMilk.formula
+                    ? const Color(0xffB579DB)
+                    : UIColors.milk,
+              ),
+              title: Text(
+                bottle.milk == BottleMilk.formula
+                    ? l10n.feedingFormula
+                    : l10n.feedingExpressed,
+              ),
+              trailing: Text(
+                '${bottle.amountMl} ml',
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-            ],
-          ),
+            ),
+          if (session.note?.isNotEmpty ?? false) Text(session.note!),
           if (milk > 0) ...[
             const SizedBox(height: 8),
             Container(

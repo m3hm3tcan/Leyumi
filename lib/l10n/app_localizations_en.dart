@@ -1574,4 +1574,66 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get open => 'Open';
+
+  @override
+  String get feedingBreast => 'Breastfeeding';
+
+  @override
+  String get feedingFormula => 'Formula';
+
+  @override
+  String get feedingExpressed => 'Expressed milk';
+
+  @override
+  String get feedingUseStock => 'Use from inventory';
+
+  @override
+  String get feedingBatch => 'Milk batch';
+
+  @override
+  String get feedingNoStock => 'No available milk in inventory';
+
+  @override
+  String get feedingConsumed => 'Amount consumed';
+
+  @override
+  String get feedingAmountError => 'Enter a whole number greater than zero.';
+
+  @override
+  String get feedingAddToMeal => 'Add to this meal';
+
+  @override
+  String get feedingBottle => 'Bottle feeding';
+
+  @override
+  String get feedingBottleVolume => 'Recorded bottle volume';
+
+  @override
+  String get feedingBreastDuration => 'Breastfeeding duration';
+
+  @override
+  String get feedingBreastAverage => 'Breastfeeding average';
+
+  @override
+  String get feedingNote => 'Note (optional)';
+
+  @override
+  String get feedingSaveMeal => 'Save meal';
+
+  @override
+  String get feedingRemove => 'Remove';
+
+  @override
+  String get feedingMealTime => 'Meal time';
+
+  @override
+  String get feedingStockCorrection =>
+      'Changes to linked portions also update inventory.';
+
+  @override
+  String get feedingStockError =>
+      'Could not save. Check the selected milk and available amount.';
+
+  @override
+  String get feedingMeals => 'Meals';
 }

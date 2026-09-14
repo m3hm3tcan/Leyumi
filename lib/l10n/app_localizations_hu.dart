@@ -1592,4 +1592,66 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get open => 'Megnyitás';
+
+  @override
+  String get feedingBreast => 'Szoptatás';
+
+  @override
+  String get feedingFormula => 'Tápszer';
+
+  @override
+  String get feedingExpressed => 'Lefejt anyatej';
+
+  @override
+  String get feedingUseStock => 'Felhasználás a készletből';
+
+  @override
+  String get feedingBatch => 'Tejadag';
+
+  @override
+  String get feedingNoStock => 'Nincs felhasználható tej a készletben';
+
+  @override
+  String get feedingConsumed => 'Elfogyasztott mennyiség';
+
+  @override
+  String get feedingAmountError => 'Adj meg nullánál nagyobb egész számot.';
+
+  @override
+  String get feedingAddToMeal => 'Hozzáadás az etetéshez';
+
+  @override
+  String get feedingBottle => 'Cumisüveges etetés';
+
+  @override
+  String get feedingBottleVolume => 'Rögzített cumisüveges mennyiség';
+
+  @override
+  String get feedingBreastDuration => 'Szoptatási idő';
+
+  @override
+  String get feedingBreastAverage => 'Átlagos szoptatási idő';
+
+  @override
+  String get feedingNote => 'Megjegyzés (nem kötelező)';
+
+  @override
+  String get feedingSaveMeal => 'Etetés mentése';
+
+  @override
+  String get feedingRemove => 'Eltávolítás';
+
+  @override
+  String get feedingMealTime => 'Etetés időpontja';
+
+  @override
+  String get feedingStockCorrection =>
+      'A kapcsolt adagok módosítása a készletet is frissíti.';
+
+  @override
+  String get feedingStockError =>
+      'A mentés sikertelen. Ellenőrizd a kiválasztott tejet és az elérhető mennyiséget.';
+
+  @override
+  String get feedingMeals => 'Etetések';
 }

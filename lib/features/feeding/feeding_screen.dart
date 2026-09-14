@@ -12,6 +12,8 @@ import 'feeding_draft_service.dart';
 import 'feeding_entry.dart';
 import 'feeding_session.dart';
 import 'feeding_side_suggestion.dart';
+import 'bottle_portion.dart';
+import 'sheets/bottle_meal_sheet.dart';
 import 'sheets/manual_feeding_sheet.dart';
 import 'widgets/feeding_save_dialog.dart';
 import 'widgets/feeding_side_selector.dart';
@@ -100,7 +102,7 @@ class _FeedingScreenState extends State<FeedingScreen>
     }
 
     final profile = await BabyStorage().loadProfile();
-    final latest = await _storage.loadLatestSession(childId: profile?.id);
+    final latest = await _storage.loadLatestBreastfeeding(childId: profile?.id);
     if (!mounted) return;
     setState(() => _suggestedSide = FeedingSideSuggestion.nextFor(latest));
   }
@@ -151,6 +153,28 @@ class _FeedingScreenState extends State<FeedingScreen>
     );
     if (session == null) return;
     await _saveManualSession(session);
+  }
+
+  Future<void> _openBottle(BottleMilk milk) async {
+    if (_activeSide != null || _isSaving) return;
+    FeedingSession? meal;
+    if (_controller.currentSession != null) {
+      final weight = _validatedWeight(_endWeightController, isStart: false);
+      if (_endWeightController.text.trim().isNotEmpty && weight == null) return;
+      _controller.setEndWeight(weight);
+      meal = _controller.createFinishedSession();
+    }
+    final saved = await showModalBottomSheet<FeedingSession>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => BottleMealSheet(meal: meal, initialMilk: milk),
+    );
+    if (saved == null) return;
+    _controller.clearSession();
+    await _draftService.clear();
+    _cancelActiveFeedingNotification();
+    if (mounted) Navigator.pop(context);
   }
 
   Future<void> _saveManualSession(FeedingSession session) async {
@@ -335,6 +359,34 @@ class _FeedingScreenState extends State<FeedingScreen>
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
           child: Column(
             children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  Chip(
+                    avatar: const Icon(Icons.favorite_outline),
+                    label: Text(l10n.feedingBreast),
+                  ),
+                  for (final milk in BottleMilk.values)
+                    ActionChip(
+                      avatar: const Icon(Icons.local_drink_outlined),
+                      label: Text(
+                        milk == BottleMilk.formula
+                            ? l10n.feedingFormula
+                            : l10n.feedingExpressed,
+                      ),
+                      onPressed: _activeSide != null || _isSaving
+                          ? null
+                          : () => _openBottle(milk),
+                    ),
+                ],
+              ),
+              if (entries.isNotEmpty && _activeSide == null)
+                Text(
+                  l10n.feedingAddToMeal,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              const SizedBox(height: 16),
               if (session == null) ...[
                 FeedingWeightField(
                   controller: _startWeightController,

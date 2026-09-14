@@ -550,5 +550,25 @@
         "type": "String"
       }
     }
-  }
+  },
+  "feedingBreast": "Emzirme",
+  "feedingFormula": "Mama",
+  "feedingExpressed": "Sağılmış anne sütü",
+  "feedingUseStock": "Stoktan kullan",
+  "feedingBatch": "Süt paketi",
+  "feedingNoStock": "Stokta kullanılabilir süt yok",
+  "feedingConsumed": "İçilen miktar",
+  "feedingAmountError": "Sıfırdan büyük bir tam sayı girin.",
+  "feedingAddToMeal": "Bu öğüne ekle",
+  "feedingBottle": "Biberonla beslenme",
+  "feedingBottleVolume": "Kaydedilen biberon miktarı",
+  "feedingBreastDuration": "Emzirme süresi",
+  "feedingBreastAverage": "Emzirme ortalaması",
+  "feedingNote": "Not (isteğe bağlı)",
+  "feedingSaveMeal": "Öğünü kaydet",
+  "feedingRemove": "Kaldır",
+  "feedingMealTime": "Öğün zamanı",
+  "feedingStockCorrection": "Bağlı kayıtları değiştirmek süt stoğunu da günceller.",
+  "feedingStockError": "Kaydedilemedi. Seçilen sütü ve kullanılabilir miktarı kontrol edin.",
+  "feedingMeals": "Öğün"
 }

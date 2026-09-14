@@ -1576,4 +1576,66 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get open => 'Aç';
+
+  @override
+  String get feedingBreast => 'Emzirme';
+
+  @override
+  String get feedingFormula => 'Mama';
+
+  @override
+  String get feedingExpressed => 'Sağılmış anne sütü';
+
+  @override
+  String get feedingUseStock => 'Stoktan kullan';
+
+  @override
+  String get feedingBatch => 'Süt paketi';
+
+  @override
+  String get feedingNoStock => 'Stokta kullanılabilir süt yok';
+
+  @override
+  String get feedingConsumed => 'İçilen miktar';
+
+  @override
+  String get feedingAmountError => 'Sıfırdan büyük bir tam sayı girin.';
+
+  @override
+  String get feedingAddToMeal => 'Bu öğüne ekle';
+
+  @override
+  String get feedingBottle => 'Biberonla beslenme';
+
+  @override
+  String get feedingBottleVolume => 'Kaydedilen biberon miktarı';
+
+  @override
+  String get feedingBreastDuration => 'Emzirme süresi';
+
+  @override
+  String get feedingBreastAverage => 'Emzirme ortalaması';
+
+  @override
+  String get feedingNote => 'Not (isteğe bağlı)';
+
+  @override
+  String get feedingSaveMeal => 'Öğünü kaydet';
+
+  @override
+  String get feedingRemove => 'Kaldır';
+
+  @override
+  String get feedingMealTime => 'Öğün zamanı';
+
+  @override
+  String get feedingStockCorrection =>
+      'Bağlı kayıtları değiştirmek süt stoğunu da günceller.';
+
+  @override
+  String get feedingStockError =>
+      'Kaydedilemedi. Seçilen sütü ve kullanılabilir miktarı kontrol edin.';
+
+  @override
+  String get feedingMeals => 'Öğün';
 }

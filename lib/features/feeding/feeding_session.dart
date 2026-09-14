@@ -1,5 +1,6 @@
 import '../../core/data/record_identity.dart';
 import 'feeding_entry.dart';
+import 'bottle_portion.dart';
 
 class FeedingSession {
   FeedingSession({
@@ -8,6 +9,8 @@ class FeedingSession {
     required this.startTime,
     required this.endTime,
     required this.entries,
+    this.bottles = const [],
+    this.note,
     this.startWeightGr,
     this.endWeightGr,
     this.milkIntakeGr,
@@ -22,6 +25,33 @@ class FeedingSession {
   final DateTime startTime;
   final DateTime endTime;
   final List<FeedingEntry> entries;
+  final List<BottlePortion> bottles;
+  final String? note;
+  bool get hasBreastfeeding =>
+      entries.any((entry) => entry.duration > Duration.zero);
+  int amountFor(BottleMilk milk) => bottles
+      .where((b) => b.milk == milk)
+      .fold(0, (sum, b) => sum + b.amountMl);
+  int get bottleAmountMl => bottles.fold(0, (sum, b) => sum + b.amountMl);
+
+  FeedingSession withBottles(
+    List<BottlePortion> portions, {
+    String? note,
+    DateTime? time,
+  }) => FeedingSession(
+    id: id,
+    childId: childId,
+    startTime: time ?? startTime,
+    endTime: time == null ? endTime : time.add(endTime.difference(startTime)),
+    entries: entries,
+    bottles: portions,
+    note: note ?? this.note,
+    startWeightGr: startWeightGr,
+    endWeightGr: endWeightGr,
+    milkIntakeGr: milkIntakeGr,
+    createdAt: createdAt,
+    updatedAt: DateTime.now(),
+  );
   final int? startWeightGr;
   final int? endWeightGr;
   final int? milkIntakeGr;
@@ -50,7 +80,9 @@ class FeedingSession {
   DateTime get endTimeSafe => entries.isNotEmpty ? endTime : startTime;
 
   Map<String, dynamic> toJson() => {
-    'schemaVersion': 2,
+    'schemaVersion': 3,
+    'bottles': bottles.map((b) => b.toJson()).toList(),
+    'note': note,
     'id': id,
     'childId': childId,
     'startTime': startTime.toIso8601String(),
@@ -73,6 +105,12 @@ class FeedingSession {
       childId: json['childId'] as String? ?? RecordIdentity.legacyChildId,
       startTime: startTime,
       endTime: endTime,
+      bottles: (json['bottles'] as List<dynamic>? ?? [])
+          .map(
+            (b) => BottlePortion.fromJson(Map<String, dynamic>.from(b as Map)),
+          )
+          .toList(),
+      note: json['note'] as String?,
       entries: (json['entries'] as List<dynamic>)
           .map(
             (entry) =>

@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/utils/app_date_utils.dart';
 import '../../../core/child/active_child_aware.dart';
+import '../../feeding/bottle_portion.dart';
 
 class FeedingGraphScreen extends StatefulWidget {
   const FeedingGraphScreen({super.key, this.embedded = false});
@@ -277,9 +278,13 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
                       : Column(
                           children: [
                             _summaryCard(),
-                            _dailyTotalChart(),
-                            _sideBalanceChart(),
-                            _milkChart(),
+                            if (filtered.any((s) => s.hasBreastfeeding)) ...[
+                              _dailyTotalChart(),
+                              _sideBalanceChart(),
+                              _milkChart(),
+                            ],
+                            if (filtered.any((s) => s.bottles.isNotEmpty))
+                              _bottleChart(),
                           ],
                         ),
                 ),
@@ -299,9 +304,8 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
       0,
       (sum, session) => sum + session.totalDuration.inMinutes,
     );
-    final average = filtered.isEmpty
-        ? 0
-        : (totalMinutes / filtered.length).round();
+    final breastCount = filtered.where((s) => s.hasBreastfeeding).length;
+    final average = breastCount == 0 ? 0 : (totalMinutes / breastCount).round();
     final totalMilk = _sum(milkTotals);
 
     return Container(
@@ -327,7 +331,10 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            l10n.totalFeedingTime.toUpperCase(),
+            (breastCount > 0
+                    ? l10n.feedingBreastDuration
+                    : l10n.feedingBottleVolume)
+                .toUpperCase(),
             style: TextStyle(
               color: Colors.white.withAlpha(180),
               fontSize: 10,
@@ -337,7 +344,9 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
           ),
           const SizedBox(height: 6),
           Text(
-            _durationLabel(totalMinutes),
+            breastCount > 0
+                ? _durationLabel(totalMinutes)
+                : '${filtered.fold<int>(0, (sum, s) => sum + s.bottleAmountMl)} ml',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -353,12 +362,17 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
               _summaryDivider(),
               Expanded(
                 child: _summaryValue(
-                  '$average ${l10n.minutesShort}',
-                  l10n.average,
+                  breastCount > 0 ? '$average ${l10n.minutesShort}' : '—',
+                  l10n.feedingBreastAverage,
                 ),
               ),
               _summaryDivider(),
-              Expanded(child: _summaryValue('${totalMilk}g', l10n.milk)),
+              Expanded(
+                child: _summaryValue(
+                  filtered.any((s) => s.hasMilkData) ? '${totalMilk}g' : '—',
+                  l10n.milk,
+                ),
+              ),
             ],
           ),
         ],
@@ -539,6 +553,63 @@ class _FeedingGraphScreenState extends State<FeedingGraphScreen>
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _bottleChart() {
+    final l10n = AppLocalizations.of(context);
+    Map<DateTime, int> totals(BottleMilk milk) {
+      final values = <DateTime, int>{};
+      for (final meal in filtered) {
+        final day = _dateOnly(meal.startTime);
+        values[day] = (values[day] ?? 0) + meal.amountFor(milk);
+      }
+      return values;
+    }
+
+    final formula = totals(BottleMilk.formula);
+    final expressed = totals(BottleMilk.expressed);
+    final maxY = _maxFor([formula, expressed], seconds: false);
+    final interval = niceInterval(maxY);
+    return PremiumChartCard(
+      title: l10n.feedingBottleVolume,
+      subtitle:
+          '${l10n.feedingFormula}: ${_sum(formula)} ml · ${l10n.feedingExpressed}: ${_sum(expressed)} ml',
+      trailing: GraphLegend(
+        items: [
+          (graphPink, l10n.feedingFormula),
+          (graphGreen, l10n.feedingExpressed),
+        ],
+        alignment: WrapAlignment.end,
+      ),
+      child: SizedBox(
+        height: 230,
+        child: LineChart(
+          LineChartData(
+            minX: 0,
+            maxX: math.max(0, sortedDays.length - 1).toDouble(),
+            minY: 0,
+            maxY: maxY,
+            gridData: premiumGrid(context, interval: interval),
+            borderData: FlBorderData(show: false),
+            titlesData: _titles(
+              interval: interval,
+              valueLabel: (v) => '${v.round()} ml',
+            ),
+            lineTouchData: _touchData(
+              unit: 'ml',
+              labels: [l10n.feedingFormula, l10n.feedingExpressed],
+            ),
+            lineBarsData: [
+              _line(spots: _spots(formula, seconds: false), color: graphPink),
+              _line(
+                spots: _spots(expressed, seconds: false),
+                color: graphGreen,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 

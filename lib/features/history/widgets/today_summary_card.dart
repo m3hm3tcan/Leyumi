@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:leyumi/features/feeding/feeding_session.dart';
 import 'package:leyumi/l10n/app_localizations.dart';
+import '../../feeding/bottle_portion.dart';
 
 class TodaySummaryCard extends StatelessWidget {
   final List<FeedingSession> sessions;
@@ -33,9 +34,10 @@ class TodaySummaryCard extends StatelessWidget {
       (a, b) => a + (b.milkIntakeGr ?? 0),
     );
 
-    final avgDuration = sessions.isEmpty
+    final breastCount = sessions.where((s) => s.hasBreastfeeding).length;
+    final avgDuration = breastCount == 0
         ? Duration.zero
-        : Duration(seconds: totalDuration.inSeconds ~/ sessions.length);
+        : Duration(seconds: totalDuration.inSeconds ~/ breastCount);
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 8, 16, 20),
@@ -98,7 +100,9 @@ class TodaySummaryCard extends StatelessWidget {
 
           /// HERO NUMBER
           Text(
-            _format(totalDuration, l10n),
+            breastCount > 0
+                ? _format(totalDuration, l10n)
+                : '${sessions.fold<int>(0, (sum, s) => sum + s.bottleAmountMl)} ml',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 42,
@@ -112,7 +116,9 @@ class TodaySummaryCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           Text(
-            l10n.totalFeedingDuration,
+            breastCount > 0
+                ? l10n.feedingBreastDuration
+                : l10n.feedingBottleVolume,
             style: TextStyle(
               color: Colors.white.withValues(alpha: .85),
               fontSize: 14,
@@ -128,7 +134,9 @@ class TodaySummaryCard extends StatelessWidget {
               Expanded(
                 child: _metricCard(
                   icon: Icons.monitor_weight_outlined,
-                  value: '$totalMilk ${l10n.unitGr} ${l10n.milk}',
+                  value: sessions.any((s) => s.hasMilkData)
+                      ? '$totalMilk ${l10n.unitGr}'
+                      : '—',
                   label: l10n.milk,
                 ),
               ),
@@ -136,8 +144,8 @@ class TodaySummaryCard extends StatelessWidget {
               Expanded(
                 child: _metricCard(
                   icon: Icons.schedule_rounded,
-                  value: _format(avgDuration, l10n),
-                  label: l10n.average,
+                  value: breastCount > 0 ? _format(avgDuration, l10n) : '—',
+                  label: l10n.feedingBreastAverage,
                 ),
               ),
               const SizedBox(width: 10),
@@ -150,6 +158,18 @@ class TodaySummaryCard extends StatelessWidget {
               ),
             ],
           ),
+          for (final milk in BottleMilk.values)
+            if (sessions.any((s) => s.amountFor(milk) > 0))
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Text(
+                  '${milk == BottleMilk.formula ? l10n.feedingFormula : l10n.feedingExpressed}: ${sessions.fold<int>(0, (sum, s) => sum + s.amountFor(milk))} ml',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
         ],
       ),
     );
